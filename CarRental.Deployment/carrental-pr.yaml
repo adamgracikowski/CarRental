@@ -1,0 +1,14 @@
+# File: carrental-pr.yaml
+# Description: Build Validation Pipeline used for Pull Requests.
+
+trigger: none
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+  - script: dotnet build ../CarRental --configuration $(buildConfiguration)
+    displayName: 'Build the project'
