@@ -1,6 +1,12 @@
+using CarRental.Comparer.API;
+using CarRental.Comparer.Persistence;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Configuration.AddUserSecrets<Program>();
+builder.Services.RegisterConfigurationOptions(builder.Configuration);
+builder.Services.RegisterPersistenceServices(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
