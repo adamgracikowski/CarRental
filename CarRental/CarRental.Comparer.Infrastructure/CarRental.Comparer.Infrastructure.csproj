@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CarRental.Common.Infrastructure\CarRental.Common.Infrastructure.csproj" />
+    <ProjectReference Include="..\CarRental.Comparer.Persistence\CarRental.Comparer.Persistence.csproj" />
+  </ItemGroup>
+
 </Project>

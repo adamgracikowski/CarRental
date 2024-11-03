@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.4.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
@@ -22,7 +23,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CarRental.Comparer.Persistence\CarRental.Comparer.Persistence.csproj" />
-    <ProjectReference Include="..\CarRental.Provider.Persistence\CarRental.Provider.Persistence.csproj" />
+    <ProjectReference Include="..\CarRental.Provider.Infrastructure\CarRental.Provider.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>
