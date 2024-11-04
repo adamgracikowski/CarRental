@@ -23,4 +23,8 @@
     <ProjectReference Include="..\CarRental.Common.Core\CarRental.Common.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="SeedDataScripts\" />
+  </ItemGroup>
+
 </Project>
