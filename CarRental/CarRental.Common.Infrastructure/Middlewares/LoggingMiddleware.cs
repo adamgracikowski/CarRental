@@ -9,7 +9,7 @@ public sealed class LoggingMiddleware : IMiddleware
 {
     private readonly ILogger<LoggingMiddleware> _logger;
 
-    private const string ReceivedRequestLogMessage = "Received request: {Method} {Path} - Body: {RequestBody}";
+    private const string ReceivedRequestLogMessage = "Request: {Method} {Path}";
     private const string ResponseLogMessage = "Response: {StatusCode} {Method} {Path} - {ElapsedMilliseconds}ms";
     private const string ErrorLogMessage = "An unhandled exception occurred while processing the request.";
     private const string InternalServerErrorMessage = "An internal server error occurred. Please try again later.";
@@ -25,14 +25,9 @@ public sealed class LoggingMiddleware : IMiddleware
 
         try
         {
-            context.Request.EnableBuffering();
-
-            var requestBody = await ReadRequestBodyAsync(context);
-
             _logger.LogInformation(ReceivedRequestLogMessage,
                 context.Request.Method,
-                context.Request.Path,
-                WebUtility.UrlDecode(requestBody));
+                context.Request.Path);
 
             await next(context);
 
@@ -52,28 +47,25 @@ public sealed class LoggingMiddleware : IMiddleware
         }
     }
 
-    private async Task<string> ReadRequestBodyAsync(HttpContext context)
-    {
-        using var reader = new StreamReader(context.Request.Body);
-        var body = await reader.ReadToEndAsync();
-
-        context.Request.Body.Position = 0;
-
-        return body;
-    }
-
     private async Task HandleException(HttpContext context, Exception ex)
     {
         _logger.LogError(ex, ErrorLogMessage);
 
-        context.Response.StatusCode = StatusCodes.Status500InternalServerError;
-        context.Response.ContentType = "application/json";
-
-        var response = new
+        if (!context.Response.HasStarted)
         {
-            Message = InternalServerErrorMessage
-        };
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            context.Response.ContentType = "application/json";
 
-        await context.Response.WriteAsJsonAsync(response);
+            var response = new
+            {
+                Message = InternalServerErrorMessage
+            };
+
+            await context.Response.WriteAsJsonAsync(response);
+        }
+        else
+        {
+            _logger.LogWarning("The response has already started, unable to send custom error message.");
+        }
     }
 }
