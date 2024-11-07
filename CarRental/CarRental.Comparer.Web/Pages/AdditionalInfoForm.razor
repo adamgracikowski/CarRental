@@ -1,0 +1,120 @@
+﻿@page "/additional-info"
+@using CarRental.Comparer.Web.Requests.Users.DTOs
+@using CarRental.Comparer.Web.Requests.Users.UserApiService
+@using Darnton.Blazor.DeviceInterop.Geolocation
+@using System.ComponentModel.DataAnnotations
+
+@inject UserApiService UserApiService
+@inject IJSRuntime jsRuntime
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject GeolocationService GeolocationService
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-5">
+    <MudPaper Elevation="4" Class="p-4">
+        <MudText Typo="Typo.h5" Align="Align.Center">Complete Your Profile</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary">
+            Please provide the additional information to complete your registration.
+        </MudText>
+
+        <EditForm Model="user" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator/>
+            <MudStack Spacing="3" Class="mt-4">
+                <MudTextField Label="First Name" @bind-Value="user.Name" For="@(() => user.Name)" Required="true" />
+                <MudTextField Label="Last Name" @bind-Value="user.Lastname" For="@(() => user.Lastname)" Required="true" />
+                <MudTextField Label="Email" @bind-Value="user.Email" Required="true" For="@(() => user.Email)" Disabled="true" />
+                <MudNumericField Label="Age" @bind-Value="user.Age" Required="true" For="@(() => user.Age)" />
+                <MudNumericField Label="Driving License Years" @bind-Value="user.DrivingLicenseYears" For="@(() => user.DrivingLicenseYears)" Required="true" />
+                <MudTextField Label="Longitude" @bind-Value="user.Longitude" For="@(() => user.Longitude)" />
+                <MudTextField Label="Latitude" @bind-Value="user.Latitude" For="@(() => user.Latitude)" />
+
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" FullWidth>
+                    Submit
+                </MudButton>
+                <MudItem xs="12" sm="5">
+                    <MudPaper Class="pa-4 mud-height-full">
+                        <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+                        @if (success)
+                        {
+                            <MudText Color="Color.Success">Success</MudText>
+                        }
+                        else
+                        {
+                            <MudText Color="@Color.Error">
+                                <ValidationSummary />
+                            </MudText>
+                        }
+                    </MudPaper>
+                </MudItem>
+            </MudStack>
+        </EditForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private UserDto user = new UserDto();
+    bool success;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var userClaims = authState.User;
+
+        user.Email = userClaims?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+
+        var doesUserExist = await SetUserByEmail(user.Email);
+
+        if(doesUserExist)
+        {
+            Navigation.NavigateTo("/profile");
+            return;
+        }
+
+        var nameAndLastName = userClaims?.Claims.FirstOrDefault(c => c.Type == "name")?.Value.Split();
+        if(nameAndLastName == null)
+        {
+            Console.WriteLine("name and last name null");
+        }
+        user.Name = nameAndLastName[0];
+        if(nameAndLastName.Count() > 1)
+            user.Lastname = nameAndLastName[1];
+
+        GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
+        if (currentPositionResult.IsSuccess)
+        {
+            user.Longitude = currentPositionResult.Position.Coords.Longitude;
+            user.Latitude = currentPositionResult.Position.Coords.Latitude;
+        }
+    }
+
+    private async Task<bool> SetUserByEmail(string email)
+    {
+        var fetchedUser = await UserApiService.GetUserByEmailAsync(email);
+
+        if (fetchedUser != null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private async Task OnValidSubmit(EditContext context)
+    {
+        success = true;
+        StateHasChanged();
+
+        var createUserSuccess = await UserApiService.CreateUserAsync(user);
+
+        if (createUserSuccess)
+        {
+            Navigation.NavigateTo("/profile");
+        }
+        else
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+}

@@ -3,12 +3,23 @@ using CarRental.Common.Infrastructure.Middlewares;
 using CarRental.Comparer.API;
 using CarRental.Comparer.Persistence;
 using CarRental.Comparer.Persistence.Data;
-using CarRental.Provider.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Configuration.AddUserSecrets<Program>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin", builder =>
+    {
+        builder.WithOrigins("https://localhost:7009") // The address of your Blazor WebAssembly app
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials(); // Optional: if you need to send credentials
+    });
+});
+
 builder.Services.RegisterConfigurationOptions(builder.Configuration);
 builder.Services.RegisterPersistenceServices(builder.Configuration);
 builder.Services.RegisterInfrastructureServices();
@@ -32,6 +43,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<LoggingMiddleware>();
+
+app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
 

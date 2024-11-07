@@ -1,0 +1,10 @@
+﻿@page "/authentication/{action}"
+@inject NavigationManager NavigationManager
+<RemoteAuthenticatorView Action="@Action" > 
+    <LogInFailed>
+        <p>Login failed. Please try again or contact support.</p>
+    </LogInFailed>
+</RemoteAuthenticatorView>
+@code {
+    [Parameter] public string Action { get; set; }
+}

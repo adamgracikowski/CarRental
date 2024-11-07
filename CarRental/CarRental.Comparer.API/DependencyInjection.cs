@@ -16,6 +16,15 @@ public static class DependencyInjection
     {
         services.AddTransient<LoggingMiddleware>();
 
+        services.RegisterAutoMapper();
+        services.ConfigureMediatR();
+
+        return services;
+    }
+
+    public static IServiceCollection RegisterAutoMapper(this IServiceCollection services)
+    {
+        services.AddAutoMapper(typeof(Program).Assembly);
         return services;
     }
 

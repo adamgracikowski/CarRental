@@ -1,27 +1,100 @@
-﻿@inherits LayoutComponentBase
+﻿@using CarRental.Comparer.Web.Services
+@inherits LayoutComponentBase
+@inject NavigationManager NavigationManager
+@inject SignOutSessionStateManager SignOutManager
+@inject ThemeService ThemeService
 
-@* Required *@
-<MudThemeProvider />
+<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
-
-@* Needed for dialogs *@
 <MudDialogProvider />
-
-@* Needed for snackbars *@
 <MudSnackbarProvider />
+<MudLayout>
+    <MudAppBar Elevation="1">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+        <MudSpacer />
+        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
 
-<div class="page">
-    <div class="sidebar">
+        <AuthorizeView>
+            <Authorized>
+                <MudText Typo="Typo.body1" Class="mr-2">
+                    @{
+                        var userName = context.User.Identity?.Name;
+                        var userEmail = context.User.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+                    }
+                    @if(string.IsNullOrEmpty(userName) == false && string.IsNullOrEmpty(userEmail) == false)
+                    {
+                        <text>Hello, @userName (@userEmail)</text>
+                    }
+                </MudText>
+                <MudButton Color="Color.Secondary" OnClick="SignOut">Log out</MudButton>
+            </Authorized>
+            <NotAuthorized>
+                <MudButton Color="Color.Secondary" OnClick="LogIn">Log in</MudButton>
+            </NotAuthorized>
+        </AuthorizeView>
+
+    </MudAppBar>
+    <MudDrawer @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Always" Elevation="2">
         <NavMenu />
-    </div>
+    </MudDrawer>
+    <MudMainContent Class="mt-16 pa-4">
+        @Body
+    </MudMainContent>
+</MudLayout>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
 
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
+<div id="blazor-error-ui">
+    An unhandled error has occurred.
+    <a href="" class="reload">Reload</a>
+    <a class="dismiss">🗙</a>
 </div>
+
+@code {
+    private bool _drawerOpen = true;
+    private bool _isDarkMode = true;
+    private MudTheme? _theme = null;
+
+    [CascadingParameter]
+    private Task<AuthenticationState> authenticationStateTask { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _theme = new()
+            {
+                PaletteLight = ThemeService.lightPalette,
+                PaletteDark = ThemeService.darkPalette,
+                LayoutProperties = new LayoutProperties()
+            };
+    }
+
+    private async Task LogIn()
+    {
+        NavigationManager.NavigateTo("loginpage");
+    }
+    private async Task SignOut()
+    {
+        await SignOutManager.SetSignOutState();
+        NavigationManager.NavigateTo("authentication/logout");
+    }
+
+    private void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void DarkModeToggle()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+
+    public string DarkLightModeButtonIcon => _isDarkMode switch
+    {
+        true => Icons.Material.Rounded.AutoMode,
+        false => Icons.Material.Outlined.DarkMode,
+    };
+}
+
+

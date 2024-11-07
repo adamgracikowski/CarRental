@@ -1,0 +1,192 @@
+﻿@page "/profile"
+@using CarRental.Comparer.Web.Dialogs
+@using CarRental.Comparer.Web.Requests.Users.DTOs
+@using CarRental.Comparer.Web.Requests.Users.UserApiService
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject UserApiService UserApiService
+@inject NavigationManager Navigation
+@inject SignOutSessionStateManager SignOutManager
+@inject IDialogService DialogService
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-5">
+    <MudPaper Elevation="4" Class="p-4">
+        <MudText Typo="Typo.h5" Align="Align.Center">Profile Management</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary">
+            Manage your profile here.
+        </MudText>
+
+        <MudStack Spacing="3" Class="mt-4">
+            @if (_user != null)
+            {
+                <EditForm Model="_user" OnValidSubmit="OnValidSubmit">
+                    <DataAnnotationsValidator />
+                    <MudTextField Label="Email" @bind-Value="_user.Email" Required="true" For="@(() => _user.Email)" Disabled="true" />
+                    <MudTextField Label="First Name" @bind-Value="_user.Name" For="@(() => _user.Name)" Required="true" Disabled="!isEditMode" />
+                    <MudTextField Label="Last Name" @bind-Value="_user.Lastname" For="@(() => _user.Lastname)" Required="true" Disabled="!isEditMode" />
+                    <MudNumericField Label="Age" @bind-Value="_user.Age" Required="true" For="@(() => _user.Age)" Disabled="!isEditMode" />
+                    <MudNumericField Label="Driving License Years" @bind-Value="_user.DrivingLicenseYears" For="@(() => _user.DrivingLicenseYears)" Required="true" Disabled="!isEditMode" />
+
+                    <MudStack Direction="Direction.Row" Spacing="2" JustifyContent="JustifyContent.SpaceBetween">
+                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ToggleEditMode" FullWidth>
+                            @if (isEditMode)
+                            {
+                                <text>Cancel</text>
+                            }
+                            else
+                            {
+                                <text>Edit</text>
+                            }
+                        </MudButton>
+
+                        @if (isEditMode)
+                        {
+                            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" FullWidth>
+                                Save Changes
+                            </MudButton>
+                        }
+
+                        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteUser" FullWidth>
+                            Delete User
+                        </MudButton>
+                    </MudStack>
+                        <MudItem xs="12" sm="5">
+                            <MudPaper Class="pa-4 mud-height-full">
+                                <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+                                @if (validationSuccess)
+                                {
+                                    <MudText Color="Color.Success">Success</MudText>
+                                }
+                                else
+                                {
+                                    <MudText Color="@Color.Error">
+                                        <ValidationSummary />
+                                    </MudText>
+                                }
+                            </MudPaper>
+                        </MudItem>
+                </EditForm>
+
+                @if (isDeleted)
+                {
+                    <MudText Color="Color.Success">User deleted successfully.</MudText>
+                }
+                else if (deleteError)
+                {
+                    <MudText Color="Color.Error">Failed to delete the user.</MudText>
+                }
+            }
+            else
+            {
+                <MudText Color="Color.Error">User not found.</MudText>
+            }
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private UserDto _user = new UserDto();
+    private bool isDeleted = false;
+    private bool deleteError = false;
+    bool validationSuccess;
+    private bool isEditMode = false;
+    private UserDto _backupUser = new UserDto();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var email = authState.User?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+
+        var fetchedUser = await UserApiService.GetUserByEmailAsync(email);
+        if (fetchedUser != null)
+        {
+            _user = fetchedUser;
+        }
+    }
+
+    private async Task OnValidSubmit()
+    {
+        validationSuccess = true;
+        var deleteUserSuccess = await UserApiService.DeleteUserByEmailAsync(_user.Email);
+
+        if (deleteUserSuccess)
+        {
+            var createUserSuccess = await UserApiService.CreateUserAsync(_user);
+
+            if (createUserSuccess)
+            {
+                Navigation.NavigateTo("/profile");
+            }
+            else
+            {
+                Navigation.NavigateTo("/");
+            }
+        }
+        else
+        {
+            Navigation.NavigateTo("/");
+        }
+
+        isEditMode = false;
+    }
+
+    private void ToggleEditMode()
+    {
+        isEditMode = !isEditMode;
+        if(isEditMode)
+        {
+            _backupUser = CloneUser(_user);
+        }
+        else if (!isEditMode)
+        {
+            _user = CloneUser(_backupUser);
+            OnInitializedAsync();
+        }
+    }
+
+    private UserDto CloneUser(UserDto source)
+    {
+        return new UserDto
+            {
+                Name = source.Name,
+                Lastname = source.Lastname,
+                Email = source.Email,
+                Age = source.Age,
+                DrivingLicenseYears = source.DrivingLicenseYears
+            };
+    }
+
+    private async Task<bool> OpenDialogAsync()
+    {
+        var options = new DialogOptions { CloseOnEscapeKey = true };
+
+        var dialog = DialogService.Show<DeleteUserDialog>("Title of the dialog", options);
+        var result = await dialog.Result;
+
+        return !result.Canceled;
+    }
+
+    private async Task DeleteUser()
+    {
+        var confirmation = await OpenDialogAsync();
+        if (confirmation == false)
+            return;
+
+        if (_user != null)
+        {
+            deleteError = false;
+            var deleteUserSuccess = await UserApiService.DeleteUserByEmailAsync(_user.Email);
+
+            if (deleteUserSuccess)
+            {
+                isDeleted = true;
+                await SignOutManager.SetSignOutState();
+                Navigation.NavigateTo("authentication/logout");
+            }
+            else
+            {
+                deleteError = true;
+            }
+        }
+    }
+}

@@ -1,0 +1,42 @@
+﻿@page "/loginpage"
+@inject NavigationManager Navigation
+
+<PageTitle>Login</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-5">
+    <MudPaper Elevation="4" Class="p-4">
+        <MudText Typo="Typo.h5" Align="Align.Center">Login</MudText>
+        <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary">Please choose a login provider:</MudText>
+
+        <MudStack Spacing="2" Class="mt-4">
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LoginWithGoogle" FullWidth 
+                       Style="background-color: #4285F4; color: white;">
+                <MudIcon Icon="fab fa-google" Class="me-2" /> Login with Google
+            </MudButton>
+
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LoginWithMicrosoft" FullWidth 
+                       Style="background-color: #2F2F2F; color: white;">
+                <MudIcon Icon="fab fa-microsoft" Class="me-2" /> Login with Microsoft
+            </MudButton>
+        </MudStack>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private void LoginWithGoogle()
+    {
+        var requestOptions =
+            new InteractiveRequestOptions
+                {
+                    Interaction = InteractionType.SignIn,
+                    ReturnUrl = "additional-info",
+                };
+        Navigation.NavigateToLogin("authentication/login",requestOptions);
+    }
+
+    private void LoginWithMicrosoft()
+    {
+        // to do in future
+        Navigation.NavigateTo("authentication/login");
+    }
+}
