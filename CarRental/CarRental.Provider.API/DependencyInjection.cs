@@ -1,8 +1,10 @@
 ﻿using CarRental.Common.Infrastructure.Middlewares;
 using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
+using CarRental.Provider.Infrastructure.BackgroundJobs.RentalServices;
 using CarRental.Provider.Infrastructure.Calculators.OfferCalculator;
 using CarRental.Provider.Persistence.Options;
 using FluentValidation;
+using Hangfire;
 
 namespace CarRental.Provider.API;
 
@@ -22,6 +24,7 @@ public static class DependencyInjection
 
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddTransient<IOfferCalculatorService, OfferCalculatorService>();
+        services.AddScoped<IRentalStatusCheckerService, RentalStatusCheckerService>();
 
         services.RegisterAutoMapper();
         services.ConfigureMediatR();
@@ -43,6 +46,23 @@ public static class DependencyInjection
         });
 
         services.AddValidatorsFromAssemblyContaining(typeof(Program));
+
+        return services;
+    }
+
+    public static IServiceCollection ConfigureHangFire(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHangfire(config =>
+        {
+            config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"))
+                .UseColouredConsoleLogProvider()
+                .UseSerilogLogProvider();
+        });
+
+        services.AddHangfireServer();
 
         return services;
     }

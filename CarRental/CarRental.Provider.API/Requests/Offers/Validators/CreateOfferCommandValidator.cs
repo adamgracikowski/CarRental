@@ -4,7 +4,7 @@ using FluentValidation;
 
 namespace CarRental.Provider.API.Requests.Offers.Validators;
 
-public class CreateOfferCommandValidator : AbstractValidator<CreateOfferCommand>
+public sealed class CreateOfferCommandValidator : AbstractValidator<CreateOfferCommand>
 {
     private readonly IValidator<CreateOfferDto> createOfferDtoValidator;
 

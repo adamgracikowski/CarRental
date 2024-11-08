@@ -3,6 +3,7 @@ using CarRental.Common.Infrastructure.Middlewares;
 using CarRental.Provider.API;
 using CarRental.Provider.Persistence;
 using CarRental.Provider.Persistence.Repositories;
+using Hangfire;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +12,7 @@ builder.Configuration.AddUserSecrets<Program>();
 builder.Services.RegisterConfigurationOptions(builder.Configuration);
 builder.Services.RegisterPersistenceServices(builder.Configuration);
 builder.Services.RegisterInfrastructureServices();
+builder.Services.ConfigureHangFire(builder.Configuration);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -35,6 +37,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<LoggingMiddleware>();
+
+app.UseHangfireDashboard(/* configure dashboard authorization */);
 
 app.UseHttpsRedirection();
 

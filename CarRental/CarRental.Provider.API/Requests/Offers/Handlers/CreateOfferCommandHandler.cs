@@ -80,8 +80,8 @@ public sealed class CreateOfferCommandHandler : IRequestHandler<CreateOfferComma
 
         car.Offers.Add(offer);
 
-        await this.carsRepository.UpdateAsync(car);
-        await this.carsRepository.SaveChangesAsync();
+        await this.carsRepository.UpdateAsync(car, cancellationToken);
+        await this.carsRepository.SaveChangesAsync(cancellationToken);
 
         var offerDto = new OfferDto(
             Id: offer.Id,
