@@ -1,7 +1,9 @@
-﻿using CarRental.Common.Infrastructure.Middlewares;
+﻿using Azure.Storage.Blobs;
+using CarRental.Common.Infrastructure.Middlewares;
 using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Provider.Infrastructure.BackgroundJobs.RentalServices;
 using CarRental.Provider.Infrastructure.Calculators.OfferCalculator;
+using CarRental.Provider.Infrastructure.Storages.BlobStorage;
 using CarRental.Provider.Persistence.Options;
 using FluentValidation;
 using Hangfire;
@@ -14,11 +16,12 @@ public static class DependencyInjection
     {
         services.Configure<ConnectionStringsOptions>(configuration.GetSection(ConnectionStringsOptions.SectionName));
         services.Configure<OfferCalculatorOptions>(configuration.GetSection(OfferCalculatorOptions.SectionName));
+        services.Configure<BlobContainersOptions>(configuration.GetSection(BlobContainersOptions.SectionName));
 
         return services;
     }
 
-    public static IServiceCollection RegisterInfrastructureServices(this IServiceCollection services)
+    public static IServiceCollection RegisterInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<LoggingMiddleware>();
 
@@ -28,6 +31,7 @@ public static class DependencyInjection
 
         services.RegisterAutoMapper();
         services.ConfigureMediatR();
+        services.ConfigureBlobStorage(configuration);
 
         return services;
     }
@@ -63,6 +67,14 @@ public static class DependencyInjection
         });
 
         services.AddHangfireServer();
+
+        return services;
+    }
+
+    public static IServiceCollection ConfigureBlobStorage(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton(x => new BlobServiceClient(configuration.GetValue<string>("AzureBlobStorage:ConnectionString")));
+        services.AddSingleton<IBlobStorageService, BlobStorageService>();
 
         return services;
     }

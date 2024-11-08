@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using CarRental.Common.Core.ProviderEntities;
-using CarRental.Provider.API.Requests.Segments.DTOs;
+using CarRental.Provider.API.DTOs.Segments;
 
 namespace CarRental.Provider.API.Profiles;
 

@@ -1,10 +1,10 @@
 ﻿using Ardalis.Result;
 using Ardalis.Specification;
 using CarRental.Common.Core.ProviderEntities;
-using CarRental.Provider.API.Requests.Cars.DTOs;
+using CarRental.Provider.API.DTOs.Cars;
+using CarRental.Provider.API.DTOs.Makes;
+using CarRental.Provider.API.DTOs.Models;
 using CarRental.Provider.API.Requests.Cars.Queries;
-using CarRental.Provider.API.Requests.Makes.DTOs;
-using CarRental.Provider.API.Requests.Models.DTOs;
 using CarRental.Provider.Persistence.Specifications.Cars;
 using MediatR;
 

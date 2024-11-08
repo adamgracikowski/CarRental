@@ -20,6 +20,7 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
 {
     private readonly IRepositoryBase<Offer> offersRepository;
     private readonly IRepositoryBase<Customer> customerRepository;
+    private readonly IRepositoryBase<Rental> rentalsRepository;
     private readonly IMapper mapper;
     private readonly ILogger<ChooseOfferCommandHandler> logger;
     private readonly IValidator<ChooseOfferCommand> validator;
@@ -29,6 +30,7 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
     public ChooseOfferCommandHandler(
         IRepositoryBase<Offer> offersRepository,
         IRepositoryBase<Customer> customersRepository,
+        IRepositoryBase<Rental> rentalsRepository,
         IMapper mapper,
         ILogger<ChooseOfferCommandHandler> logger,
         IValidator<ChooseOfferCommand> validator,
@@ -37,6 +39,7 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
     {
         this.offersRepository = offersRepository;
         this.customerRepository = customersRepository;
+        this.rentalsRepository = rentalsRepository;
         this.mapper = mapper;
         this.logger = logger;
         this.validator = validator;
@@ -104,7 +107,11 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
             Status = RentalStatus.Unconfirmed,
         };
 
+        await this.rentalsRepository.AddAsync(rental, cancellationToken);
+        await this.rentalsRepository.SaveChangesAsync(cancellationToken);
+
         offer.Rental = rental;
+        offer.RentalId = rental.Id;
 
         await this.offersRepository.UpdateAsync(offer, cancellationToken);
         await this.offersRepository.SaveChangesAsync(cancellationToken);

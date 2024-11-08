@@ -1,5 +1,5 @@
 ﻿using Ardalis.Result;
-using CarRental.Provider.API.Requests.Offers.DTOs;
+using CarRental.Provider.API.DTOs.Offers;
 using MediatR;
 
 namespace CarRental.Provider.API.Requests.Offers.Commands;

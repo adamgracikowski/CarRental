@@ -1,6 +1,6 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
-using CarRental.Provider.API.Requests.Customers.DTOs;
+using CarRental.Provider.API.DTOs.Customers;
 using CarRental.Provider.API.Requests.Offers.Commands;
 using CarRental.Provider.API.Requests.Rentals.DTOs;
 using MediatR;

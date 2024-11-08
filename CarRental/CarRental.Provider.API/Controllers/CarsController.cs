@@ -1,10 +1,10 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using CarRental.Common.Core.Enums;
-using CarRental.Provider.API.Requests.Cars.DTOs;
+using CarRental.Provider.API.DTOs.Cars;
+using CarRental.Provider.API.DTOs.Offers;
 using CarRental.Provider.API.Requests.Cars.Queries;
 using CarRental.Provider.API.Requests.Offers.Commands;
-using CarRental.Provider.API.Requests.Offers.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 

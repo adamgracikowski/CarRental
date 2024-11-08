@@ -11,8 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddUserSecrets<Program>();
 builder.Services.RegisterConfigurationOptions(builder.Configuration);
 builder.Services.RegisterPersistenceServices(builder.Configuration);
-builder.Services.RegisterInfrastructureServices();
 builder.Services.ConfigureHangFire(builder.Configuration);
+builder.Services.RegisterInfrastructureServices(builder.Configuration);
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
