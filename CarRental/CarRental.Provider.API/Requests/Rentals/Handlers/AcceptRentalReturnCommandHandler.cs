@@ -55,7 +55,7 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
             return Result<RentalReturnDto>.Invalid(validation.AsErrors());
         }
 
-        var specification = new RentalByIdWithRentalReturnSpecification(request.Id);
+        var specification = new RentalByIdWithRentalReturnOfferCarSpecification(request.Id);
 
         var rental = await this.rentalsRepository.FirstOrDefaultAsync(specification, cancellationToken);
 
@@ -108,6 +108,7 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
         rental.Status = RentalStatus.Returned;
         rental.RentalReturn = rentalReturn;
         rental.RentalReturnId = rentalReturn.Id;
+        rental.Offer.Car.Status = CarStatus.Available;
 
         await this.rentalsRepository.UpdateAsync(rental, cancellationToken);
         await this.rentalsRepository.SaveChangesAsync(cancellationToken);
