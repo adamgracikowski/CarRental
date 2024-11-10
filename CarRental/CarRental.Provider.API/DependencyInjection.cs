@@ -1,6 +1,7 @@
 ﻿using Azure.Storage.Blobs;
 using CarRental.Common.Infrastructure.Middlewares;
 using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
+using CarRental.Common.Infrastructure.Providers.RandomStringProvider;
 using CarRental.Provider.Infrastructure.BackgroundJobs.RentalServices;
 using CarRental.Provider.Infrastructure.Calculators.OfferCalculator;
 using CarRental.Provider.Infrastructure.Storages.BlobStorage;
@@ -28,6 +29,7 @@ public static class DependencyInjection
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddTransient<IOfferCalculatorService, OfferCalculatorService>();
         services.AddScoped<IRentalStatusCheckerService, RentalStatusCheckerService>();
+        services.AddSingleton<IRandomStringProvider, RandomStringProvider>();
 
         services.RegisterAutoMapper();
         services.ConfigureMediatR();

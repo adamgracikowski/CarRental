@@ -24,6 +24,10 @@ public sealed class OfferConfiguration : IEntityTypeConfiguration<Offer>
             .HasColumnType(ConfigurationConstants.PriceConstants.DatabaseType)
             .IsRequired();
 
+        builder.Property(o => o.Key)
+            .HasMaxLength(ConfigurationConstants.OfferConstants.KeyMaxLength)
+            .IsRequired();
+
         builder.HasOne(o => o.Car)
             .WithMany(c => c.Offers)
             .HasForeignKey(o => o.CarId)

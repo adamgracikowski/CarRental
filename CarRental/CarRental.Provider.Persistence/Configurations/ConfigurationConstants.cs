@@ -56,4 +56,9 @@ public static class ConfigurationConstants
     {
         public const string DatabaseType = "decimal(18,2)";
     }
+
+    public static class OfferConstants
+    {
+        public const int KeyMaxLength = 40;
+    }
 }

@@ -10,6 +10,7 @@ using CarRental.Provider.API.DTOs.Segments;
 using CarRental.Provider.API.Requests.Offers.Commands;
 using CarRental.Provider.Infrastructure.Calculators.OfferCalculator;
 using CarRental.Provider.Persistence.Specifications.Cars;
+using CarRental.Common.Infrastructure.Providers.RandomStringProvider;
 using FluentValidation;
 using MediatR;
 
@@ -20,18 +21,21 @@ public sealed class CreateOfferCommandHandler : IRequestHandler<CreateOfferComma
     private readonly IRepositoryBase<Car> carsRepository;
     private readonly IValidator<CreateOfferCommand> validator;
     private readonly IOfferCalculatorService offerCalculatorService;
+    private readonly IRandomStringProvider randomStringProvider;
     private readonly IMapper mapper;
 
     public CreateOfferCommandHandler(
         IRepositoryBase<Car> carsRepository,
         IValidator<CreateOfferCommand> validator,
         IOfferCalculatorService offerCalculatorService,
+        IRandomStringProvider randomStringProvider,
         IMapper mapper
         )
     {
         this.carsRepository = carsRepository;
         this.validator = validator;
         this.offerCalculatorService = offerCalculatorService;
+        this.randomStringProvider = randomStringProvider;
         this.mapper = mapper;
     }
 
@@ -76,6 +80,7 @@ public sealed class CreateOfferCommandHandler : IRequestHandler<CreateOfferComma
             ExpiresAt = offerCalculatoResult.ExpiresAt,
             RentalPricePerDay = offerCalculatoResult.RentalPricePerDay,
             InsurancePricePerDay = offerCalculatoResult.InsurancePricePerDay,
+            Key = randomStringProvider.GenerateRandomString()
         };
 
         car.Offers.Add(offer);

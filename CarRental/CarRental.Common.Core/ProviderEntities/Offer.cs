@@ -17,4 +17,6 @@ public sealed class Offer : EntityBase
     public Rental? Rental { get; set; }
 
     public int? RentalId { get; set; }
+
+    public required string Key { get; set; }
 }

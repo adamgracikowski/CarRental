@@ -55,4 +55,19 @@ public sealed class RentalsController : ControllerBase
 
         return response;
     }
+
+    [TranslateResultToActionResult]
+    [HttpPatch("{id}/confirm/{key}")]
+    public async Task<Result> ConfirmRental(
+    int id,
+    string key,
+    CancellationToken cancellationToken)
+    {
+        var command = new ConfirmRentalCommand(id, key);
+
+        var response = await this.mediator.Send(command, cancellationToken);
+
+        return response;
+    }
+
 }
