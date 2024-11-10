@@ -4,6 +4,7 @@ using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Common.Infrastructure.Providers.RandomStringProvider;
 using CarRental.Provider.Infrastructure.BackgroundJobs.RentalServices;
 using CarRental.Provider.Infrastructure.Calculators.OfferCalculator;
+using CarRental.Provider.Infrastructure.Calculators.RentalBillCalculator;
 using CarRental.Provider.Infrastructure.Storages.BlobStorage;
 using CarRental.Provider.Persistence.Options;
 using FluentValidation;
@@ -28,6 +29,7 @@ public static class DependencyInjection
 
         services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
         services.AddTransient<IOfferCalculatorService, OfferCalculatorService>();
+        services.AddTransient<IRentalBillCalculatorService, RentalBillCalculatorService>();
         services.AddScoped<IRentalStatusCheckerService, RentalStatusCheckerService>();
         services.AddSingleton<IRandomStringProvider, RandomStringProvider>();
 

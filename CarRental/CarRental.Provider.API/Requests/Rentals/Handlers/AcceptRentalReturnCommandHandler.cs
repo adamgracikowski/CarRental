@@ -7,6 +7,7 @@ using CarRental.Common.Core.ProviderEntities;
 using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Provider.API.DTOs.RentalReturns;
 using CarRental.Provider.API.Requests.Rentals.Commands;
+using CarRental.Provider.Infrastructure.Calculators.RentalBillCalculator;
 using CarRental.Provider.Infrastructure.Storages.BlobStorage;
 using CarRental.Provider.Persistence.Specifications.Rentals;
 using FluentValidation;
@@ -24,6 +25,7 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
     private readonly ILogger<AcceptRentalReturnCommandHandler> logger;
     private readonly IMapper mapper;
     private readonly IDateTimeProvider dateTimeProvider;
+    private readonly IRentalBillCalculatorService rentalBillCalculatorService;
     private readonly BlobContainersOptions options;
 
     public AcceptRentalReturnCommandHandler(
@@ -34,6 +36,7 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
         ILogger<AcceptRentalReturnCommandHandler> logger,
         IMapper mapper,
         IDateTimeProvider dateTimeProvider,
+        IRentalBillCalculatorService rentalBillCalculatorService,
         IOptions<BlobContainersOptions> options)
     {
         this.rentalsRepository = rentalsRepository;
@@ -43,6 +46,7 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
         this.logger = logger;
         this.mapper = mapper;
         this.dateTimeProvider = dateTimeProvider;
+        this.rentalBillCalculatorService = rentalBillCalculatorService;
         this.options = options.Value;
     }
 
