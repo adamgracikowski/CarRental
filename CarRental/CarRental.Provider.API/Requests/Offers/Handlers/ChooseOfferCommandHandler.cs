@@ -8,6 +8,7 @@ using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Provider.API.Requests.Offers.Commands;
 using CarRental.Provider.API.Requests.Rentals.DTOs;
 using CarRental.Provider.Infrastructure.BackgroundJobs.RentalServices;
+using CarRental.Provider.Infrastructure.EmailService;
 using CarRental.Provider.Persistence.Specifications.Customers;
 using CarRental.Provider.Persistence.Specifications.Offers;
 using FluentValidation;
@@ -26,6 +27,8 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
     private readonly IValidator<ChooseOfferCommand> validator;
     private readonly IBackgroundJobClient backgroundJobClient;
     private readonly IDateTimeProvider dateTimeProvider;
+    private readonly IEmailService emailService;
+    private readonly IEmailInputMaker emailInputMaker;
 
     public ChooseOfferCommandHandler(
         IRepositoryBase<Offer> offersRepository,
@@ -35,7 +38,9 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
         ILogger<ChooseOfferCommandHandler> logger,
         IValidator<ChooseOfferCommand> validator,
         IBackgroundJobClient backgroundJobClient,
-        IDateTimeProvider dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        IEmailService emailService,
+        IEmailInputMaker emailInputMaker)
     {
         this.offersRepository = offersRepository;
         this.customerRepository = customersRepository;
@@ -45,6 +50,8 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
         this.validator = validator;
         this.backgroundJobClient = backgroundJobClient;
         this.dateTimeProvider = dateTimeProvider;
+        this.emailService = emailService;
+        this.emailInputMaker = emailInputMaker;
     }
 
     public async Task<Result<RentalDto>> Handle(ChooseOfferCommand request, CancellationToken cancellationToken)
@@ -56,7 +63,7 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
             return Result<RentalDto>.Invalid(validation.AsErrors());
         }
 
-        var offerSpecification = new OfferByIdWithRentalSpecification(request.Id);
+        var offerSpecification = new OfferByIdWithRentalCarModelMakeSpecification(request.Id);
         var offer = await this.offersRepository.FirstOrDefaultAsync(offerSpecification, cancellationToken);
 
         if (offer == null)
@@ -124,8 +131,17 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
 
         var delay = offer.ExpiresAt - now;
 
-        // send email here...
+        var emailTemplate = emailInputMaker.GenerateConfirmOfferInput(
+            customer.EmailAddress,
+            customer.FirstName + customer.LastName,
+            offer.Key,
+            offer.Car.Model.Make.Name,
+            offer.Car.Model.Name,
+            rental.Id
+         );
 
+        await emailService.SendEmailAsync(emailTemplate);
+        
         this.backgroundJobClient.Schedule<IRentalStatusCheckerService>(
             x => x.CheckAndUpdateRentalStatusAsync(rental.Id, CancellationToken.None),
             delay

@@ -68,7 +68,7 @@ public sealed class RentalsController : ControllerBase
 
     [AllowAnonymous]
     [TranslateResultToActionResult]
-    [HttpPatch("{id}/confirm/{key}")]
+    [HttpGet("{id}/confirm/{key}")]
     public async Task<Result> ConfirmRental(
     int id,
     string key,
