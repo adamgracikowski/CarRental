@@ -16,7 +16,11 @@ public class AcceptRentalReturnCommandValidator : AbstractValidator<AcceptRental
             .GreaterThan(0)
             .WithMessage("{PropertyName} must be greater than {ComparisonValue}.");
 
-        RuleFor(c => c.AcceptRentalReturnDto)
+        RuleFor(a => a.Audience)
+            .NotEmpty()
+            .WithMessage("{PropertyName} must be non-empty.");
+
+        RuleFor(a => a.AcceptRentalReturnDto)
             .SetValidator(this.acceptRentalReturnDtoValidator)
             .OverridePropertyName(string.Empty);
     }

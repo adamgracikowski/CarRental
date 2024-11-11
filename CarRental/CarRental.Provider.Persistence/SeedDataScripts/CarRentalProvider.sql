@@ -126,19 +126,19 @@ VALUES
     (20, 2022, 1, 1, 21.045208, 52.232378, 0),
     (21, 2020, 2, 1, 21.012229, 52.229676, 0)
 
-INSERT INTO Offers (CarId, GeneratedAt, ExpiresAt, RentalPricePerDay, InsurancePricePerDay, RentalId, [Key])
+INSERT INTO Offers (CarId, GeneratedAt, ExpiresAt, RentalPricePerDay, InsurancePricePerDay, RentalId, [Key], GeneratedBy)
 VALUES
-	(1, '2024-11-01 09:00:00', '2024-11-01 09:00:30', 50.00, 30.00 , NULL, 'a'),
-    (2, '2024-11-01 10:00:00', '2024-11-01 10:30:00', 60.00, 30.00, NULL, 'a'),
-    (3, '2024-10-15 12:00:00','2024-10-15 12:30:00', 55.00, 50.00, NULL, 'a'),
-    (4, '2024-10-15 14:00:00', '2024-10-15 14:30:00', 65.00, 30.00,NULL, 'a'),
-    (5, '2024-10-15 15:00:00', '2024-10-15 15:30:00', 70.00, 30.00, NULL, 'a'),
-    (20, '2024-10-15 16:00:00', '2024-10-15 16:30:00', 70.00, 30.00, NULL, 'a'),
-    (7, '2024-10-01 17:00:00', '2024-10-15 17:30:00', 80.00, 50.00, NULL, 'a'),
-    (8, '2024-10-01 18:00:00', '2024-10-01 18:30:00',85.00, 50.00, NULL, 'a'),
-    (9, '2024-10-01 19:00:00', '2024-10-01 19:30:00', 90.00, 50.00, NULL, 'a'),
-    (6, '2024-10-01 20:00:00', '2024-10-01 20:30:00', 95.00, 55.00, NULL, 'a'),
-    (21, '2024-10-01 20:00:00', '2024-10-01 20:30:00', 95.00, 55.00, NULL, 'a');
+	(1, '2024-11-01 09:00:00', '2024-11-01 09:00:30', 50.00, 30.00 , NULL, 'a', 'CarRental.Comparer.Web.Audience'),
+    (2, '2024-11-01 10:00:00', '2024-11-01 10:30:00', 60.00, 30.00, NULL, 'a', 'CarRental.Comparer.Web.Audience'),
+    (3, '2024-10-15 12:00:00','2024-10-15 12:30:00', 55.00, 50.00, NULL, 'a', 'CarRental.Comparer.Web.Audience'),
+    (4, '2024-10-15 14:00:00', '2024-10-15 14:30:00', 65.00, 30.00,NULL, 'a', 'CarRental.Comparer.Web.Audience'),
+    (5, '2024-10-15 15:00:00', '2024-10-15 15:30:00', 70.00, 30.00, NULL, 'a', 'CarRental.Comparer.Web.Audience'),
+    (20, '2024-10-15 16:00:00', '2024-10-15 16:30:00', 70.00, 30.00, NULL, 'a', 'CarRental.Comparer.Web.Audience'),
+    (7, '2024-10-01 17:00:00', '2024-10-15 17:30:00', 80.00, 50.00, NULL, 'a', 'CarRental.Comparer.Web.Audience'),
+    (8, '2024-10-01 18:00:00', '2024-10-01 18:30:00',85.00, 50.00, NULL, 'a', 'CarRental.Comparer.Web.Audience'),
+    (9, '2024-10-01 19:00:00', '2024-10-01 19:30:00', 90.00, 50.00, NULL, 'a', 'CarRental.Comparer.Web.Audience'),
+    (6, '2024-10-01 20:00:00', '2024-10-01 20:30:00', 95.00, 55.00, NULL, 'a', 'CarRental.Comparer.Web.Audience'),
+    (21, '2024-10-01 20:00:00', '2024-10-01 20:30:00', 95.00, 55.00, NULL, 'a', 'CarRental.Comparer.Web.Audience');
 
 INSERT INTO Rentals (OfferId, CustomerId, RentalReturnId, Status)
 VALUES
@@ -167,8 +167,3 @@ VALUES
 UPDATE Rentals
 SET Rentals.RentalReturnId = Rentals.Id - 5 
 WHERE Rentals.Id BETWEEN 6 AND 9
-
-
-
-
-

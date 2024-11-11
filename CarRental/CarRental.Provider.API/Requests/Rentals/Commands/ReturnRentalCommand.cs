@@ -4,4 +4,4 @@ using MediatR;
 
 namespace CarRental.Provider.API.Requests.Rentals.Commands;
 
-public sealed record ReturnRentalCommand(int Id) : IRequest<Result<RentalStatusDto>>;
+public sealed record ReturnRentalCommand(int Id, string? Audience) : IRequest<Result<RentalStatusDto>>;

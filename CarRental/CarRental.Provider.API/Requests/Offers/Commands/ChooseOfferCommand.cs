@@ -5,4 +5,4 @@ using MediatR;
 
 namespace CarRental.Provider.API.Requests.Offers.Commands;
 
-public sealed record ChooseOfferCommand(int Id, CustomerDto CustomerDto) : IRequest<Result<RentalDto>>;
+public sealed record ChooseOfferCommand(int Id, CustomerDto CustomerDto, string? Audience) : IRequest<Result<RentalDto>>;

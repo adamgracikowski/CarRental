@@ -28,6 +28,9 @@ public sealed class OfferConfiguration : IEntityTypeConfiguration<Offer>
             .HasMaxLength(ConfigurationConstants.OfferConstants.KeyMaxLength)
             .IsRequired();
 
+        builder.Property(o => o.GeneratedBy)
+            .IsRequired();
+
         builder.HasOne(o => o.Car)
             .WithMany(c => c.Offers)
             .HasForeignKey(o => o.CarId)

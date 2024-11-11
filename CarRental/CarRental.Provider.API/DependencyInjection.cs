@@ -2,6 +2,8 @@
 using CarRental.Common.Infrastructure.Middlewares;
 using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Common.Infrastructure.Providers.RandomStringProvider;
+using CarRental.Provider.API.Authorization.JwtTokenService;
+using CarRental.Provider.API.Authorization.TrustedClientService;
 using CarRental.Provider.Infrastructure.BackgroundJobs.RentalServices;
 using CarRental.Provider.Infrastructure.Calculators.OfferCalculator;
 using CarRental.Provider.Infrastructure.Calculators.RentalBillCalculator;
@@ -19,6 +21,7 @@ public static class DependencyInjection
         services.Configure<ConnectionStringsOptions>(configuration.GetSection(ConnectionStringsOptions.SectionName));
         services.Configure<OfferCalculatorOptions>(configuration.GetSection(OfferCalculatorOptions.SectionName));
         services.Configure<BlobContainersOptions>(configuration.GetSection(BlobContainersOptions.SectionName));
+        services.Configure<JwtSettingsOptions>(configuration.GetSection(JwtSettingsOptions.SectionName));
 
         return services;
     }
@@ -32,6 +35,9 @@ public static class DependencyInjection
         services.AddTransient<IRentalBillCalculatorService, RentalBillCalculatorService>();
         services.AddScoped<IRentalStatusCheckerService, RentalStatusCheckerService>();
         services.AddSingleton<IRandomStringProvider, RandomStringProvider>();
+        
+        services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<ITrustedClientService, TrustedClientService>();
 
         services.RegisterAutoMapper();
         services.ConfigureMediatR();

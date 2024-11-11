@@ -16,6 +16,10 @@ public sealed class CreateOfferCommandValidator : AbstractValidator<CreateOfferC
             .GreaterThan(0)
             .WithMessage("{PropertyName} must be greater than {ComparisonValue}.");
 
+        RuleFor(c => c.Audience)
+            .NotEmpty()
+            .WithMessage("{PropertyName} must be non-empty.");
+
         RuleFor(c => c.CreateOfferDto)
             .SetValidator(this.createOfferDtoValidator)
             .OverridePropertyName(string.Empty);

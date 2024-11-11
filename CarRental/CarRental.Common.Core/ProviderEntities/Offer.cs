@@ -19,4 +19,6 @@ public sealed class Offer : EntityBase
     public int? RentalId { get; set; }
 
     public required string Key { get; set; }
+
+    public required string GeneratedBy { get; set; }
 }

@@ -1,15 +1,18 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using CarRental.Common.Core.Enums;
+using CarRental.Provider.API.Authorization;
 using CarRental.Provider.API.DTOs.Cars;
 using CarRental.Provider.API.DTOs.Offers;
 using CarRental.Provider.API.Requests.Cars.Queries;
 using CarRental.Provider.API.Requests.Offers.Commands;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarRental.Provider.API.Controllers;
 
+[Authorize]
 [Route("[controller]")]
 [ApiController]
 public sealed class CarsController : ControllerBase
@@ -33,10 +36,12 @@ public sealed class CarsController : ControllerBase
     }
 
     [TranslateResultToActionResult]
-    [HttpPost("{carId}/Offers")]
-    public async Task <Result<OfferDto>> CreateOffer(int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken)
+    [HttpPost("{id}/Offers")]
+    public async Task <Result<OfferDto>> CreateOffer(int id, CreateOfferDto createOfferDto, CancellationToken cancellationToken)
     {
-        var command = new CreateOfferCommand(carId, createOfferDto);
+        var audience = User.GetAudience();
+
+        var command = new CreateOfferCommand(id, createOfferDto, audience);
 
         var response = await this.mediator.Send(command, cancellationToken);
 

@@ -80,7 +80,8 @@ public sealed class CreateOfferCommandHandler : IRequestHandler<CreateOfferComma
             ExpiresAt = offerCalculatoResult.ExpiresAt,
             RentalPricePerDay = offerCalculatoResult.RentalPricePerDay,
             InsurancePricePerDay = offerCalculatoResult.InsurancePricePerDay,
-            Key = randomStringProvider.GenerateRandomString()
+            Key = randomStringProvider.GenerateRandomString(),
+            GeneratedBy = request.Audience!,
         };
 
         car.Offers.Add(offer);
