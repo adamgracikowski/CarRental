@@ -1,4 +1,4 @@
-﻿namespace CarRental.Comparer.API.Requests.Users.DTOs;
+﻿namespace CarRental.Comparer.API.DTOs.Users;
 
 public sealed record UserDto
 {

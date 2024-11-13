@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 
-namespace CarRental.Provider.Infrastructure.Storages.BlobStorage;
+namespace CarRental.Common.Infrastructure.Storages.BlobStorage;
 
 public interface IBlobStorageService
 {
@@ -9,4 +9,6 @@ public interface IBlobStorageService
     Task<bool> DeleteFileAsync(string containerName, string fileName, CancellationToken cancellationToken = default);
 
     Task<Stream?> DownloadFileAsync(string containerName, string fileName, CancellationToken cancellationToken = default);
+
+    Task<IEnumerable<string>> GetFilesAsync(string containerName, CancellationToken cancellationToken = default);
 }

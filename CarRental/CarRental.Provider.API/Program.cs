@@ -13,6 +13,7 @@ using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddUserSecrets<Program>();
+
 builder.Services.RegisterConfigurationOptions(builder.Configuration);
 
 builder.Services.ConfigureCors(builder.Configuration);

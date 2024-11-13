@@ -8,10 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Storage.Blobs" Version="12.22.2" />
     <PackageReference Include="Darnton.Blazor.DeviceInterop" Version="0.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Authentication" Version="8.0.10" />
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.DevServer" Version="8.0.10" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
     <PackageReference Include="MudBlazor" Version="7.15.0" />
   </ItemGroup>
 

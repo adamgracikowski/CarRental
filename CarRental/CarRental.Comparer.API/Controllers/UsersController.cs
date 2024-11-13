@@ -1,7 +1,7 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
+using CarRental.Comparer.API.DTOs.Users;
 using CarRental.Comparer.API.Requests.Users.Commands;
-using CarRental.Comparer.API.Requests.Users.DTOs;
 using CarRental.Comparer.API.Requests.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

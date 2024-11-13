@@ -3,7 +3,7 @@ using Azure.Storage.Blobs.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace CarRental.Provider.Infrastructure.Storages.BlobStorage;
+namespace CarRental.Common.Infrastructure.Storages.BlobStorage;
 
 public sealed class BlobStorageService : IBlobStorageService
 {
@@ -22,7 +22,7 @@ public sealed class BlobStorageService : IBlobStorageService
     {
         try
         {
-            var containerClient = this.blobServiceClient.GetBlobContainerClient(containerName);
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
             await containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
 
@@ -32,18 +32,18 @@ public sealed class BlobStorageService : IBlobStorageService
 
             if (result)
             {
-                this.logger.LogInformation("File {FileName} successfully deleted from container {ContainerName}.", fileName, containerName);
+                logger.LogInformation("File {FileName} successfully deleted from container {ContainerName}.", fileName, containerName);
             }
             else
             {
-                this.logger.LogInformation("File {FileName} not found in container {ContainerName}.", fileName, containerName);
+                logger.LogInformation("File {FileName} not found in container {ContainerName}.", fileName, containerName);
             }
 
             return true;
         }
         catch (Exception ex)
         {
-            this.logger.LogInformation("Error while deleting file {FileName} from container {ContainerName}: {ErrorMessage}.", fileName, containerName, ex.Message);
+            logger.LogInformation("Error while deleting file {FileName} from container {ContainerName}: {ErrorMessage}.", fileName, containerName, ex.Message);
             return false;
         }
     }
@@ -52,11 +52,11 @@ public sealed class BlobStorageService : IBlobStorageService
     {
         try
         {
-            var containerClient = this.blobServiceClient.GetBlobContainerClient(containerName);
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
             if (!await containerClient.ExistsAsync(cancellationToken: cancellationToken))
             {
-                this.logger.LogInformation("Container {ContainerName} does not exist.", containerName);
+                logger.LogInformation("Container {ContainerName} does not exist.", containerName);
                 return null;
             }
 
@@ -64,18 +64,18 @@ public sealed class BlobStorageService : IBlobStorageService
 
             if (!await blobClient.ExistsAsync(cancellationToken: cancellationToken))
             {
-                this.logger.LogInformation("File {FileName} does not exist in container {ContainerName}.", fileName, containerName);
+                logger.LogInformation("File {FileName} does not exist in container {ContainerName}.", fileName, containerName);
                 return null;
             }
 
             var download = await blobClient.DownloadContentAsync(cancellationToken: cancellationToken);
 
-            this.logger.LogInformation("File {FileName} successfully downloaded from container {ContainerName}.", fileName, containerName);
+            logger.LogInformation("File {FileName} successfully downloaded from container {ContainerName}.", fileName, containerName);
             return download.Value.Content.ToStream();
         }
         catch (Exception ex)
         {
-            this.logger.LogInformation("Error while downloading file {FileName} from container {ContainerName}: {ErrorMessage}.", fileName, containerName, ex.Message);
+            logger.LogInformation("Error while downloading file {FileName} from container {ContainerName}: {ErrorMessage}.", fileName, containerName, ex.Message);
             return null;
         }
     }
@@ -84,7 +84,7 @@ public sealed class BlobStorageService : IBlobStorageService
     {
         try
         {
-            var containerClient = this.blobServiceClient.GetBlobContainerClient(containerName);
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
 
             await containerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
 
@@ -98,13 +98,41 @@ public sealed class BlobStorageService : IBlobStorageService
 
             await blobClient.UploadAsync(stream, blobHttpHeaders, cancellationToken: cancellationToken);
 
-            this.logger.LogInformation("File {FileName} successfully uploaded to container {ContainerName}.", fileName, containerName);
+            logger.LogInformation("File {FileName} successfully uploaded to container {ContainerName}.", fileName, containerName);
             return true;
         }
         catch (Exception ex)
         {
-            this.logger.LogInformation("Error while uploading file {FileName} to container {ContainerName}: {ErrorMessage}.", fileName, containerName, ex.Message);
+            logger.LogInformation("Error while uploading file {FileName} to container {ContainerName}: {ErrorMessage}.", fileName, containerName, ex.Message);
             return false;
         }
+    }
+
+    public async Task<IEnumerable<string>> GetFilesAsync(string containerName, CancellationToken cancellationToken = default)
+    {
+        var files = new List<string>();
+
+        try
+        {
+            var containerClient = blobServiceClient.GetBlobContainerClient(containerName);
+
+            if (!await containerClient.ExistsAsync(cancellationToken: cancellationToken))
+            {
+                logger.LogInformation("Container {ContainerName} does not exist.", containerName);
+                return files;
+            }
+
+            await foreach (var blobItem in containerClient.GetBlobsAsync(cancellationToken: cancellationToken))
+            {
+                files.Add(blobItem.Name);
+            }
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Error while listing files in container {ContainerName}: {ErrorMessage}.", containerName, ex.Message);
+        }
+
+        return files;
     }
 }

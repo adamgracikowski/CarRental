@@ -4,14 +4,14 @@
 @inject SignOutSessionStateManager SignOutManager
 @inject ThemeService ThemeService
 
-<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
+<MudThemeProvider Theme="@ThemeService.CustomTheme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        <MudText Typo="Typo.h5" Class="ml-3">Application</MudText>
+        <MudText Typo="Typo.h5" Class="ml-3">Car Rental</MudText>
         <MudSpacer />
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
 
@@ -27,10 +27,10 @@
                         <text>Hello, @userName (@userEmail)</text>
                     }
                 </MudText>
-                <MudButton Color="Color.Secondary" OnClick="SignOut">Log out</MudButton>
+                <MudButton StartIcon="@Icons.Material.Filled.Logout" Color="Color.Secondary" OnClick="SignOut">Log out</MudButton>
             </Authorized>
             <NotAuthorized>
-                <MudButton Color="Color.Secondary" OnClick="LogIn">Log in</MudButton>
+                <MudButton StartIcon="@Icons.Material.Filled.Login" Color="Color.Secondary" OnClick="LogIn">Log in</MudButton>
             </NotAuthorized>
         </AuthorizeView>
 
@@ -53,7 +53,6 @@
 @code {
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
-    private MudTheme? _theme = null;
 
     [CascadingParameter]
     private Task<AuthenticationState> authenticationStateTask { get; set; }
@@ -61,13 +60,6 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-
-        _theme = new()
-            {
-                PaletteLight = ThemeService.lightPalette,
-                PaletteDark = ThemeService.darkPalette,
-                LayoutProperties = new LayoutProperties()
-            };
     }
 
     private async Task LogIn()

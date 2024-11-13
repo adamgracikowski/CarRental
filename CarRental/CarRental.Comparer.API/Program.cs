@@ -22,7 +22,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.RegisterConfigurationOptions(builder.Configuration);
 builder.Services.RegisterPersistenceServices(builder.Configuration);
-builder.Services.RegisterInfrastructureServices();
+builder.Services.RegisterInfrastructureServices(builder.Configuration);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

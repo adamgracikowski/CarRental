@@ -2,9 +2,8 @@
 @using CarRental.Comparer.Web.Dialogs
 @using CarRental.Comparer.Web.Requests.Users.DTOs
 @using CarRental.Comparer.Web.Requests.Users.UserApiService
-@inject HttpClient Http
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject UserApiService UserApiService
+@inject IUserApiService UserApiService
 @inject NavigationManager Navigation
 @inject SignOutSessionStateManager SignOutManager
 @inject IDialogService DialogService

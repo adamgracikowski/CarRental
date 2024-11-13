@@ -2,7 +2,7 @@
 using Ardalis.Specification;
 using AutoMapper;
 using CarRental.Common.Core.ComparerEntities;
-using CarRental.Comparer.API.Requests.Users.DTOs;
+using CarRental.Comparer.API.DTOs.Users;
 using CarRental.Comparer.API.Requests.Users.Queries;
 using CarRental.Comparer.Persistence.Specifications.Users;
 using MediatR;

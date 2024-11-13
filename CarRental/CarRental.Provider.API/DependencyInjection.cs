@@ -2,19 +2,19 @@
 using CarRental.Common.Infrastructure.Middlewares;
 using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Common.Infrastructure.Providers.RandomStringProvider;
+using CarRental.Common.Infrastructure.Storages.BlobStorage;
 using CarRental.Provider.API.Authorization.JwtTokenService;
 using CarRental.Provider.API.Authorization.TrustedClientService;
 using CarRental.Provider.Infrastructure.BackgroundJobs.RentalServices;
 using CarRental.Provider.Infrastructure.Calculators.OfferCalculator;
 using CarRental.Provider.Infrastructure.Calculators.RentalBillCalculator;
-using CarRental.Provider.Infrastructure.Storages.BlobStorage;
 using CarRental.Provider.Infrastructure.EmailService;
+using CarRental.Provider.Infrastructure.EmailService.Options;
 using CarRental.Provider.Persistence.Options;
 using FluentValidation;
 using Hangfire;
 using SendGrid;
 using System.Reflection;
-using CarRental.Provider.Infrastructure.EmailService.Options;
 
 namespace CarRental.Provider.API;
 

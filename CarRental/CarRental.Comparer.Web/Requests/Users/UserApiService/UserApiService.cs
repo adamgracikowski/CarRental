@@ -3,7 +3,7 @@ using System.Net.Http.Json;
 
 namespace CarRental.Comparer.Web.Requests.Users.UserApiService;
 
-public class UserApiService
+public class UserApiService : IUserApiService
 {
     private readonly HttpClient _httpClient;
 

@@ -1,58 +1,136 @@
 ﻿@page "/"
+@using CarRental.Comparer.Web.PagesNavModels
+@using CarRental.Comparer.Web.Requests.AvailableCars.DTOs
+@using CarRental.Comparer.Web.Services
+@using CarRental.Comparer.Web.Requests.AvailableCars.AvailableCarsService
+@using CarRental.Comparer.Web.Services.MakeLogoService
+@using CarRental.Comparer.Web.Services.StateContainer
+@using CarRental.Comparer.Web.Extensions
+@inject NavigationManager NavigationManager
+@inject ThemeService ThemeService 
+@inject StateContainer StateContainer
+@inject IAvailableCarsService AvailableCarsService
+@inject IMakeLogoService MakeLogoService
 
 <PageTitle>Home</PageTitle>
+<MudText Typo="Typo.h3" GutterBottom="true" Align="ThemeService.align">Car Rental</MudText>
+<MudText Typo="Typo.h4" GutterBottom="true" Align="ThemeService.align">Find your rental car</MudText>
+<MudPaper class="mb-4 mt-4" Outlined="true">
+    <MudStack Row="true" JustifyContent="Center" AlignItems="AlignItems.Center" Height="100vh">
+        <MudItem xs="6">
+            <MudPaper class ="ml-2" mb-2>
+                <MudSelect @bind-Value="Make" Label="Select make" Placeholder="Please Select" AdornmentIcon="@Icons.Material.Filled.Warehouse" AdornmentColor="Color.Primary" Variant="Variant.Outlined">
+                    <MudSelectItem Value="@("All")">All</MudSelectItem>
+                    @if (cars != null && cars.Any())
+                    {
+                        @foreach (var carMake in cars)
+                        {
+                            <MudSelectItem Value="@carMake.Name">@carMake.Name</MudSelectItem>
+                        }
+                    }
+                    else
+                    {
+                        <MudSelectItem Value="Make" Disabled="true">No makes available</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="6">
+            <MudSelect @bind-Value="Model" Label="Select model" Placeholder="Please Select" AdornmentIcon="@Icons.Material.Filled.ElectricCar" AdornmentColor="Color.Primary" Variant="Variant.Outlined">
+                <MudSelectItem Value="@("All")">All</MudSelectItem>
+                @if (!string.IsNullOrEmpty(Make) && cars != null)
+                 {
+                    var selectedMake = cars.FirstOrDefault(m => m.Name == Make);
+                    if (selectedMake != null && selectedMake.Models != null && selectedMake.Models.Any())
+                    {
+                        foreach (var model in selectedMake.Models)
+                        {
+                            <MudSelectItem Value="@model.Name">@model.Name</MudSelectItem>
+                        }
+                    }
+                    else
+                    {
+                        if (Make != "All")
+                        {
+                            <MudSelectItem Value=Error Disabled="true">No models available</MudSelectItem>
+                        }
+                    }
+                }
+                else
+                {
+                    <MudSelectItem Value=Error Disabled="true">Select a make first</MudSelectItem>
+                }
+            </MudSelect>
+        </MudItem>
+        <MudItem xs="2">
+            <MudButton OnClick=@(() => OnMakeModelClick(Make,Model)) Variant="Variant.Filled" EndIcon="@Icons.Material.Filled.Search" Color="Color.Primary" FullWidth = "true" Style="height: 60px">Search</MudButton>
+        </MudItem>
+    </MudStack>
+</MudPaper>
 
-<MudText Typo="Typo.h3" GutterBottom="true">Hello, world!</MudText>
-<MudText Class="mb-8">Welcome to your new app, powered by MudBlazor and the .NET 8 Template!</MudText>
+<MudContainer>
+    @if (cars != null)
+    {
+        <MudPaper Class="d-flex flex-wrap gap-4" Width="100%" MaxWidth="100%">
+            @foreach (var make in cars)
+            {
+                    <MudCard Class="m-2 p-2" Style="cursor: pointer; width: 200px;">
+                    <MudCardContent Class="d-flex flex-column justify-center align-center">
+                        <MudImage Src="@MakeLogoService.GetLogo(make.Name)"
+                        Style="width: 50%; height: auto;"/>
 
-<MudAlert Severity="Severity.Normal">
-    You can find documentation and examples on our website here:
-    <MudLink Href="https://mudblazor.com" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        <b>www.mudblazor.com</b>
-    </MudLink>
-</MudAlert>
+                            <MudText Align="Align.Center" Typo="Typo.h5">@make.Name</MudText>
+                            @foreach (var model in make.Models)
+                            {
+                            <MudText Align="Align.Center" Typo="Typo.body2">- @model.Name</MudText>
+                            }
+                        </MudCardContent>
+                    <MudCardActions Class="d-flex justify-center">
+                            <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => OnMakeClick(make))">
+                                View models
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+            }
+        </MudPaper>
+    }
+</MudContainer>
+@code 
+{
+    protected override async void OnInitialized()
+    {
+        var makeList = await AvailableCarsService.GetAvailableCars();
+        cars = makeList.makes;
+        await MakeLogoService.RefreshLogos();
+        StateHasChanged();
+    }
 
-<br />
-<MudText Typo="Typo.h5" GutterBottom="true">Interactivity in this Template</MudText>
-<br />
-<MudText Typo="Typo.body2">
-    When you opt for the "Global" Interactivity Location, <br />
-    the render modes are defined in App.razor and consequently apply to all child components.<br />
-    In this case, providers are globally set in the MainLayout.<br />
-    <br />
-    On the other hand, if you choose the "Per page/component" Interactivity Location,<br />
-    it is necessary to include the <br />
-    <br />
-    &lt;MudPopoverProvider /&gt; <br />
-    &lt;MudDialogProvider /&gt; <br />
-    &lt;MudSnackbarProvider /&gt; <br />
-    <br />
-    components on every interactive page.<br />
-    <br />
-    If a render mode is not specified for a page, it defaults to Server-Side Rendering (SSR),<br />
-    similar to this page. While MudBlazor allows pages to be rendered in SSR,<br />
-    please note that interactive features, such as buttons and dropdown menus, will not be functional.
-</MudText>
+    public string Search { get; set; }
 
-<br />
-<MudText Typo="Typo.h5" GutterBottom="true">What's New in Blazor with the Release of .NET 8</MudText>
-<br />
-<MudText Typo="Typo.h6" GutterBottom="true">Prerendering</MudText>
-<MudText Typo="Typo.body2" GutterBottom="true">
-    If you're exploring the features of .NET 8 Blazor,<br /> you might be pleasantly surprised to learn that each page is prerendered on the server,<br /> regardless of the selected render mode.<br /><br />
-    This means that you'll need to inject all necessary services on the server,<br /> even when opting for the wasm (WebAssembly) render mode.<br /><br />
-    This prerendering functionality is crucial to ensuring that WebAssembly mode feels fast and responsive,<br /> especially when it comes to initial page load times.<br /><br />
-    For more information on how to detect prerendering and leverage the RenderContext, you can refer to the following link:
-    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issuecomment-1783568121" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        More details
-    </MudLink>
-</MudText>
+    private string Error = "error";
 
-<br />
-<MudText Typo="Typo.h6" GutterBottom="true">InteractiveAuto</MudText>
-<MudText Typo="Typo.body2">
-    A discussion on how to achieve this can be found here:
-    <MudLink Href="https://github.com/dotnet/aspnetcore/issues/51468#issue-1950424116" Target="_blank" Typo="Typo.body2" Color="Color.Primary">
-        More details
-    </MudLink>
-</MudText>
+    private string Make { get; set; } 
+
+    private string Model { get; set; }
+
+    private ICollection<MakeWithModelsDto> cars {get; set;}
+
+    private void OnMakeClick(MakeWithModelsDto make)
+    {
+        var navArgs = new HomeToRentalCars(cars); 
+        navArgs.SelectedMake = make.Name;
+        StateContainer.AddRoutingObjectParameter(navArgs);
+
+        NavigationManager.NavigateTo($"rentalcars/{navArgs.GetHashCode()}");
+    }
+
+    private void OnMakeModelClick(string make, string model)
+    {
+        var navArgs = new HomeToRentalCars(cars);
+        navArgs.SelectedMake = make;
+        navArgs.SelectedModel = model;
+        StateContainer.AddRoutingObjectParameter(navArgs);
+
+        NavigationManager.NavigateTo($"rentalcars/{navArgs.GetHashCode()}");
+    }
+}

@@ -4,11 +4,11 @@
 @using Darnton.Blazor.DeviceInterop.Geolocation
 @using System.ComponentModel.DataAnnotations
 
-@inject UserApiService UserApiService
+@inject IUserApiService UserApiService
 @inject IJSRuntime jsRuntime
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject GeolocationService GeolocationService
+@inject IGeolocationService GeolocationService
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-5">
     <MudPaper Elevation="4" Class="p-4">
