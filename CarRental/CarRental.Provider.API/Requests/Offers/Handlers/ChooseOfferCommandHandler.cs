@@ -131,9 +131,9 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
 
         var delay = offer.ExpiresAt - now;
 
-        var emailTemplate = emailInputMaker.GenerateConfirmOfferInput(
+        var emailTemplate = emailInputMaker.GenerateOfferConfirmedInput(
             customer.EmailAddress,
-            String.Join(' ', customer.FirstName, customer.LastName),
+            $"{rental.Customer.FirstName} {rental.Customer.LastName}",
             offer.Key,
             offer.Car.Model.Make.Name,
             offer.Car.Model.Name,

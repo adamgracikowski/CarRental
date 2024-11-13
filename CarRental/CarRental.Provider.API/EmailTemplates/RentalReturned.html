@@ -1,0 +1,86 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Returned</title>
+    <style>
+
+        .email-container {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .email-content {
+            width: 1000px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-header {
+            font-size: 20px;
+            color: #333333;
+        }
+
+        .email-body {
+            font-size: 16px;
+            color: #555555;
+            line-height: 1.5;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: Arial, sans-serif;
+            margin: auto;
+        }
+
+        th, td {
+            padding: 8px 12px;
+            border: 1px solid #dddddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-content">
+            <h1 class="email-header">Your rental is returned</h1>
+            <p class=" = email-body">Hello {{name}},</p>
+            <p class="email-body">Your {{make}} {{model}} car rental return has been cofirmed. Thank you for choosing our car rental and see you next time!</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Number of Days</th>
+                        <th>Insurance Price per Day</th>
+                        <th>Rental Price per Day</th>
+                        <th>Total Insurance Price</th>
+                        <th>Total Rental Price</th>
+                        <th>Total Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{numberOfDays}}</td>
+                        <td>{{insurancePricePerDay}}$</td>
+                        <td>{{rentalPricePerDay}}$</td>
+                        <td>{{totalInsurancePrice}}$</td>
+                        <td>{{totalRentalPrice}}$</td>
+                        <td>{{totalPrice}}$</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

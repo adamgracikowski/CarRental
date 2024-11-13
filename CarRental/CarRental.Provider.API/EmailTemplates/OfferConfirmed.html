@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>=Rental Confirm</title>
+    <title>Offer Confirmed</title>
     <style>
 
         .email-container {
@@ -14,7 +14,7 @@
         }
 
         .email-content {
-            max-width: 600px;
+            max-width: 1000px;
             margin: 0 auto;
             background-color: #ffffff;
             padding: 30px;
@@ -53,8 +53,9 @@
 <body>
     <div class="email-container">
         <div class="email-content">
-            <h1 class="email-header">Confirm your rental</h1>
-            <p class="email-body">Click the button below to confirm the rental of the car {{make}} {{model}}.</p>
+            <h1 class="email-header">Confirm your car rental</h1>
+            <p class=" = email-body">Hello {{name}},</p>
+            <p class="email-body">Thank you for choosing our rental service. To complete your rental process of the {{make}} {{model}} car, please confirm your booking by clicking the button below:</p>
             <a href="{{confirmation_link}}" class="button" style=" color: white">Confirm</a>
         </div>
     </div>

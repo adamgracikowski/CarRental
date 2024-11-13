@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rental Return Strarted</title>
+    <style>
+
+        .email-container {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .email-content {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .email-header {
+            font-size: 20px;
+            color: #333333;
+        }
+
+        .email-body {
+            font-size: 16px;
+            color: #555555;
+            line-height: 1.5;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <div class="email-content">
+            <h1 class="email-header">Your rental return started</h1>
+            <p class=" = email-body">Hello {{name}},</p>
+            <p class="email-body">The return process for your {{make}} {{model}} has started. One of our team members will be in touch with you shortly.</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -10,6 +10,7 @@ using CarRental.Provider.API.DTOs.RentalReturns;
 using CarRental.Provider.API.Requests.Rentals.Commands;
 using CarRental.Provider.Infrastructure.Calculators.RentalBillCalculator;
 using CarRental.Provider.Persistence.Specifications.Rentals;
+using CarRental.Provider.Infrastructure.EmailService;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Options;
@@ -27,6 +28,8 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
     private readonly IDateTimeProvider dateTimeProvider;
     private readonly IRentalBillCalculatorService rentalBillCalculatorService;
     private readonly BlobContainersOptions options;
+    private readonly IEmailService emailService;
+    private readonly IEmailInputMaker emailInputMaker;
 
     public AcceptRentalReturnCommandHandler(
         IRepositoryBase<Rental> rentalsRepository,
@@ -37,7 +40,9 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
         IMapper mapper,
         IDateTimeProvider dateTimeProvider,
         IRentalBillCalculatorService rentalBillCalculatorService,
-        IOptions<BlobContainersOptions> options)
+        IOptions<BlobContainersOptions> options,
+        IEmailInputMaker emailInputMaker,
+        IEmailService emailService)
     {
         this.rentalsRepository = rentalsRepository;
         this.rentalReturnsRepository = rentalReturnsRepository;
@@ -48,6 +53,8 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
         this.dateTimeProvider = dateTimeProvider;
         this.rentalBillCalculatorService = rentalBillCalculatorService;
         this.options = options.Value;
+        this.emailService = emailService;
+        this.emailInputMaker = emailInputMaker;
     }
 
     public async Task<Result<RentalReturnDto>> Handle(AcceptRentalReturnCommand request, CancellationToken cancellationToken)
@@ -59,7 +66,7 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
             return Result<RentalReturnDto>.Invalid(validation.AsErrors());
         }
 
-        var specification = new RentalByIdWithRentalReturnOfferCarSpecification(request.Id);
+        var specification = new RentalByIdWithRentalReturnClientOfferCarModelMakeSpecification(request.Id);
 
         var rental = await this.rentalsRepository.FirstOrDefaultAsync(specification, cancellationToken);
 
@@ -127,7 +134,18 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
         await this.rentalsRepository.UpdateAsync(rental, cancellationToken);
         await this.rentalsRepository.SaveChangesAsync(cancellationToken);
 
-        // send email here...
+        var emailInput = emailInputMaker.GenerateRentalReturnedTemplate(
+            rental.Customer.EmailAddress,
+            $"{rental.Customer.FirstName} {rental.Customer.LastName}",
+            rental.Offer.Car.Model.Make.Name,
+            rental.Offer.Car.Model.Name,
+            rental.Offer.GeneratedAt,
+            rentalReturn.ReturnedAt,
+            rental.Offer.InsurancePricePerDay,
+            rental.Offer.RentalPricePerDay
+            );
+
+        await emailService.SendEmailAsync(emailInput);
 
         var rentalReturnDto = this.mapper.Map<RentalReturnDto>(rentalReturn);
         return Result<RentalReturnDto>.Created(rentalReturnDto);

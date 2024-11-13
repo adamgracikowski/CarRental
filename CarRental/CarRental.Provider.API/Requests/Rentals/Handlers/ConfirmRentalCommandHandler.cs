@@ -7,20 +7,28 @@ using CarRental.Provider.API.Requests.Rentals.Commands;
 using CarRental.Provider.Persistence.Specifications.Rentals;
 using CarRental.Common.Core.Enums;
 using MediatR;
+using CarRental.Provider.Infrastructure.EmailService;
 
 namespace CarRental.Provider.API.Requests.Rentals.Handlers;
 
 public sealed class ConfirmRentalCommandHandler : IRequestHandler<ConfirmRentalCommand, Result>
 {
     private IRepositoryBase<Rental> rentalsRepository;
+    private readonly IEmailService emailService;
+    private readonly IEmailInputMaker emailInputMaker;
 
-    public ConfirmRentalCommandHandler(IRepositoryBase<Rental> rentalsRepository)
+    public ConfirmRentalCommandHandler(
+        IRepositoryBase<Rental> rentalsRepository,
+        IEmailInputMaker emailInputMaker,
+        IEmailService emailService)
     {
         this.rentalsRepository = rentalsRepository;
+        this.emailInputMaker = emailInputMaker;
+        this.emailService = emailService;
     }
     public async Task<Result> Handle(ConfirmRentalCommand command, CancellationToken cancellationToken)
     {
-        var specification = new RentalByIdWithOfferCarSpecification(command.Id);
+        var specification = new RentalByIdWithOfferCarModelMakeClientSpecification(command.Id);
         var rental = await this.rentalsRepository.FirstOrDefaultAsync(specification, cancellationToken);
 
         if (rental == null)
@@ -54,7 +62,14 @@ public sealed class ConfirmRentalCommandHandler : IRequestHandler<ConfirmRentalC
         await this.rentalsRepository.UpdateAsync(rental, cancellationToken);
         await this.rentalsRepository.SaveChangesAsync(cancellationToken);
 
-        //TODO: send email
+        var emailInput = emailInputMaker.GenerateRentalConfirmedInput(
+            rental.Customer.EmailAddress,
+            $"{rental.Customer.FirstName} {rental.Customer.LastName}",
+            rental.Offer.Car.Model.Make.Name,
+            rental.Offer.Car.Model.Name
+            );
+
+        await emailService.SendEmailAsync(emailInput);
 
         return Result.Success();
 

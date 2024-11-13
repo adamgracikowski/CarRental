@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -8,11 +8,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="EmailTemplates\ConfirmOffer.html" />
+    <None Remove="EmailTemplates\OfferConfirmed.html" />
+    <None Remove="EmailTemplates\RentalConfirmed.html" />
+    <None Remove="EmailTemplates\RentalReturned.html" />
+    <None Remove="EmailTemplates\RentalReturnStarted.html" />
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Include="EmailTemplates\ConfirmOffer.html" />
+    <EmbeddedResource Include="EmailTemplates\OfferConfirmed.html" />
+    <EmbeddedResource Include="EmailTemplates\RentalConfirmed.html" />
+    <EmbeddedResource Include="EmailTemplates\RentalReturned.html" />
+    <EmbeddedResource Include="EmailTemplates\RentalReturnStarted.html" />
   </ItemGroup>
 
   <ItemGroup>

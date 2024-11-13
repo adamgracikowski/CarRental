@@ -5,6 +5,7 @@ using CarRental.Common.Core.Enums;
 using CarRental.Common.Core.ProviderEntities;
 using CarRental.Provider.API.DTOs.Rentals;
 using CarRental.Provider.API.Requests.Rentals.Commands;
+using CarRental.Provider.Infrastructure.EmailService;
 using CarRental.Provider.Persistence.Specifications.Rentals;
 using MediatR;
 
@@ -14,18 +15,24 @@ public class ReturnRentalCommandHandler : IRequestHandler<ReturnRentalCommand, R
 {
     private readonly IRepositoryBase<Rental> rentalsRepository;
     private readonly IMapper mapper;
+    private readonly IEmailService emailService;
+    private readonly IEmailInputMaker emailInputMaker;
 
     public ReturnRentalCommandHandler(
         IRepositoryBase<Rental> rentalsRepository,
-        IMapper mapper)
+        IMapper mapper,
+        IEmailInputMaker emailInputMaker,
+        IEmailService emailService)
     {
         this.rentalsRepository = rentalsRepository;
         this.mapper = mapper;
+        this.emailInputMaker = emailInputMaker;
+        this.emailService = emailService;
     }
 
     public async Task<Result<RentalStatusDto>> Handle(ReturnRentalCommand request, CancellationToken cancellationToken)
     {
-        var specification = new RentalByIdWithOfferSpecification(request.Id);
+        var specification = new RentalByIdWithOfferCarModelMakeClientSpecification(request.Id);
 
         var rental = await this.rentalsRepository.FirstOrDefaultAsync(specification, cancellationToken);
 
@@ -56,7 +63,11 @@ public class ReturnRentalCommandHandler : IRequestHandler<ReturnRentalCommand, R
         await this.rentalsRepository.UpdateAsync(rental, cancellationToken);
         await this.rentalsRepository.SaveChangesAsync(cancellationToken);
 
-        // send email here...
+        var input = emailInputMaker.GenerateRentalReturnStartedTemplate(
+            rental.Customer.EmailAddress,
+            $"{rental.Customer.FirstName} {rental.Customer.LastName}",
+            rental.Offer.Car.Model.Make.Name,
+            rental.Offer.Car.Model.Name);
 
         var rentalStatusDto = this.mapper.Map<RentalStatusDto>(rental);
 

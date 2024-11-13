@@ -2,5 +2,5 @@
 
 public interface IEmailService
 {
-    public Task<SendEmailResult> SendEmailAsync(SendEmailInput sendEmailInput);
+    Task<SendEmailResult> SendEmailAsync(SendEmailInput sendEmailInput);
 }

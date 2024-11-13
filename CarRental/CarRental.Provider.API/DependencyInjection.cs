@@ -10,11 +10,14 @@ using CarRental.Provider.Infrastructure.Calculators.OfferCalculator;
 using CarRental.Provider.Infrastructure.Calculators.RentalBillCalculator;
 using CarRental.Provider.Infrastructure.EmailService;
 using CarRental.Provider.Infrastructure.EmailService.Options;
+using CarRental.Provider.Infrastructure.EmailService.TemplateProviders;
 using CarRental.Provider.Persistence.Options;
 using FluentValidation;
 using Hangfire;
 using SendGrid;
 using System.Reflection;
+using System.IO;
+using Microsoft.Extensions.Configuration;
 
 namespace CarRental.Provider.API;
 
@@ -107,25 +110,44 @@ public static class DependencyInjection
 
     public static IServiceCollection ConfigureEmailTemplates(this IServiceCollection services, IConfiguration configuration)
     {
-        var path = configuration.GetValue<string>("SendGrid:EmbeddedResources:ConfirmOfferTemplate");
+        var confirmOfferContent = GetEmbeddedResourceContent("SendGrid:EmbeddedResources:OfferConfirmedTemplate", configuration);
+
+        var rentalConfirmationContent = GetEmbeddedResourceContent("SendGrid:EmbeddedResources:RentalConfirmedTemplate", configuration);
+
+        var rentalReturnedContent = GetEmbeddedResourceContent("SendGrid:EmbeddedResources:RentalReturnedTemplate", configuration);
+
+        var rentalReturnStartedContent = GetEmbeddedResourceContent("SendGrid:EmbeddedResources:RentalReturnStartedTemplate", configuration);
+
+        services.AddSingleton(x => new OfferConfirmedTemplate(confirmOfferContent));
+
+        services.AddSingleton(x => new RentalReturnConfirmedTemplate(rentalReturnedContent));
+
+        services.AddSingleton(x => new RentalConfirmedTemplate(rentalConfirmationContent));
+
+        services.AddSingleton(x => new RentalReturnStartedTemplate(rentalReturnStartedContent));
+
+        return services;
+    }
+
+    private static string GetEmbeddedResourceContent(string resourceKey, IConfiguration configuration)
+    {
+        var path = configuration.GetValue<string>(resourceKey);
 
         if (path == null)
         {
             throw new ArgumentNullException("Error when retrieving value from options.");
         }
-        
+
         using var stream = Assembly.GetEntryAssembly()?.GetManifestResourceStream(path);
-        
+
         if (stream == null)
         {
             throw new Exception("Error while loading template");
         }
 
         using var reader = new StreamReader(stream, System.Text.Encoding.UTF8);
-        var confirmTemplate = new ConfirmOfferTemplate(reader.ReadToEnd());
 
-        services.AddSingleton(x => confirmTemplate);
+        return reader.ReadToEnd();
 
-        return services;
     }
 }
