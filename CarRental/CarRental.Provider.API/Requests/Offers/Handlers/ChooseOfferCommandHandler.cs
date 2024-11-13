@@ -133,7 +133,7 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
 
         var emailTemplate = emailInputMaker.GenerateConfirmOfferInput(
             customer.EmailAddress,
-            customer.FirstName + customer.LastName,
+            String.Join(' ', customer.FirstName, customer.LastName),
             offer.Key,
             offer.Car.Model.Make.Name,
             offer.Car.Model.Name,

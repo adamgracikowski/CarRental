@@ -35,17 +35,17 @@ public sealed class ConfirmRentalCommandHandler : IRequestHandler<ConfirmRentalC
 
         if (rental.Status != RentalStatus.Unconfirmed)
         {
-            return Result.Invalid(new ValidationError( nameof(Rental.Status),"Rental is not in unconfirmed state."));
+            return Result.Invalid(new ValidationError(nameof(Rental.Status), "Rental is not in unconfirmed state."));
         }
 
         if (rental.Offer.Key != command.Key)
         {
-            return Result.Invalid(new ValidationError("Key is not valid."));
+            return Result.Invalid(new ValidationError(command.Key, "Key is not valid."));
         }
 
         if (rental.Offer.Car.Status == CarStatus.Rented)
         {
-            return Result.Invalid(new ValidationError("Car is not avaliable."));
+            return Result.Invalid(new ValidationError("CarStatus", "Car is not available."));
         }
 
         rental.Status = RentalStatus.Active;

@@ -25,6 +25,7 @@ public static class DependencyInjection
         services.Configure<ConnectionStringsOptions>(configuration.GetSection(ConnectionStringsOptions.SectionName));
         services.Configure<OfferCalculatorOptions>(configuration.GetSection(OfferCalculatorOptions.SectionName));
         services.Configure<BlobContainersOptions>(configuration.GetSection(BlobContainersOptions.SectionName));
+        services.Configure<JwtSettingsOptions>(configuration.GetSection(JwtSettingsOptions.SectionName));
         services.Configure<SendEmailOptions>(configuration.GetSection(SendEmailOptions.SectionName));
 
         return services;
