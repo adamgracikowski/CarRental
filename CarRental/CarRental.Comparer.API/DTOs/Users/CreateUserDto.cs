@@ -1,18 +1,11 @@
 ﻿namespace CarRental.Comparer.API.DTOs.Users;
 
-public sealed record class CreateUserDto
-{
-    public string Email { get; set; }
-
-    public string Name { get; set; }
-
-    public string Lastname { get; set; }
-
-    public int Age { get; set; }
-
-    public int DrivingLicenseYears { get; set; }
-
-    public decimal Longitude { get; set; }
-
-    public decimal Latitude { get; set; }
-}
+public sealed record class CreateUserDto(
+    string Email,
+    string Name,
+    string Lastname,
+    int Age,
+    int DrivingLicenseYears,
+    decimal Longitude,
+    decimal Latitude
+);

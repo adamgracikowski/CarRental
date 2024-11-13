@@ -1,7 +1,6 @@
-﻿using CarRental.Comparer.Web.Requests.AvailableCars.AvailableCarsService;
-using CarRental.Comparer.Web.Requests.Users.UserApiService;
+﻿using CarRental.Comparer.Web.Requests.CarServices;
+using CarRental.Comparer.Web.Requests.UserServices;
 using CarRental.Comparer.Web.Services;
-using CarRental.Comparer.Web.Services.MakeLogoService;
 using CarRental.Comparer.Web.Services.StateContainer;
 using Darnton.Blazor.DeviceInterop.Geolocation;
 using MudBlazor.Services;
@@ -10,19 +9,13 @@ namespace CarRental.Comparer.Web;
 
 public static class DependencyInjection
 {
-	public static IServiceCollection RegisterConfigurationOptions(this IServiceCollection services, IConfiguration configuration)
+	public static IServiceCollection RegisterInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
 	{
 		services.AddOidcAuthentication(configuration);
-		services.AddComparerHttpClient(configuration);
-		services.AddProviderHttpClient(configuration);
-		services.AddMakeLogoService(configuration);
+		services.ConfigureHttpClients(configuration);
 
-		return services;
-	}
-
-	public static IServiceCollection RegisterInfrastructureServices(this IServiceCollection services)
-	{
 		services.AddMudServices();
+
 		services.AddScoped<IGeolocationService, GeolocationService>();
 		services.AddScoped<ThemeService>();
 		services.AddScoped<StateContainer>();
@@ -41,39 +34,15 @@ public static class DependencyInjection
 		return services;
 	}
 
-	public static IServiceCollection AddMakeLogoService(this IServiceCollection services, IConfiguration configuration)
-	{
-		var baseAddress = configuration["ComparerApiSettings:BaseAddress"];
-		if (string.IsNullOrEmpty(baseAddress))
-		{
-			throw new InvalidOperationException("BaseAddress configuration is missing.");
-		}
-		services.AddHttpClient<IMakeLogoService, MakeLogoService>(client => client.BaseAddress = new Uri(baseAddress));
+    public static IServiceCollection ConfigureHttpClients(this IServiceCollection services, IConfiguration configuration)
+    {
+		var baseUrl = configuration.GetValue<string>("ComparerApiSettings:BaseUrl");
 
-		return services;
-	}
+        ArgumentException.ThrowIfNullOrEmpty(baseUrl, "BaseUrl can not be null.");
 
-	public static IServiceCollection AddComparerHttpClient(this IServiceCollection services, IConfiguration configuration)
-	{
-		var baseAddress = configuration["ComparerApiSettings:BaseAddress"];
-		if (string.IsNullOrEmpty(baseAddress))
-		{
-			throw new InvalidOperationException("BaseAddress configuration is missing.");
-		}
-		services.AddHttpClient<IUserApiService, UserApiService>(client => client.BaseAddress = new Uri(baseAddress));
+        services.AddHttpClient<ICarService, CarService>(client => client.BaseAddress = new Uri(baseUrl));
+        services.AddHttpClient<IUserService, UserService>(client => client.BaseAddress = new Uri(baseUrl));
 
-		return services;
-	}
-
-	public static IServiceCollection AddProviderHttpClient(this IServiceCollection services, IConfiguration configuration)
-	{
-		var baseAddress = configuration["ProviderApiSettings:BaseAddress"];
-		if (string.IsNullOrEmpty(baseAddress))
-		{
-			throw new InvalidOperationException("BaseAddress configuration is missing.");
-		}
-		services.AddHttpClient<IAvailableCarsService, AvailableCarsService>(client => client.BaseAddress = new Uri(baseAddress));
-
-		return services;
-	}
+        return services;
+    }
 }

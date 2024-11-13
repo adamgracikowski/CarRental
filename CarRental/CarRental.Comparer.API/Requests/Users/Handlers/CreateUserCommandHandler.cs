@@ -11,34 +11,34 @@ namespace CarRental.Comparer.API.Requests.Users.Handlers;
 
 public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<UserDto>>
 {
-    private readonly IRepositoryBase<User> _usersRepository;
-    private readonly IMapper _mapper;
-    private readonly ILogger<CreateUserCommandHandler> _logger;
+    private readonly IRepositoryBase<User> usersRepository;
+    private readonly IMapper mapper;
+    private readonly ILogger<CreateUserCommandHandler> logger;
 
     public CreateUserCommandHandler(IRepositoryBase<User> usersRepository, IMapper mapper, ILogger<CreateUserCommandHandler> logger)
     {
-        _usersRepository = usersRepository;
-        _mapper = mapper;
-        _logger = logger;
+        this.usersRepository = usersRepository;
+        this.mapper = mapper;
+        this.logger = logger;
     }
 
     public async Task<Result<UserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = _mapper.Map<User>(request.createUserDto);
+        var user = this.mapper.Map<User>(request.CreateUserDto);
 
         var specification = new UserByEmailSpecification(user.Email);
 
-        var userInDatabase = await _usersRepository.FirstOrDefaultAsync(specification, cancellationToken);
+        var userInDatabase = await this.usersRepository.FirstOrDefaultAsync(specification, cancellationToken);
 
         if (userInDatabase != null)
         {
             return Result<UserDto>.Conflict();
         }
 
-        await _usersRepository.AddAsync(user, cancellationToken);
+        await this.usersRepository.AddAsync(user, cancellationToken);
 
-        var createdUserDto = _mapper.Map<UserDto>(user);
+        var userDto = this.mapper.Map<UserDto>(user);
 
-        return Result<UserDto>.Created(createdUserDto);
+        return Result<UserDto>.Created(userDto);
     }
 }

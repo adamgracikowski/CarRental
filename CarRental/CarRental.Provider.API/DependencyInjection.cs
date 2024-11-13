@@ -30,6 +30,7 @@ public static class DependencyInjection
         services.Configure<BlobContainersOptions>(configuration.GetSection(BlobContainersOptions.SectionName));
         services.Configure<JwtSettingsOptions>(configuration.GetSection(JwtSettingsOptions.SectionName));
         services.Configure<SendEmailOptions>(configuration.GetSection(SendEmailOptions.SectionName));
+        services.Configure<JwtSettingsOptions>(configuration.GetSection(JwtSettingsOptions.SectionName));
 
         return services;
     }

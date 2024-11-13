@@ -1,9 +1,9 @@
 ﻿@page "/profile"
 @using CarRental.Comparer.Web.Dialogs
-@using CarRental.Comparer.Web.Requests.Users.DTOs
-@using CarRental.Comparer.Web.Requests.Users.UserApiService
+@using CarRental.Comparer.Web.Requests.DTOs.Users
+@using CarRental.Comparer.Web.Requests.UserServices
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject IUserApiService UserApiService
+@inject IUserService UserService
 @inject NavigationManager Navigation
 @inject SignOutSessionStateManager SignOutManager
 @inject IDialogService DialogService
@@ -96,7 +96,7 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var email = authState.User?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
 
-        var fetchedUser = await UserApiService.GetUserByEmailAsync(email);
+        var fetchedUser = await UserService.GetUserByEmailAsync(email);
         if (fetchedUser != null)
         {
             _user = fetchedUser;
@@ -106,11 +106,11 @@
     private async Task OnValidSubmit()
     {
         validationSuccess = true;
-        var deleteUserSuccess = await UserApiService.DeleteUserByEmailAsync(_user.Email);
+        var deleteUserSuccess = await UserService.DeleteUserByEmailAsync(_user.Email);
 
         if (deleteUserSuccess)
         {
-            var createUserSuccess = await UserApiService.CreateUserAsync(_user);
+            var createUserSuccess = await UserService.CreateUserAsync(_user);
 
             if (createUserSuccess)
             {
@@ -174,7 +174,7 @@
         if (_user != null)
         {
             deleteError = false;
-            var deleteUserSuccess = await UserApiService.DeleteUserByEmailAsync(_user.Email);
+            var deleteUserSuccess = await UserService.DeleteUserByEmailAsync(_user.Email);
 
             if (deleteUserSuccess)
             {

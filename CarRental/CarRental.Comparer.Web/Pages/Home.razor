@@ -1,16 +1,14 @@
 ﻿@page "/"
 @using CarRental.Comparer.Web.PagesNavModels
-@using CarRental.Comparer.Web.Requests.AvailableCars.DTOs
+@using CarRental.Comparer.Web.Requests.CarServices
+@using CarRental.Comparer.Web.Requests.DTOs.Makes
 @using CarRental.Comparer.Web.Services
-@using CarRental.Comparer.Web.Requests.AvailableCars.AvailableCarsService
-@using CarRental.Comparer.Web.Services.MakeLogoService
 @using CarRental.Comparer.Web.Services.StateContainer
 @using CarRental.Comparer.Web.Extensions
 @inject NavigationManager NavigationManager
 @inject ThemeService ThemeService 
 @inject StateContainer StateContainer
-@inject IAvailableCarsService AvailableCarsService
-@inject IMakeLogoService MakeLogoService
+@inject ICarService CarService
 
 <PageTitle>Home</PageTitle>
 <MudText Typo="Typo.h3" GutterBottom="true" Align="ThemeService.align">Car Rental</MudText>
@@ -76,7 +74,7 @@
             {
                     <MudCard Class="m-2 p-2" Style="cursor: pointer; width: 200px;">
                     <MudCardContent Class="d-flex flex-column justify-center align-center">
-                        <MudImage Src="@MakeLogoService.GetLogo(make.Name)"
+                        <MudImage Src="@make.LogoUrl"
                         Style="width: 50%; height: auto;"/>
 
                             <MudText Align="Align.Center" Typo="Typo.h5">@make.Name</MudText>
@@ -99,9 +97,9 @@
 {
     protected override async void OnInitialized()
     {
-        var makeList = await AvailableCarsService.GetAvailableCars();
-        cars = makeList.makes;
-        await MakeLogoService.RefreshLogos();
+        var makeList = await CarService.GetAvailableCars();
+        cars = makeList.Makes;
+
         StateHasChanged();
     }
 

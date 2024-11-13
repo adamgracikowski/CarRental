@@ -25,8 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\CarRental.Comparer.Persistence\CarRental.Comparer.Persistence.csproj" />
-    <ProjectReference Include="..\CarRental.Provider.Infrastructure\CarRental.Provider.Infrastructure.csproj" />
+    <ProjectReference Include="..\CarRental.Comparer.Infrastructure\CarRental.Comparer.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

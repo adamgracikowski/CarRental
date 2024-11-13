@@ -3,7 +3,7 @@
 @using CarRental.Comparer.Web.Services
 @using CarRental.Comparer.Web.Services.StateContainer
 @using CarRental.Comparer.Web.Extensions
-@using CarRental.Comparer.Web.Requests.AvailableCars.DTOs
+@using CarRental.Comparer.Web.Requests.DTOs.Cars
 @inject StateContainer StateContainer
 
 <div style="display: flex;">
@@ -245,6 +245,7 @@
     }
 
     private Dictionary<T, int> GetAvailableOptions<T>(Func<CarDisplayDto, T> selector, string excludeFilter)
+        where T: notnull
     {
         return CarList
             .GroupBy(selector)

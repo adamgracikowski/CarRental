@@ -1,5 +1,11 @@
 ﻿using Azure.Storage.Blobs;
 using CarRental.Common.Infrastructure.Middlewares;
+using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
+using CarRental.Comparer.Infrastructure.CarComparisons;
+using CarRental.Comparer.Infrastructure.CarProviders;
+using CarRental.Comparer.Infrastructure.CarProviders.Authorization;
+using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders;
+using CarRental.Comparer.Infrastructure.CarProviders.Options;
 using CarRental.Common.Infrastructure.Storages.BlobStorage;
 using CarRental.Comparer.Persistence.Options;
 
@@ -12,16 +18,28 @@ public static class DependencyInjection
         services.Configure<ConnectionStringsOptions>(configuration.GetSection(ConnectionStringsOptions.SectionName));
         services.Configure<BlobContainersOptions>(configuration.GetSection(BlobContainersOptions.SectionName));
 
+        
+        services.Configure<CarProvidersOptions>(configuration.GetSection(CarProvidersOptions.SectionName));
+        services.Configure<InternalProviderOptions>(configuration.GetSection(InternalProviderOptions.SectionName));
+
         return services;
     }
 
     public static IServiceCollection RegisterInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<LoggingMiddleware>();
+        services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
         services.RegisterAutoMapper();
         services.ConfigureMediatR();
         services.ConfigureBlobStorage(configuration);
+
+        services.AddMemoryCache();
+        services.AddSingleton<ITokenService, InternalProviderTokenService>();
+        services.AddTransient<TokenAuthorizationHandler>();
+
+        services.AddTransient<ICarComparisonService, CarComparisonService>();
+        services.AddTransient<ICarProviderService, InternalCarProviderService>();
 
         return services;
     }

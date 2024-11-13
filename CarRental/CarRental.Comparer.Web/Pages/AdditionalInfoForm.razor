@@ -1,10 +1,10 @@
 ﻿@page "/additional-info"
-@using CarRental.Comparer.Web.Requests.Users.DTOs
-@using CarRental.Comparer.Web.Requests.Users.UserApiService
+@using CarRental.Comparer.Web.Requests.DTOs.Users
+@using CarRental.Comparer.Web.Requests.UserServices
 @using Darnton.Blazor.DeviceInterop.Geolocation
 @using System.ComponentModel.DataAnnotations
 
-@inject IUserApiService UserApiService
+@inject IUserService UserService
 @inject IJSRuntime jsRuntime
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -89,7 +89,7 @@
 
     private async Task<bool> SetUserByEmail(string email)
     {
-        var fetchedUser = await UserApiService.GetUserByEmailAsync(email);
+        var fetchedUser = await UserService.GetUserByEmailAsync(email);
 
         if (fetchedUser != null)
         {
@@ -106,7 +106,7 @@
         success = true;
         StateHasChanged();
 
-        var createUserSuccess = await UserApiService.CreateUserAsync(user);
+        var createUserSuccess = await UserService.CreateUserAsync(user);
 
         if (createUserSuccess)
         {

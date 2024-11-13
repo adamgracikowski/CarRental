@@ -6,17 +6,17 @@ using CarRental.Comparer.API.Requests.Users.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CarRental.Provider.API.Controllers;
+namespace CarRental.Comparer.API.Controllers;
 
 [Route("[controller]")]
 [ApiController]
 public sealed class UsersController : ControllerBase
 {
-    private readonly IMediator _mediator;
+    private readonly IMediator mediator;
 
     public UsersController(IMediator mediator)
     {
-        _mediator = mediator;
+        this.mediator = mediator;
     }
 
     [TranslateResultToActionResult]
@@ -25,7 +25,7 @@ public sealed class UsersController : ControllerBase
     {
         var command = new CreateUserCommand(createUserDto);
 
-        var response = await _mediator.Send(command, cancellationToken);
+        var response = await this.mediator.Send(command, cancellationToken);
 
         return response;
     }
@@ -36,7 +36,7 @@ public sealed class UsersController : ControllerBase
     {
         var query = new GetUserByEmailQuery(email);
 
-        var response = await _mediator.Send(query, cancellationToken);
+        var response = await this.mediator.Send(query, cancellationToken);
 
         return response;
     }
@@ -47,7 +47,7 @@ public sealed class UsersController : ControllerBase
     {
         var command = new DeleteUserByEmailCommand(email);
 
-        var response = await _mediator.Send(command, cancellationToken);
+        var response = await this.mediator.Send(command, cancellationToken);
 
         return response;
     }
