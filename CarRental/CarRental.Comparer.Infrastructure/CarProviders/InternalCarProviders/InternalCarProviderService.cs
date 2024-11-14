@@ -1,5 +1,6 @@
 ﻿using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
-using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs;
+using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Cars;
+using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
@@ -11,6 +12,8 @@ public sealed class InternalCarProviderService : ICarProviderService
     private readonly HttpClient httpClient;
     private readonly InternalProviderOptions providerOptions;
     private readonly ILogger<InternalCarProviderService> logger;
+
+    public string ProviderName => providerOptions.Name;
 
     public InternalCarProviderService(
         IHttpClientFactory httpClientFactory,
@@ -33,6 +36,32 @@ public sealed class InternalCarProviderService : ICarProviderService
         catch (Exception ex)
         {
             logger.LogInformation($"{ex.Message}");
+            return null;
+        }
+    }
+
+    public async Task<OfferDto?> CreateOfferAsync(int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync($"/Cars/{carId}/Offers", createOfferDto, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var offerDto = await response.Content.ReadFromJsonAsync<OfferDto>(cancellationToken);
+                return offerDto;
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
+                logger.LogInformation($"Error: {errorMessage}");
+                return null;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
             return null;
         }
     }

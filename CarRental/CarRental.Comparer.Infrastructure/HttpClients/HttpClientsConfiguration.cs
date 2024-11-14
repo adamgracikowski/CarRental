@@ -1,6 +1,5 @@
 ﻿using CarRental.Comparer.Infrastructure.CarProviders.Authorization;
 using CarRental.Comparer.Infrastructure.CarProviders.Options;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
