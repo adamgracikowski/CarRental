@@ -3,19 +3,19 @@ using Ardalis.Specification;
 using CarRental.Common.Core.ComparerEntities;
 using CarRental.Comparer.API.Requests.Providers.Commands;
 using CarRental.Comparer.Infrastructure.CarComparisons;
-using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
 using MediatR;
 
 namespace CarRental.Comparer.API.Requests.Providers.Handlers;
 
-public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Result<OfferDto>>
+public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Result<RentalIdDto>>
 {
     private readonly IRepositoryBase<Provider> providersRepository;
-    private readonly ILogger<CreateOfferCommandHandler> logger;
+    private readonly ILogger<ChooseOfferCommandHandler> logger;
     private readonly ICarComparisonService carComparisonService;
 
-    public CreateOfferCommandHandler(IRepositoryBase<Provider> providersRepository,
-        ILogger<CreateOfferCommandHandler> logger,
+    public ChooseOfferCommandHandler(IRepositoryBase<Provider> providersRepository,
+        ILogger<ChooseOfferCommandHandler> logger,
         ICarComparisonService carComparisonService)
     {
         this.providersRepository = providersRepository;
@@ -23,23 +23,23 @@ public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Res
         this.carComparisonService = carComparisonService;
     }
 
-    public async Task<Result<OfferDto>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
+    public async Task<Result<RentalIdDto>> Handle(ChooseOfferCommand request, CancellationToken cancellationToken)
     {
         var provider = await providersRepository.GetByIdAsync(request.id, cancellationToken);
 
         if (provider?.Name is null)
         {
             logger.LogWarning($"Provider with ID {request.id} not found.");
-            return Result<OfferDto>.NotFound();
+            return Result<RentalIdDto>.NotFound();
         }
 
-        var offerDto = await carComparisonService.CreateOfferAsync(provider.Name, request.carId, request.createOfferDto, cancellationToken);
+        var rentalIdDto = await carComparisonService.ChooseOfferAsync(provider.Name, request.offerId, request.chooseOfferDto, cancellationToken);
 
-        if (offerDto is null)
+        if (rentalIdDto is null)
         {
-            return Result<OfferDto>.Error();
+            return Result<RentalIdDto>.Error();
         }
 
-        return Result<OfferDto>.Success(offerDto);
+        return Result<RentalIdDto>.Success(rentalIdDto);
     }
 }

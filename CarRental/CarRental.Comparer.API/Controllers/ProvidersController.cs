@@ -1,7 +1,8 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using CarRental.Comparer.API.Requests.Providers.Commands;
-using CarRental.Comparer.Infrastructure.CarComparisons;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -20,10 +21,21 @@ public sealed class ProvidersController : ControllerBase
     }
 
     [TranslateResultToActionResult]
-    [HttpPost("Providers/{id}/Cars/{carId}/Offers")]
+    [HttpPost("{id}/Cars/{carId}/Offers")]
     public async Task<Result<OfferDto>> CreateOffer(int id, int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken)
     {
         var command = new CreateOfferCommand(id, carId, createOfferDto);
+
+        var response = await mediator.Send(command, cancellationToken);
+
+        return response;
+    }
+
+    [TranslateResultToActionResult]
+    [HttpPost("{id}/Offers/{offerId}")]
+    public async Task<Result<RentalIdDto>> ChooseOffer(int id, int offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken)
+    {
+        var command = new ChooseOfferCommand(id, offerId, chooseOfferDto);
 
         var response = await mediator.Send(command, cancellationToken);
 

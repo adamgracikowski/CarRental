@@ -2,6 +2,8 @@
 using CarRental.Common.Core.ComparerEntities;
 using CarRental.Common.Infrastructure.Storages.BlobStorage;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
 using CarRental.Comparer.Infrastructure.CarProviders;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using Microsoft.Extensions.Configuration;
@@ -56,6 +58,18 @@ public sealed class CarComparisonService : ICarComparisonService
         var offer = await carProviderService.CreateOfferAsync(carId, createOfferDto, cancellationToken);
 
         return offer;
+    }
+
+
+    public async Task<RentalIdDto?> ChooseOfferAsync(string providerName, int offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken)
+    {
+        var carProviderService = GetCarProviderServiceByName(providerName);
+
+        if (carProviderService is null) return null;
+
+        var rentalIdDto = await carProviderService.ChooseOfferAsync(offerId, chooseOfferDto, cancellationToken);
+
+        return rentalIdDto;
     }
 
     private ICarProviderService? GetCarProviderServiceByName(string name)

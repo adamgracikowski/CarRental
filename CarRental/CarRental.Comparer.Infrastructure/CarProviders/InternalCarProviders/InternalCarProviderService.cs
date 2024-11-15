@@ -1,4 +1,7 @@
-﻿using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
+﻿using CarRental.Common.Core.ProviderEntities;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Cars;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using Microsoft.Extensions.Logging;
@@ -50,6 +53,32 @@ public sealed class InternalCarProviderService : ICarProviderService
             {
                 var offerDto = await response.Content.ReadFromJsonAsync<OfferDto>(cancellationToken);
                 return offerDto;
+            }
+            else
+            {
+                var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
+                logger.LogInformation($"Error: {errorMessage}");
+                return null;
+            }
+
+        }
+        catch (Exception ex)
+        {
+            logger.LogInformation(ex.Message);
+            return null;
+        }
+    }
+
+    public async Task<RentalIdDto?> ChooseOfferAsync(int offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await httpClient.PostAsJsonAsync($"/Offers/{offerId}", chooseOfferDto, cancellationToken);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var rentalIdDto = await response.Content.ReadFromJsonAsync<RentalIdDto>(cancellationToken);
+                return rentalIdDto;
             }
             else
             {
