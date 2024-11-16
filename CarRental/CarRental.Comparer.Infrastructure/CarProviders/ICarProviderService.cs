@@ -13,5 +13,7 @@ public interface ICarProviderService
 
     Task<OfferDto?> CreateOfferAsync(int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken);
 
-    Task<RentalIdDto?> ChooseOfferAsync(int offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken);
+    Task<RentalIdDto?> ChooseOfferAsync(int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken);
+
+    Task<RentalStatusDto?> GetRentalStatusByIdAsync(int rentalId, CancellationToken cancellationToken);
 }

@@ -23,23 +23,19 @@ public sealed class CarDetailsConfiguration : IEntityTypeConfiguration<CarDetail
             .IsRequired(false);
 
         builder.Property(c => c.FuelType)
-           .HasDefaultValue(ConfigurationConstants.CarDetailsConstants.DefaultFuelType)
-           .IsRequired();
+           .IsRequired(false);
 
         builder.Property(c => c.TransmissionType)
-            .HasDefaultValue(ConfigurationConstants.CarDetailsConstants.DefaultTransmissionType)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(c => c.YearOfProduction)
             .IsRequired();
 
         builder.Property(c => c.NumberOfDoors)
-            .HasDefaultValue(ConfigurationConstants.CarDetailsConstants.NumberOfDoorsDefaultValue)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(c => c.NumberOfSeats)
-            .HasDefaultValue(ConfigurationConstants.CarDetailsConstants.NumberOfSeatsDefaultValue)
-            .IsRequired();
+            .IsRequired(false);
 
         builder.HasMany(c => c.RentalTransactions)
             .WithOne(o => o.CarDetails)

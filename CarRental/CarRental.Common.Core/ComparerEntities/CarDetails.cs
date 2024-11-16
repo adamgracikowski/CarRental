@@ -12,15 +12,15 @@ public sealed class CarDetails : EntityBase
 
     public string? Segment { get; set; }
 
-    public FuelType FuelType { get; set; }
+    public string? FuelType { get; set; }
 
-    public TransmissionType TransmissionType { get; set; }
+    public string? TransmissionType { get; set; }
 
     public int YearOfProduction { get; set; }
 
-    public int NumberOfDoors { get; set; }
+    public int? NumberOfDoors { get; set; }
 
-    public int NumberOfSeats { get; set; }
+    public int? NumberOfSeats { get; set; }
 
-    public ICollection<RentalTransaction> RentalTransactions { get; set; }
+    public ICollection<RentalTransaction> RentalTransactions { get; set; } = [];
 }

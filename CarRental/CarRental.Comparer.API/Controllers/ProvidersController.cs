@@ -1,7 +1,9 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using CarRental.Comparer.API.Requests.Providers.Commands;
+using CarRental.Comparer.API.Requests.Providers.Queries;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Providers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using MediatR;
@@ -38,6 +40,17 @@ public sealed class ProvidersController : ControllerBase
         var command = new ChooseOfferCommand(id, offerId, chooseOfferDto);
 
         var response = await mediator.Send(command, cancellationToken);
+
+        return response;
+    }
+
+    [TranslateResultToActionResult]
+    [HttpGet]
+    public async Task<Result<ProvidersDto>> GetProviders(CancellationToken cancellationToken)
+    {
+        var query = new GetProvidersQuery();
+
+        var response = await mediator.Send(query, cancellationToken);
 
         return response;
     }

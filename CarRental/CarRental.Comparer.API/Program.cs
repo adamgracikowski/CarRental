@@ -5,6 +5,7 @@ using CarRental.Comparer.API.Authorization;
 using CarRental.Comparer.Infrastructure.HttpClients;
 using CarRental.Comparer.Persistence;
 using CarRental.Comparer.Persistence.Data;
+using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,7 @@ builder.Services.ConfigureCors(builder.Configuration);
 
 builder.Services.RegisterPersistenceServices(builder.Configuration);
 builder.Services.ConfigureHttpClients(builder.Configuration);
+builder.Services.ConfigureHangfire(builder.Configuration);
 builder.Services.RegisterInfrastructureServices(builder.Configuration);
 
 builder.Services.AddControllers();
@@ -37,6 +39,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseMiddleware<LoggingMiddleware>();
+
+app.UseHangfireDashboard(/* configure dashboard authorization */);
 
 app.UseHttpsRedirection();
 app.UseCors(CorsConfiguration.TrustedComparerPolicy);

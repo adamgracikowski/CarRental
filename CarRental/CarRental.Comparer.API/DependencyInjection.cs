@@ -10,6 +10,9 @@ using CarRental.Common.Infrastructure.Storages.BlobStorage;
 using CarRental.Comparer.Persistence.Options;
 using CarRental.Comparer.Infrastructure.Cache;
 using Microsoft.Extensions.Configuration;
+using Hangfire;
+using FluentValidation;
+using CarRental.Comparer.API.BackgroundJobs.RentalServices;
 
 namespace CarRental.Comparer.API;
 
@@ -44,6 +47,8 @@ public static class DependencyInjection
         services.AddTransient<ICarComparisonService, CarComparisonService>();
         services.AddTransient<ICarProviderService, InternalCarProviderService>();
 
+        services.AddScoped<IRentalComparerStatusCheckerService, RentalComparerStatusCheckerService>();
+
         return services;
     }
 
@@ -73,6 +78,8 @@ public static class DependencyInjection
             configurations.RegisterServicesFromAssembly(typeof(Program).Assembly);
         });
 
+        services.AddValidatorsFromAssemblyContaining(typeof(Program));
+
         return services;
     }
 
@@ -80,6 +87,23 @@ public static class DependencyInjection
     {
         services.AddSingleton(x => new BlobServiceClient(configuration.GetValue<string>("AzureBlobStorage:ConnectionString")));
         services.AddSingleton<IBlobStorageService, BlobStorageService>();
+
+        return services;
+    }
+
+    public static IServiceCollection ConfigureHangfire(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddHangfire(config =>
+        {
+            config.SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                .UseSimpleAssemblyNameTypeSerializer()
+                .UseRecommendedSerializerSettings()
+                .UseSqlServerStorage(configuration.GetConnectionString("DefaultConnection"))
+                .UseColouredConsoleLogProvider()
+                .UseSerilogLogProvider();
+        });
+
+        services.AddHangfireServer();
 
         return services;
     }
