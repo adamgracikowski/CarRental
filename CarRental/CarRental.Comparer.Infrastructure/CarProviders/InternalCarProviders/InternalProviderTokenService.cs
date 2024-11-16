@@ -1,5 +1,6 @@
 ﻿using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Comparer.Infrastructure.CarProviders.Authorization;
+using CarRental.Comparer.Infrastructure.Cache;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
@@ -13,42 +14,49 @@ public sealed class InternalProviderTokenService : ITokenService
     private record AuthRequestDto(string ClientId, string ClientSecret);
 
     private readonly IHttpClientFactory httpClientFactory;
-    private readonly IMemoryCache cache; // redis in the future
+    private readonly ICacheService cache; 
     private readonly IDateTimeProvider dateTimeProvider;
     private readonly InternalProviderOptions options;
+    private readonly ICacheKeyGenerator cacheKeyGenerator;
 
     public InternalProviderTokenService(
         IHttpClientFactory httpClientFactory,
-        IMemoryCache cache,
+        ICacheService cache,
         IOptions<InternalProviderOptions> options,
-        IDateTimeProvider dateTimeProvider)
+        IDateTimeProvider dateTimeProvider,
+        ICacheKeyGenerator cacheKeyGenerator)
     {
         this.httpClientFactory = httpClientFactory;
         this.cache = cache;
         this.dateTimeProvider = dateTimeProvider;
         this.options = options.Value;
+        this.cacheKeyGenerator = cacheKeyGenerator;
     }
 
     public async Task<string> GetTokenAsync(CancellationToken cancellationToken)
     {
         var precision = TimeSpan.FromMinutes(options.TokenNearExpirationMinutes);
 
-        if (cache.TryGetValue<string>(options.Name, out var token) &&
-            token is not null &&
+        var tokenKey = cacheKeyGenerator.GenerateTokenKey(options.Name);
+
+        var token = await cache.GetDataByKeyAsync<string>(tokenKey);
+
+        if (token is not null &&
             !IsTokenNearExpiration(token, precision))
         {
             return token;
         }
 
-        token = await RequestNewTokenAsync(cancellationToken);
-        var expirationTime = GetExpirationTime(token);
+        var newToken = await RequestNewTokenAsync(cancellationToken);
+        var expirationTime = GetExpirationTime(newToken);
 
-        if (expirationTime.HasValue)
+        if (expirationTime != null && expirationTime.HasValue)
         {
-            cache.Set(options.Name, token, absoluteExpiration: expirationTime.Value);
+            var expirationDate = ((DateTimeOffset)expirationTime).UtcDateTime;
+            await cache.AddDataAsync(tokenKey, newToken, expirationDate);
         }
 
-        return token;
+        return newToken;
     }
 
     private async Task<string> RequestNewTokenAsync(CancellationToken cancellationToken)

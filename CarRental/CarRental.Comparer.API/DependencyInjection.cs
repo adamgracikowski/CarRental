@@ -8,6 +8,8 @@ using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders;
 using CarRental.Comparer.Infrastructure.CarProviders.Options;
 using CarRental.Common.Infrastructure.Storages.BlobStorage;
 using CarRental.Comparer.Persistence.Options;
+using CarRental.Comparer.Infrastructure.Cache;
+using Microsoft.Extensions.Configuration;
 
 namespace CarRental.Comparer.API;
 
@@ -17,8 +19,8 @@ public static class DependencyInjection
     {
         services.Configure<ConnectionStringsOptions>(configuration.GetSection(ConnectionStringsOptions.SectionName));
         services.Configure<BlobContainersOptions>(configuration.GetSection(BlobContainersOptions.SectionName));
-
-        
+        services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.SectionName));
+     
         services.Configure<CarProvidersOptions>(configuration.GetSection(CarProvidersOptions.SectionName));
         services.Configure<InternalProviderOptions>(configuration.GetSection(InternalProviderOptions.SectionName));
 
@@ -33,6 +35,7 @@ public static class DependencyInjection
         services.RegisterAutoMapper();
         services.ConfigureMediatR();
         services.ConfigureBlobStorage(configuration);
+        services.ConfigureRedis(configuration);
 
         services.AddMemoryCache();
         services.AddSingleton<ITokenService, InternalProviderTokenService>();
@@ -40,6 +43,19 @@ public static class DependencyInjection
 
         services.AddTransient<ICarComparisonService, CarComparisonService>();
         services.AddTransient<ICarProviderService, InternalCarProviderService>();
+
+        return services;
+    }
+
+    public static IServiceCollection ConfigureRedis(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddStackExchangeRedisCache(option =>
+        {
+            option.Configuration = configuration.GetValue<string>("Redis:ConnectionString");
+            option.InstanceName = configuration.GetValue<string>("Redis:InstanceName");
+        });
+        services.AddSingleton<ICacheService, RedisCacheService>();
+        services.AddSingleton<ICacheKeyGenerator, CacheKeyGenerator>();
 
         return services;
     }

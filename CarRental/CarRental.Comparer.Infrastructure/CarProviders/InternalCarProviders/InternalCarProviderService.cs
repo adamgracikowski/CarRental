@@ -1,4 +1,5 @@
 ﻿using CarRental.Common.Core.ProviderEntities;
+using CarRental.Comparer.Infrastructure.Cache;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;

@@ -1,6 +1,7 @@
 ﻿using Ardalis.Specification;
 using CarRental.Common.Core.ComparerEntities;
 using CarRental.Common.Infrastructure.Storages.BlobStorage;
+using CarRental.Comparer.Infrastructure.Cache;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
@@ -20,31 +21,47 @@ public sealed class CarComparisonService : ICarComparisonService
     private readonly string StorageAccountName = string.Empty;
     private readonly IRepositoryBase<Provider> providersRepository;
     private readonly ILogger<CarComparisonService> logger;
+    private readonly ICacheKeyGenerator keyGenerator;
+    private readonly ICacheService cacheService;
 
     public CarComparisonService(
         IEnumerable<ICarProviderService> carProviderServices,
         IBlobStorageService blobStorageService,
         IOptions<BlobContainersOptions> options,
+        IConfiguration configuration,
         IRepositoryBase<Provider> providersRepository,
         ILogger<CarComparisonService> logger,
-        IConfiguration configuration)
+        ICacheKeyGenerator keyGenerator,
+        ICacheService cacheService)
     {
         this.carProviderServices = carProviderServices;
         this.blobStorageService = blobStorageService;
         this.options = options.Value;
         this.providersRepository = providersRepository;
         this.logger = logger;
-
         StorageAccountName = configuration.GetValue<string>($"AzureBlobStorage:StorageAccountName") ?? string.Empty;
+        this.keyGenerator = keyGenerator;
+        this.cacheService = cacheService;
     }
 
     public async Task<UnifiedCarListDto> GetAllAvailableCarsAsync(CancellationToken cancellationToken)
     {
-        var tasks = this.carProviderServices.Select(provider => provider.GetAvailableCarsAsync(cancellationToken));
+        var carsKey = keyGenerator.GenerateCarsKey();
 
+        var cacheResult = await cacheService.GetDataByKeyAsync<UnifiedCarListDto>(carsKey);
+
+        if (cacheResult != null && cacheResult.Makes.Count > 0)
+        {
+            return cacheResult;
+        }
+
+        var tasks = this.carProviderServices.Select(provider => provider.GetAvailableCarsAsync(cancellationToken));
+        
         var results = await Task.WhenAll(tasks);
 
         var aggregatedResponse = await this.AggregateResponsesAsync(results, cancellationToken);
+
+        await cacheService.AddDataAsync(carsKey, aggregatedResponse);
 
         return aggregatedResponse;
     }
