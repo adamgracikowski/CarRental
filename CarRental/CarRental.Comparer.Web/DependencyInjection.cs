@@ -1,8 +1,11 @@
 ﻿using CarRental.Comparer.Web.Requests.CarServices;
+using CarRental.Comparer.Web.Requests.OfferServices;
+using CarRental.Comparer.Web.Requests.ProvidersServices;
 using CarRental.Comparer.Web.Requests.UserServices;
 using CarRental.Comparer.Web.Services;
 using CarRental.Comparer.Web.Services.StateContainer;
 using Darnton.Blazor.DeviceInterop.Geolocation;
+using GoogleMapsComponents;
 using MudBlazor.Services;
 
 namespace CarRental.Comparer.Web;
@@ -42,7 +45,20 @@ public static class DependencyInjection
 
         services.AddHttpClient<ICarService, CarService>(client => client.BaseAddress = new Uri(baseUrl));
         services.AddHttpClient<IUserService, UserService>(client => client.BaseAddress = new Uri(baseUrl));
+        services.AddHttpClient<IProviderService, ProviderService>(client => client.BaseAddress = new Uri(baseUrl));
+        services.AddHttpClient<IOfferService, OfferService>(client => client.BaseAddress = new Uri(baseUrl));
 
         return services;
     }
+
+	public static IServiceCollection ConfigureGoogleMaps(this IServiceCollection services, IConfiguration configuration)
+	{
+		var googleKey = configuration.GetValue<string>("GoogleMaps:ApiKey");
+
+		ArgumentException.ThrowIfNullOrEmpty(googleKey, "Api key for Google Maps can not be null or empty.");
+
+		services.AddBlazorGoogleMaps(googleKey);
+
+		return services;
+	}
 }

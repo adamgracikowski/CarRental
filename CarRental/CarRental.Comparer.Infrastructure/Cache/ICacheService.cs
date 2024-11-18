@@ -1,6 +1,4 @@
-﻿using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
-
-namespace CarRental.Comparer.Infrastructure.Cache;
+﻿namespace CarRental.Comparer.Infrastructure.Cache;
 
 public interface ICacheService
 {

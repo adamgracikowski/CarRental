@@ -5,308 +5,321 @@
 @using CarRental.Comparer.Web.Extensions
 @using CarRental.Comparer.Web.Requests.DTOs.Cars
 @inject StateContainer StateContainer
+@inject NavigationManager Navigation
 
 <div style="display: flex;">
-    <div style="width: 20%; padding: 10px;">
-        <MudExpansionPanels Elevation="1" MultiExpansion="true">
-            <MudButton Color="Color.Primary" OnClick="ClearAllFilters">Clear Filters</MudButton>
+	<div style="width: 20%; padding: 10px;">
+		<MudExpansionPanels Elevation="1" MultiExpansion="true">
+			<MudButton Color="Color.Primary" OnClick="ClearAllFilters">Clear Filters</MudButton>
 
-            <MudExpansionPanel Text="Make" KeepExpanded="true">
-                <MudButton OnClick="@(()=>ClearCategoryFilters(AvailableMakeOptions.Keys.ToList(), MakeFilterSelections))" Color="Color.Primary">Clear</MudButton>
-                @foreach (var make in AvailableMakeOptions)
-                {
-                    <MudCheckBox T="bool"
-                                 Label="@($"{make.Key} ({make.Value})")"
-                                 Value="@MakeFilterSelections.Contains(make.Key)"
-                                 ValueChanged="(isChecked) => OnSelectionChanged(MakeFilterSelections,make.Key, isChecked)"
-                                 Disabled="@(make.Value == 0)"
-                                 Style="@(make.Value == 0 ? "color: grey;" : "")" />
-                }
-            </MudExpansionPanel>
+			<MudExpansionPanel Text="Make" KeepExpanded="true">
+				<MudButton OnClick="@(()=>ClearCategoryFilters(AvailableMakeOptions.Keys.ToList(), MakeFilterSelections))" Color="Color.Primary">Clear</MudButton>
+				@foreach (var make in AvailableMakeOptions)
+				{
+					<MudCheckBox T="bool"
+					Label="@($"{make.Key} ({make.Value})")"
+					Value="@MakeFilterSelections.Contains(make.Key)"
+					ValueChanged="(isChecked) => OnSelectionChanged(MakeFilterSelections,make.Key, isChecked)"
+					Disabled="@(make.Value == 0)"
+					Style="@(make.Value == 0 ? "color: grey;" : "")" />
+				}
+			</MudExpansionPanel>
 
-            <MudExpansionPanel Text="Model" KeepExpanded="true">
-                <MudButton OnClick="@(()=>ClearCategoryFilters(AvailableModelOptions.Keys.ToList(), ModelFilterSelections))" Color="Color.Primary">Clear</MudButton>
-                @foreach (var model in AvailableModelOptions)
-                {
-                    <MudCheckBox T="bool"
-                                 Label="@($"{model.Key} ({model.Value})")"
-                                 Value="@ModelFilterSelections.Contains(model.Key)"
-                                 ValueChanged="(isChecked) => OnSelectionChanged(ModelFilterSelections,model.Key, isChecked)"
-                                 Disabled="@(model.Value == 0)"
-                                 Style="@(model.Value == 0 ? "color: grey;" : "")" />
-                }
-            </MudExpansionPanel>
+			<MudExpansionPanel Text="Model" KeepExpanded="true">
+				<MudButton OnClick="@(()=>ClearCategoryFilters(AvailableModelOptions.Keys.ToList(), ModelFilterSelections))" Color="Color.Primary">Clear</MudButton>
+				@foreach (var model in AvailableModelOptions)
+				{
+					<MudCheckBox T="bool"
+					Label="@($"{model.Key} ({model.Value})")"
+					Value="@ModelFilterSelections.Contains(model.Key)"
+					ValueChanged="(isChecked) => OnSelectionChanged(ModelFilterSelections,model.Key, isChecked)"
+					Disabled="@(model.Value == 0)"
+					Style="@(model.Value == 0 ? "color: grey;" : "")" />
+				}
+			</MudExpansionPanel>
 
-            <MudExpansionPanel Text="Number of Doors" KeepExpanded="true">
-                <MudButton OnClick="@(()=>ClearCategoryFilters(AvailableDoorsOptions.Keys.ToList(), DoorsFilterSelections))" Color="Color.Primary">Clear</MudButton>
-                @foreach (var doors in AvailableDoorsOptions)
-                {
-                    <MudCheckBox T="bool"
-                                 Label="@($"{doors.Key} doors ({doors.Value})")"
-                                 Value="@DoorsFilterSelections.Contains(doors.Key)"
-                                 ValueChanged="(isChecked) => OnSelectionChanged(DoorsFilterSelections,doors.Key, isChecked)"
-                                 Disabled="@(doors.Value == 0)"
-                                 Style="@(doors.Value == 0 ? "color: grey;" : "")" />
-                }
-            </MudExpansionPanel>
+			<MudExpansionPanel Text="Number of Doors" KeepExpanded="true">
+				<MudButton OnClick="@(()=>ClearCategoryFilters(AvailableDoorsOptions.Keys.ToList(), DoorsFilterSelections))" Color="Color.Primary">Clear</MudButton>
+				@foreach (var doors in AvailableDoorsOptions)
+				{
+					<MudCheckBox T="bool"
+					Label="@($"{doors.Key} doors ({doors.Value})")"
+					Value="@DoorsFilterSelections.Contains(doors.Key)"
+					ValueChanged="(isChecked) => OnSelectionChanged(DoorsFilterSelections,doors.Key, isChecked)"
+					Disabled="@(doors.Value == 0)"
+					Style="@(doors.Value == 0 ? "color: grey;" : "")" />
+				}
+			</MudExpansionPanel>
 
-            <MudExpansionPanel Text="Number of Seats" KeepExpanded="true">
-                <MudButton OnClick="@(()=>ClearCategoryFilters(AvailableSeatsOptions.Keys.ToList(), SeatsFilterSelections))" Color="Color.Primary">Clear</MudButton>
-                @foreach (var seats in AvailableSeatsOptions)
-                {
-                    <MudCheckBox T="bool"
-                                 Label="@($"{seats.Key} seats ({seats.Value})")"
-                                 Value="@SeatsFilterSelections.Contains(seats.Key)"
-                                 ValueChanged="(isChecked) => OnSelectionChanged(SeatsFilterSelections,seats.Key, isChecked)"
-                                 Disabled="@(seats.Value == 0)"
-                                 Style="@(seats.Value == 0 ? "color: grey;" : "")" />
-                }
-            </MudExpansionPanel>
+			<MudExpansionPanel Text="Number of Seats" KeepExpanded="true">
+				<MudButton OnClick="@(()=>ClearCategoryFilters(AvailableSeatsOptions.Keys.ToList(), SeatsFilterSelections))" Color="Color.Primary">Clear</MudButton>
+				@foreach (var seats in AvailableSeatsOptions)
+				{
+					<MudCheckBox T="bool"
+					Label="@($"{seats.Key} seats ({seats.Value})")"
+					Value="@SeatsFilterSelections.Contains(seats.Key)"
+					ValueChanged="(isChecked) => OnSelectionChanged(SeatsFilterSelections,seats.Key, isChecked)"
+					Disabled="@(seats.Value == 0)"
+					Style="@(seats.Value == 0 ? "color: grey;" : "")" />
+				}
+			</MudExpansionPanel>
 
-            <MudExpansionPanel Text="Engine Type" KeepExpanded="true">
-                <MudButton OnClick="@(()=>ClearCategoryFilters(AvailableEngineOptions.Keys.ToList(), EngineFilterSelections))" Color="Color.Primary">Clear</MudButton>
-                @foreach (var engine in AvailableEngineOptions)
-                {
-                    <MudCheckBox T="bool"
-                                 Label="@($"{engine.Key} ({engine.Value})")"
-                                 Value="@EngineFilterSelections.Contains(engine.Key)"
-                                 ValueChanged="(isChecked) => OnSelectionChanged(EngineFilterSelections,engine.Key, isChecked)"
-                                 Disabled="@(engine.Value == 0)"
-                                 Style="@(engine.Value == 0 ? "color: grey;" : "")" />
-                }
-            </MudExpansionPanel>
+			<MudExpansionPanel Text="Engine Type" KeepExpanded="true">
+				<MudButton OnClick="@(()=>ClearCategoryFilters(AvailableEngineOptions.Keys.ToList(), EngineFilterSelections))" Color="Color.Primary">Clear</MudButton>
+				@foreach (var engine in AvailableEngineOptions)
+				{
+					<MudCheckBox T="bool"
+					Label="@($"{engine.Key} ({engine.Value})")"
+					Value="@EngineFilterSelections.Contains(engine.Key)"
+					ValueChanged="(isChecked) => OnSelectionChanged(EngineFilterSelections,engine.Key, isChecked)"
+					Disabled="@(engine.Value == 0)"
+					Style="@(engine.Value == 0 ? "color: grey;" : "")" />
+				}
+			</MudExpansionPanel>
 
-            <MudExpansionPanel Text="Wheel Drive Type" KeepExpanded="true">
-                <MudButton OnClick="@(()=>ClearCategoryFilters(AvailableDriveOptions.Keys.ToList(), DriveFilterSelections))" Color="Color.Primary">Clear</MudButton>
-                @foreach (var drive in AvailableDriveOptions)
-                {
-                    <MudCheckBox T="bool"
-                                 Label="@($"{drive.Key} ({drive.Value})")"
-                                 Value="@DriveFilterSelections.Contains(drive.Key)"
-                                 ValueChanged="(isChecked) => OnSelectionChanged(DriveFilterSelections,drive.Key, isChecked)"
-                                 Disabled="@(drive.Value == 0)"
-                                 Style="@(drive.Value == 0 ? "color: grey;" : "")" />
-                }
-            </MudExpansionPanel>
-        </MudExpansionPanels>
-    </div>
+			<MudExpansionPanel Text="Wheel Drive Type" KeepExpanded="true">
+				<MudButton OnClick="@(()=>ClearCategoryFilters(AvailableDriveOptions.Keys.ToList(), DriveFilterSelections))" Color="Color.Primary">Clear</MudButton>
+				@foreach (var drive in AvailableDriveOptions)
+				{
+					<MudCheckBox T="bool"
+					Label="@($"{drive.Key} ({drive.Value})")"
+					Value="@DriveFilterSelections.Contains(drive.Key)"
+					ValueChanged="(isChecked) => OnSelectionChanged(DriveFilterSelections,drive.Key, isChecked)"
+					Disabled="@(drive.Value == 0)"
+					Style="@(drive.Value == 0 ? "color: grey;" : "")" />
+				}
+			</MudExpansionPanel>
+		</MudExpansionPanels>
+	</div>
 
-    <div style="width: 80%; padding: 10px;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <div style="display: flex; align-items: center;">
-                <MudSelect T="int" Label="Items per Page" @bind-Value="RowsPerPage" SelectedValuesChanged="@(() => OnRowsPerPageChanged(RowsPerPage))" Variant="Variant.Outlined" Style="width: 150px;">
-                    <MudSelectItem Value="5">5</MudSelectItem>
-                    <MudSelectItem Value="10">10</MudSelectItem>
-                    <MudSelectItem Value="15">15</MudSelectItem>
-                    <MudSelectItem Value="20">20</MudSelectItem>
-                </MudSelect>
+	<div style="width: 80%; padding: 10px;">
+		<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+			<div style="display: flex; align-items: center;">
+				<MudSelect T="int" Label="Items per Page" @bind-Value="RowsPerPage" SelectedValuesChanged="@(() => OnRowsPerPageChanged(RowsPerPage))" Variant="Variant.Outlined" Style="width: 150px;">
+					<MudSelectItem Value="5">5</MudSelectItem>
+					<MudSelectItem Value="10">10</MudSelectItem>
+					<MudSelectItem Value="15">15</MudSelectItem>
+					<MudSelectItem Value="20">20</MudSelectItem>
+				</MudSelect>
 
-                <MudSelect T="string" Label="Sort By" @bind-Value="SortBy" Variant="Variant.Outlined" Style="margin-left: 10px;">
-                    <MudSelectItem Value="@("Make")">Make</MudSelectItem>
-                    <MudSelectItem Value="@("Model")">Model</MudSelectItem>
-                </MudSelect>
-            </div>
+				<MudSelect T="string" Label="Sort By" @bind-Value="SortBy" Variant="Variant.Outlined" Style="margin-left: 10px;">
+					<MudSelectItem Value="@("Make")">Make</MudSelectItem>
+					<MudSelectItem Value="@("Model")">Model</MudSelectItem>
+				</MudSelect>
+			</div>
 
-            <div style="display: flex; align-items: center;">
-                <MudPagination @bind-Page="CurrentPage" Count="PageCount" SelectedChanged="OnPageChanged" />
-            </div>
-        </div>
+			<div style="display: flex; align-items: center;">
+				<MudPagination @bind-Page="CurrentPage" Count="PageCount" SelectedChanged="OnPageChanged" />
+			</div>
+		</div>
 
-       <MudList T="CarDisplayDto">
-            @foreach (var car in PagedFilteredCarList)
-            {
-                <MudListItem>
-                    <MudPaper Elevation="2" Class="car-card">
-                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px;">
-                            <div>
-                                <MudText Typo="Typo.h6">@car.MakeName</MudText>
-                                <MudText Typo="Typo.subtitle2">@car.ModelName</MudText>
-                            </div>
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary">
-                                Show Details
-                            </MudButton>
-                        </div>
-                    </MudPaper>
-                </MudListItem>
-            }
-        </MudList>
-    </div>
+		<MudList T="CarDisplayDto">
+			@foreach (var car in PagedFilteredCarList)
+			{
+				<MudListItem>
+					<MudPaper Elevation="2" Class="car-card">
+						<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px;">
+							<div>
+								<MudText Typo="Typo.h6">@car.MakeName</MudText>
+								<MudText Typo="Typo.subtitle2">@car.ModelName</MudText>
+							</div>
+							<MudButton OnClick="e => ViewOffers(car.MakeName,car.ModelName)" Variant="Variant.Filled" Color="Color.Primary">
+								View Offers
+							</MudButton>
+						</div>
+					</MudPaper>
+				</MudListItem>
+			}
+		</MudList>
+	</div>
 </div>
 
 @code {
-    [Parameter] public int SetHashCode { get; set; }
+	[Parameter] public int SetHashCode { get; set; }
 
-    private List<CarDisplayDto> CarList { get; set; } = [];
-    private List<CarDisplayDto> FilteredCarList { get; set; } = [];
+	private List<CarDisplayDto> CarList { get; set; } = [];
+	private List<CarDisplayDto> FilteredCarList { get; set; } = [];
 
-    private HashSet<string> MakeFilterSelections { get; set; } = [];
-    private HashSet<string> ModelFilterSelections { get; set; } = [];
-    private HashSet<int> DoorsFilterSelections { get; set; } = [];
-    private HashSet<int> SeatsFilterSelections { get; set; } = [];
-    private HashSet<string> EngineFilterSelections { get; set; } = [];
-    private HashSet<string> DriveFilterSelections { get; set; } = [];
+	private HashSet<string> MakeFilterSelections { get; set; } = [];
+	private HashSet<string> ModelFilterSelections { get; set; } = [];
+	private HashSet<int> DoorsFilterSelections { get; set; } = [];
+	private HashSet<int> SeatsFilterSelections { get; set; } = [];
+	private HashSet<string> EngineFilterSelections { get; set; } = [];
+	private HashSet<string> DriveFilterSelections { get; set; } = [];
 
-    private Dictionary<string, int> AvailableMakeOptions { get; set; } = [];
-    private Dictionary<string, int> AvailableModelOptions { get; set; } = [];
-    private Dictionary<int, int> AvailableDoorsOptions { get; set; } = [];
-    private Dictionary<int, int> AvailableSeatsOptions { get; set; } = [];
-    private Dictionary<string, int> AvailableEngineOptions { get; set; } = [];
-    private Dictionary<string, int> AvailableDriveOptions { get; set; } = [];
+	private Dictionary<string, int> AvailableMakeOptions { get; set; } = [];
+	private Dictionary<string, int> AvailableModelOptions { get; set; } = [];
+	private Dictionary<int, int> AvailableDoorsOptions { get; set; } = [];
+	private Dictionary<int, int> AvailableSeatsOptions { get; set; } = [];
+	private Dictionary<string, int> AvailableEngineOptions { get; set; } = [];
+	private Dictionary<string, int> AvailableDriveOptions { get; set; } = [];
 
-    private string SortBy { get; set; } = "Make"; 
+	private string SortBy { get; set; } = "Make";
 
-    private List<CarDisplayDto> SortedFilteredCarList =>
-        SortBy switch
-        {
-            "Make" => FilteredCarList.OrderBy(car => car.MakeName).ThenBy(car => car.ModelName).ToList(),
-            "Model" => FilteredCarList.OrderBy(car => car.ModelName).ThenBy(car => car.MakeName).ToList(),
-            _ => FilteredCarList
-        };
+	private List<CarDisplayDto> SortedFilteredCarList =>
+		SortBy switch
+		{
+			"Make" => FilteredCarList.OrderBy(car => car.MakeName).ThenBy(car => car.ModelName).ToList(),
+			"Model" => FilteredCarList.OrderBy(car => car.ModelName).ThenBy(car => car.MakeName).ToList(),
+			_ => FilteredCarList
+		};
 
-    private int RowsPerPage { get; set; } = 10;
-    private int CurrentPage { get; set; } = 1;
-    private int PageCount => (int)Math.Ceiling((double)FilteredCarList.Count / RowsPerPage);
+	private int RowsPerPage { get; set; } = 10;
+	private int CurrentPage { get; set; } = 1;
+	private int PageCount => (int)Math.Ceiling((double)FilteredCarList.Count / RowsPerPage);
 
-    private IEnumerable<CarDisplayDto> PagedFilteredCarList =>
-        SortedFilteredCarList.Skip((CurrentPage - 1) * RowsPerPage).Take(RowsPerPage);
+	private IEnumerable<CarDisplayDto> PagedFilteredCarList =>
+		SortedFilteredCarList.Skip((CurrentPage - 1) * RowsPerPage).Take(RowsPerPage);
 
-    private void OnPageChanged(int page)
-    {
-        CurrentPage = page;
-    }
+	private void OnPageChanged(int page)
+	{
+		CurrentPage = page;
+	}
 
-    private void OnRowsPerPageChanged(int rowsPerPage)
-    {
-        RowsPerPage = rowsPerPage;
-        CurrentPage = 1; 
-    }
+	private void OnRowsPerPageChanged(int rowsPerPage)
+	{
+		RowsPerPage = rowsPerPage;
+		CurrentPage = 1;
+	}
 
-    private void OnSortByChanged(string sortBy)
-    {
-        SortBy = sortBy;
-    }
+	private void OnSortByChanged(string sortBy)
+	{
+		SortBy = sortBy;
+	}
 
-    protected override void OnInitialized()
-    {
-        var data = StateContainer.GetRoutingObjectParameter<HomeToRentalCars>(SetHashCode);
+	protected override void OnInitialized()
+	{
+		var data = StateContainer.GetRoutingObjectParameter<HomeToRentalCars>(SetHashCode);
 
-        if (data?.Makes != null)
-        {
-            CarList = data.Makes.SelectMany(make =>
-                        make.Models.SelectMany(model =>
-                            model.Cars.Select(car => new CarDisplayDto
-                                {
-                                    MakeName = make.Name,
-                                    ModelName = model.Name,
-                                    NumberOfDoors = model.NumberOfDoors,
-                                    NumberOfSeats = model.NumberOfSeats,
-                                    EngineType = model.EngineType,
-                                    WheelDriveType = model.WheelDriveType
-                                }))).Distinct().ToList();
+		if (data?.Makes != null)
+		{
+			CarList = data.Makes.SelectMany(make =>
+				make.Models.SelectMany(model =>
+					model.Cars.Select(car => {
+						var carDisplayDto = new CarDisplayDto(
+							make.Name,
+							model.Name,
+							model.NumberOfDoors,
+							model.NumberOfSeats,
+							model.EngineType,
+							model.WheelDriveType
+						);
 
-            FilteredCarList = new List<CarDisplayDto>(CarList);
-            SetUpInitalFilters(data.SelectedMake, data.SelectedModel);
-            FilterCarList();
-            UpdateAvailableFilterOptions();
-        }
-    }
+						return carDisplayDto;
+					}
+					))).Distinct().ToList();
 
-    private void SetUpInitalFilters(string make, string model)
-    {
-        if(string.IsNullOrEmpty(make))
-        {
-            return;
-        }
+			FilteredCarList = new List<CarDisplayDto>(CarList);
+			SetUpInitalFilters(data.SelectedMake, data.SelectedModel);
+			FilterCarList();
+			UpdateAvailableFilterOptions();
+		}
+	}
 
-        if(make != "All")
-        {
-            MakeFilterSelections.Add(make);
-        }
-
-        if(string.IsNullOrEmpty(model))
+	private void SetUpInitalFilters(string make, string model)
+	{
+		if (string.IsNullOrEmpty(make))
 		{
 			return;
 		}
 
-        if(model != "All")
+		if (make != "All")
+		{
+			MakeFilterSelections.Add(make);
+		}
+
+		if (string.IsNullOrEmpty(model))
+		{
+			return;
+		}
+
+		if (model != "All")
 		{
 			ModelFilterSelections.Add(model);
 		}
-    }
+	}
 
-    private void UpdateAvailableFilterOptions()
-    {
-        AvailableMakeOptions = GetAvailableOptions(car => car.MakeName, "Make");
-        AvailableModelOptions = GetAvailableOptions(car => car.ModelName, "Model");
-        AvailableDoorsOptions = GetAvailableOptions(car => car.NumberOfDoors, "Doors");
-        AvailableSeatsOptions = GetAvailableOptions(car => car.NumberOfSeats, "Seats");
-        AvailableEngineOptions = GetAvailableOptions(car => car.EngineType, "Engine");
-        AvailableDriveOptions = GetAvailableOptions(car => car.WheelDriveType, "Drive");
-    }
+	private void UpdateAvailableFilterOptions()
+	{
+		AvailableMakeOptions = GetAvailableOptions(car => car.MakeName, "Make");
+		AvailableModelOptions = GetAvailableOptions(car => car.ModelName, "Model");
+		AvailableDoorsOptions = GetAvailableOptions(car => car.NumberOfDoors, "Doors");
+		AvailableSeatsOptions = GetAvailableOptions(car => car.NumberOfSeats, "Seats");
+		AvailableEngineOptions = GetAvailableOptions(car => car.EngineType ?? "", "Engine");
+		AvailableDriveOptions = GetAvailableOptions(car => car.WheelDriveType ?? "", "Drive");
+	}
 
-    private Dictionary<T, int> GetAvailableOptions<T>(Func<CarDisplayDto, T> selector, string excludeFilter)
-        where T: notnull
-    {
-        return CarList
-            .GroupBy(selector)
-            .ToDictionary(
-                g => g.Key,
-                g => g.Count(car => ApplySelectionsWithExclusion(car, excludeFilter))
-            );
-    }
+	private Dictionary<T, int> GetAvailableOptions<T>(Func<CarDisplayDto, T> selector, string excludeFilter)
+		where T : notnull
+	{
+		return CarList
+			.GroupBy(selector)
+			.ToDictionary(
+				g => g.Key,
+				g => g.Count(car => ApplySelectionsWithExclusion(car, excludeFilter))
+			);
+	}
 
-    private bool ApplySelectionsWithExclusion(CarDisplayDto car, string excludeFilter)
-    {
-        return (excludeFilter == "Make" || MakeFilterSelections.Count == 0 || MakeFilterSelections.Contains(car.MakeName)) &&
-               (excludeFilter == "Model" || ModelFilterSelections.Count == 0 || ModelFilterSelections.Contains(car.ModelName)) &&
-               (excludeFilter == "Doors" || DoorsFilterSelections.Count == 0 || DoorsFilterSelections.Contains(car.NumberOfDoors)) &&
-               (excludeFilter == "Seats" || SeatsFilterSelections.Count == 0 || SeatsFilterSelections.Contains(car.NumberOfSeats)) &&
-               (excludeFilter == "Engine" || EngineFilterSelections.Count == 0 || EngineFilterSelections.Contains(car.EngineType)) &&
-               (excludeFilter == "Drive" || DriveFilterSelections.Count == 0 || DriveFilterSelections.Contains(car.WheelDriveType));
-    }
+	private bool ApplySelectionsWithExclusion(CarDisplayDto car, string excludeFilter)
+	{
+		return (excludeFilter == "Make" || MakeFilterSelections.Count == 0 || MakeFilterSelections.Contains(car.MakeName)) &&
+						(excludeFilter == "Model" || ModelFilterSelections.Count == 0 || ModelFilterSelections.Contains(car.ModelName)) &&
+						(excludeFilter == "Doors" || DoorsFilterSelections.Count == 0 || DoorsFilterSelections.Contains(car.NumberOfDoors)) &&
+						(excludeFilter == "Seats" || SeatsFilterSelections.Count == 0 || SeatsFilterSelections.Contains(car.NumberOfSeats)) &&
+						(excludeFilter == "Engine" || EngineFilterSelections.Count == 0 || EngineFilterSelections.Contains(car.EngineType ?? "")) &&
+						(excludeFilter == "Drive" || DriveFilterSelections.Count == 0 || DriveFilterSelections.Contains(car.WheelDriveType ?? ""));
+	}
 
-    private bool ApplyCurrentSelections(CarDisplayDto car)
-    {
-        return (MakeFilterSelections.Count == 0 || MakeFilterSelections.Contains(car.MakeName)) &&
-               (ModelFilterSelections.Count == 0 || ModelFilterSelections.Contains(car.ModelName)) &&
-               (DoorsFilterSelections.Count == 0 || DoorsFilterSelections.Contains(car.NumberOfDoors)) &&
-               (SeatsFilterSelections.Count == 0 || SeatsFilterSelections.Contains(car.NumberOfSeats)) &&
-               (EngineFilterSelections.Count == 0 || EngineFilterSelections.Contains(car.EngineType)) &&
-               (DriveFilterSelections.Count == 0 || DriveFilterSelections.Contains(car.WheelDriveType));
-    }
+	private bool ApplyCurrentSelections(CarDisplayDto car)
+	{
+		return (MakeFilterSelections.Count == 0 || MakeFilterSelections.Contains(car.MakeName)) &&
+						(ModelFilterSelections.Count == 0 || ModelFilterSelections.Contains(car.ModelName)) &&
+						(DoorsFilterSelections.Count == 0 || DoorsFilterSelections.Contains(car.NumberOfDoors)) &&
+						(SeatsFilterSelections.Count == 0 || SeatsFilterSelections.Contains(car.NumberOfSeats)) &&
+						(EngineFilterSelections.Count == 0 || EngineFilterSelections.Contains(car.EngineType ?? "")) &&
+						(DriveFilterSelections.Count == 0 || DriveFilterSelections.Contains(car.WheelDriveType ?? ""));
+	}
 
-    private void FilterCarList()
-    {
-        FilteredCarList = CarList.Where(ApplyCurrentSelections).ToList();
-    }
+	private void FilterCarList()
+	{
+		FilteredCarList = CarList.Where(ApplyCurrentSelections).ToList();
+	}
 
-    private void ClearAllFilters()
-    {
-        FilteredCarList = CarList;
-        MakeFilterSelections.Clear();
-        ModelFilterSelections.Clear();
-        DoorsFilterSelections.Clear();
-        SeatsFilterSelections.Clear();
-        EngineFilterSelections.Clear();
-        DriveFilterSelections.Clear();
-        UpdateAvailableFilterOptions();
-    }
+	private void ClearAllFilters()
+	{
+		FilteredCarList = CarList;
+		MakeFilterSelections.Clear();
+		ModelFilterSelections.Clear();
+		DoorsFilterSelections.Clear();
+		SeatsFilterSelections.Clear();
+		EngineFilterSelections.Clear();
+		DriveFilterSelections.Clear();
+		UpdateAvailableFilterOptions();
+	}
 
-    private void ClearCategoryFilters<T>(List<T> checkBoxOptions, HashSet<T> checkedCheckBoxes)
-    {
-        checkedCheckBoxes.Clear();
-        FilterCarList();
-        UpdateAvailableFilterOptions();
-    }
+	private void ClearCategoryFilters<T>(List<T> checkBoxOptions, HashSet<T> checkedCheckBoxes)
+	{
+		checkedCheckBoxes.Clear();
+		FilterCarList();
+		UpdateAvailableFilterOptions();
+	}
 
-    private void OnSelectionChanged<T>(HashSet<T> selectionSet, T value, bool isChecked)
-    {
-        if (isChecked)
-            selectionSet.Add(value);
-        else
-            selectionSet.Remove(value);
+	private void OnSelectionChanged<T>(HashSet<T> selectionSet, T value, bool isChecked)
+	{
+		if (isChecked)
+			selectionSet.Add(value);
+		else
+			selectionSet.Remove(value);
 
-        FilterCarList();
-        UpdateAvailableFilterOptions();
-    }
+		FilterCarList();
+		UpdateAvailableFilterOptions();
+	}
+
+	private void ViewOffers(string makeName, string modelName)
+	{
+		var slugMake = makeName.Replace(' ', '-');
+		var slugModel = modelName.Replace(' ', '-');
+
+		Navigation.NavigateTo($"/offers/{slugMake}/{slugModel}");
+	}
 }

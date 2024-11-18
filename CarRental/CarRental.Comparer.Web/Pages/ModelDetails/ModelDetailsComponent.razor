@@ -1,0 +1,436 @@
+﻿@page "/offers/{MakeName}/{ModelName}"
+
+@using CarRental.Comparer.Web.Extensions
+@using CarRental.Comparer.Web.Requests.CarServices
+@using CarRental.Comparer.Web.Requests.DTOs.Cars
+@using CarRental.Comparer.Web.Requests.DTOs.Models
+@using CarRental.Comparer.Web.Requests.DTOs.Offers
+@using CarRental.Comparer.Web.Requests.DTOs.Providers
+@using CarRental.Comparer.Web.Requests.OfferServices
+@using CarRental.Comparer.Web.Requests.ProvidersServices
+@using CarRental.Comparer.Web.Requests.UserServices
+@using Darnton.Blazor.DeviceInterop.Geolocation
+@using GoogleMapsComponents.Maps
+
+@inject IDialogService DialogService
+@inject IGeolocationService GeolocationService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISnackbar Snackbar
+@inject ICarService CarService
+@inject IProviderService ProviderService
+@inject IOfferService OfferService
+@inject IUserService UserService
+
+@if (Model is not null)
+{
+	<MudContainer>
+		<MudCard>
+			<MudCardHeader>
+				<div class="d-flex flex-column flex-md-row align-items-center">
+					<MudImage Class="rounded-lg" Src="@Model.LogoUrl" Alt="ModelName"></MudImage>
+					<div class="justify-content-center">
+						<MudText Typo="Typo.h2" Align="Align.Center" Class="mb-1"><b>@MakeName</b></MudText>
+						<MudText Typo="Typo.h3" Align="Align.Center" Class="mb-3"><b>@Model.Name</b></MudText>
+					</div>
+				</div>
+			</MudCardHeader>
+			<MudCardContent>
+				<MudCardActions Class="mb-5">
+					<MudButton Disabled="@AreOffersBeingGenerated" @onclick="GenerateOffersAsync" Variant="Variant.Filled" Color="Color.Primary" Size="MudBlazor.Size.Large">Generate Offers</MudButton>
+				</MudCardActions>
+				@if (AreOffersBeingGenerated)
+					@foreach (var progress in ProviderProgresses)
+					{
+						<MudItem class="d-flex align-items-center mb-5">
+							<MudText Class="me-5" Style="width: 150px;">@progress.ProviderName</MudText>
+							@if (progress.IsTimeout)
+							{
+								<MudIcon Icon="@Icons.Material.Filled.TimerOff" Size="MudBlazor.Size.Medium" Color="Color.Error" Class="me-2" />
+							}
+							else if (progress.IsCompleted)
+							{
+								<MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="MudBlazor.Size.Medium" Color="Color.Success" Class="me-2" />
+							}
+							else
+							{
+								<MudIcon Icon="@Icons.Material.Filled.DirectionsCar" Size="MudBlazor.Size.Medium" Color="Color.Primary" Class="me-2" />
+							}
+							<MudProgressLinear Value="@(100.0 * progress.Progress / progress.Total)" Rounded="true" Size="MudBlazor.Size.Medium" Color="Color.Primary" Class="flex-grow-1" />
+						</MudItem>
+					}
+				<MudGrid>
+					<MudItem xs="12" md="9">
+						<CarMapComponent OnMarkerClicked="HandleMarkerClick" @ref="CarMap"></CarMapComponent>
+					</MudItem>
+					<MudItem xs="12" md="3">
+						<MudCard>
+							<MudCardHeader>
+								<MudText Typo="Typo.h6" Align="Align.Left" Class="mb-1 text-muted"><b>Model details:</b></MudText>
+							</MudCardHeader>
+							<MudCardContent>
+								@if (Model.EngineType is not null)
+								{
+									<MudText Typo="Typo.subtitle2" Align="Align.Left" Class="text-muted">Engine Type: <b>@Model.EngineType</b></MudText>
+								}
+								@if (Model.WheelDriveType is not null)
+								{
+									<MudText Typo="Typo.subtitle2" Align="Align.Left" Class="text-muted">Wheel Drive Type: <b>@Model.WheelDriveType</b></MudText>
+								}
+								<MudText Typo="Typo.subtitle2" Align="Align.Left" Class="text-muted">Number of seats: <b>@Model.NumberOfSeats</b></MudText>
+								<MudText Typo="Typo.subtitle2" Align="Align.Left" Class="text-muted">Number of doors: <b>@Model.NumberOfDoors</b></MudText>
+							</MudCardContent>
+						</MudCard>
+					</MudItem>
+				</MudGrid>
+			</MudCardContent>
+		</MudCard>
+		<MudDataGrid Items="@Offers">
+			<Columns>
+				<HierarchyColumn T="OfferButton" />
+				<PropertyColumn Property="x => x.ProviderName" Title="Provider" />
+				<PropertyColumn Property="x => x.Total" Title="Price Per Day" Format="C" />
+				<PropertyColumn Property="x => x.Offer.Car.TransmissionType" Title="Transmission Type" />
+				<PropertyColumn Property="x => x.Offer.Car.FuelType" Title="Fuel Type" />
+				<PropertyColumn Property="x => x.Offer.Car.ProductionYear" Title="Production Year" />
+				<TemplateColumn>
+					<CellTemplate>
+						<MudStack Row>
+							<MudButton style="width: 120px" Disabled="@context.Item.Disabled" OnClick="@(e => ChooseOfferAsync(context.Item))" Size="MudBlazor.Size.Small" Variant="Variant.Filled" Color="Color.Primary">
+								@if (@context.Item.RequestInProgress)
+								{
+									<MudProgressCircular Color="Color.Primary" Size="MudBlazor.Size.Small" Indeterminate="true" />
+								}
+								else
+								{
+									<MudItem>Choose Offer</MudItem>
+								}
+							</MudButton>
+						</MudStack>
+					</CellTemplate>
+				</TemplateColumn>
+			</Columns>
+			<ChildRowContent>
+				<MudCard>
+					<MudCardHeader>
+						<MudCardContent>
+							<MudGrid Spacing="3">
+								<MudItem xs="4">
+									<MudText Typo="Typo.subtitle1"><b>Car Details</b></MudText>
+									<MudText Typo="Typo.body2">Location: (@context.Item.Offer.Car.Latitude; @context.Item.Offer.Car.Longitude)</MudText>
+								</MudItem>
+								<MudItem xs="4">
+									<MudText Typo="Typo.subtitle1"><b>Insurance:</b></MudText>
+									<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Insurance.Name</MudText>
+									@if (!string.IsNullOrEmpty(context.Item.Offer.Segment.Insurance.Description))
+									{
+										<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Insurance.Description</MudText>
+									}
+									<MudText Typo="Typo.caption" Color="Color.Success"> <b>@context.Item.Offer.InsurancePricePerDay.ToString("C")</b></MudText>
+								</MudItem>
+								<MudItem xs="4">
+									<MudText Typo="Typo.subtitle1"><b>Segment:</b></MudText>
+									<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Name</MudText>
+									<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Description</MudText>
+									<MudText Typo="Typo.caption" Color="Color.Success"> <b>@context.Item.Offer.RentalPricePerDay.ToString("C")</b></MudText>
+								</MudItem>
+							</MudGrid>
+						</MudCardContent>
+					</MudCardHeader>
+				</MudCard>
+			</ChildRowContent>
+			<PagerContent>
+				<MudDataGridPager T="OfferButton" />
+			</PagerContent>
+		</MudDataGrid>
+	</MudContainer>
+}
+else
+{
+	<div class="d-flex justify-content-center align-content-center h-100">
+		<MudProgressCircular Color="Color.Primary" Size="MudBlazor.Size.Large" Indeterminate="true" />
+	</div>
+}
+
+
+@code {
+	[Parameter]
+	public string? MakeName { get; set; }
+
+	[Parameter]
+	public string? ModelName { get; set; }
+
+	private class OfferButton
+	{
+		public required OfferDto Offer { get; set; }
+		public decimal Total { get; set; }
+		public required string ProviderName { get; set; }
+		public required bool Disabled { get; set; }
+		public required bool RequestInProgress { get; set; }
+	}
+
+	private class ProviderProgress
+	{
+		public required string ProviderName { get; set; }
+		public int ProviderId { get; set; }
+		public int Progress { get; set; }
+		public int Total { get; set; }
+		public bool IsCompleted => Progress == Total;
+		public bool IsTimeout { get; set; }
+		public ICollection<int> CarIds { get; set; } = [];
+	}
+
+	public ModelDetailsDto? Model { get; set; }
+
+	public ProviderListDto? ProviderList { get; set; }
+
+	private List<OfferButton> Offers { get; set; } = [];
+
+	private object OffersLock = new();
+
+	public bool AreOffersBeingGenerated { get; set; }
+
+	private List<ProviderProgress> ProviderProgresses { get; set; } = [];
+
+	private CarMapComponent CarMap { get; set; } = default!;
+
+	private AuthenticationState? AuthenticationState { get; set; }
+
+	private string? UserEmailAddress { get; set; }
+
+	private CreateOfferDto CreateOfferDto { get; set; } = new();
+
+	protected override async Task OnInitializedAsync()
+	{
+		AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		UserEmailAddress = AuthenticationState?.User.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+
+		if (!string.IsNullOrEmpty(MakeName) && !string.IsNullOrEmpty(ModelName))
+		{
+			Model = await CarService.GetModelDetailsAsync(MakeName, ModelName, new SlugStringComparer());
+
+			if (Model is null) return;
+
+			ProviderList = await ProviderService.GetProvidersAsync();
+
+			if (ProviderList is null) return;
+
+			ProviderProgresses = Model.Cars
+				.GroupBy(c => c.ProviderName)
+				.Select(c =>
+				{
+					var providerDto = ProviderList.Providers.FirstOrDefault(p => p.ProviderName == c.Key);
+					var providerId = providerDto?.ProviderId ?? 0;
+					var carIds = c.Select(car => car.Id).ToList();
+					var providerProgress = new ProviderProgress
+						{
+							ProviderId = providerId,
+							ProviderName = c.Key,
+							CarIds = carIds,
+							Total = carIds.Count
+						};
+
+					return providerProgress;
+				}).ToList();
+		}
+
+		StateHasChanged();
+	}
+
+	private async Task<bool> PrepareForGeneratingOffersAsync()
+	{
+		if (UserEmailAddress is not null)
+		{
+			var userDto = await UserService.GetUserByEmailAsync(UserEmailAddress);
+
+			if (userDto is null) return false;
+
+			CreateOfferDto = new CreateOfferDto(
+				drivingLicenseYears: userDto.DrivingLicenseYears,
+				age: userDto.Age,
+				latitude: (decimal)userDto.Latitude,
+				longitude: (decimal)userDto.Longitude
+			);
+
+			GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
+
+			if (currentPositionResult.IsSuccess)
+			{
+				CreateOfferDto.Longitude = (decimal)currentPositionResult.Position.Coords.Longitude;
+				CreateOfferDto.Latitude = (decimal)currentPositionResult.Position.Coords.Latitude;
+			}
+		}
+		else
+		{
+			var dialogResult = await OpenCreateOfferDialogAsync();
+
+			if (dialogResult is null || dialogResult.Canceled)
+			{
+				return false;
+			}
+		}
+
+		var position = new LatLngLiteral((double)CreateOfferDto.Latitude, (double)CreateOfferDto.Longitude);
+
+		await CarMap.AddMarkerAsync(position.Lat, position.Lng, user: true);
+		CarMap.SetMapCenter(position);
+
+		return true;
+	}
+
+	public async Task GenerateOffersAsync()
+	{
+		if (!await PrepareForGeneratingOffersAsync())
+		{
+			return;
+		};
+
+		AreOffersBeingGenerated = true;
+
+		using var tokenSource = new CancellationTokenSource();
+
+		tokenSource.CancelAfter(TimeSpan.FromSeconds(15));
+
+		var tasks = ProviderProgresses
+			.Select(async p => await GenerateOffersFromProviderAsync(p, tokenSource.Token))
+			.ToList();
+
+		await Task.WhenAll(tasks);
+	}
+
+	private async Task GenerateOffersFromProviderAsync(ProviderProgress provider, CancellationToken cancellationToken)
+	{
+		if (CreateOfferDto is null) return;
+
+		foreach (var carId in provider.CarIds)
+		{
+
+			var offerDto = await OfferService.CreateOfferAsync(provider.ProviderId, carId, CreateOfferDto, cancellationToken);
+
+			provider.Progress += 1;
+
+			if (offerDto is not null)
+			{
+				lock (OffersLock)
+				{
+					Offers.Add(new OfferButton
+						{
+							Offer = offerDto,
+							Disabled = false,
+							ProviderName = provider.ProviderName,
+							RequestInProgress = false,
+							Total = offerDto.RentalPricePerDay + offerDto.InsurancePricePerDay
+						});
+				}
+
+				await CarMap.AddMarkerAsync((double)offerDto.Car.Latitude, (double)offerDto.Car.Longitude);
+			}
+
+			provider.IsTimeout = cancellationToken.IsCancellationRequested;
+
+			StateHasChanged();
+		}
+	}
+
+	private void HandleMarkerClick(LatLngLiteral position)
+	{
+		var offer = Offers.FirstOrDefault(o =>
+			Math.Abs((double)o.Offer.Car.Latitude - position.Lat) < 0.001 &&
+			Math.Abs((double)o.Offer.Car.Longitude - position.Lng) < 0.001
+		);
+
+		if (offer is null) return;
+
+		lock (Offers)
+		{
+			Offers.Remove(offer);
+			Offers.Insert(0, offer);
+		}
+
+		StateHasChanged();
+	}
+
+	private async Task ChooseOfferAsync(OfferButton offerButton)
+	{
+		offerButton.RequestInProgress = true;
+
+		if (UserEmailAddress is null)
+		{
+			Snackbar.Add("This feature is only available to logged-in users.", Severity.Info, config =>
+			{
+				config.Icon = Icons.Material.Filled.Info;
+				config.IconSize = MudBlazor.Size.Large;
+			});
+
+			offerButton.RequestInProgress = false;
+			StateHasChanged();
+			return;
+		}
+
+		var provider = ProviderProgresses.FirstOrDefault(p => p.ProviderName == offerButton.ProviderName);
+
+		if (provider is null || Model is null)
+		{
+			offerButton.RequestInProgress = false;
+			StateHasChanged();
+			return;
+		}
+
+		var chooseOfferDto = new ChooseOfferDto(
+			EmailAddress: UserEmailAddress,
+			Make: MakeName ?? string.Empty,
+			Model: ModelName ?? string.Empty,
+			Segment: offerButton.Offer.Segment.Name,
+			CarOuterId: "0", // nie mam tego na froncie...
+			YearOfProduction: offerButton.Offer.Car.ProductionYear,
+			TransmissionType: offerButton.Offer.Car.TransmissionType,
+			FuelType: offerButton.Offer.Car.FuelType,
+			NumerOfDoors: Model.NumberOfDoors,
+			NumberOfSeats: Model.NumberOfSeats,
+			RentalPricePerDay: offerButton.Offer.RentalPricePerDay,
+			InsurancePricePerDay: offerButton.Offer.InsurancePricePerDay,
+			RentedAt: DateTime.UtcNow, // to pole jest błędne w API porównywarki, powinno być zwracane z API dostawcy...
+			ExpiresAt: offerButton.Offer.ExpiresAt
+		);
+
+		var rentalIdDto = await OfferService
+			.ChooseOfferAsync(provider.ProviderId, offerButton.Offer.Id.ToString(), chooseOfferDto);
+
+		if (rentalIdDto is not null)
+		{
+			offerButton.Disabled = true;
+
+			Snackbar.Add("Please check your inbox to confirm your rental!", Severity.Success, config =>
+			{
+				config.Icon = Icons.Material.Filled.AlternateEmail;
+				config.IconSize = MudBlazor.Size.Large;
+			});
+		}
+		else
+		{
+			Snackbar.Add("The offer might be expired or unavailable.", Severity.Error, config =>
+			{
+				config.Icon = Icons.Material.Filled.Error;
+				config.IconSize = MudBlazor.Size.Large;
+			});
+		}
+
+		offerButton.RequestInProgress = false;
+		StateHasChanged();
+	}
+
+	private async Task<DialogResult?> OpenCreateOfferDialogAsync()
+	{
+		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+
+		var dialog = await DialogService.ShowAsync<ChooseOfferDialogComponent>("User details", options);
+		var result = await dialog.Result;
+
+		if (result is not null && !result.Canceled)
+		{
+			CreateOfferDto = (CreateOfferDto)result.Data!;
+		}
+
+		return result;
+	}
+}

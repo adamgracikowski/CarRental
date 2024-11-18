@@ -111,9 +111,9 @@
 
     private string Model { get; set; }
 
-    private ICollection<MakeWithModelsDto> cars {get; set;}
+    private ICollection<MakeDto> cars {get; set;}
 
-    private void OnMakeClick(MakeWithModelsDto make)
+    private void OnMakeClick(MakeDto make)
     {
         var navArgs = new HomeToRentalCars(cars); 
         navArgs.SelectedMake = make.Name;

@@ -1,0 +1,75 @@
+﻿@using GoogleMapsComponents
+@using GoogleMapsComponents.Maps
+
+@implements IAsyncDisposable
+
+<GoogleMap @ref="@Map" Id="map" Options="@MapOption" Height="400px"></GoogleMap>
+
+@code {
+
+	[Parameter]
+	public EventCallback<LatLngLiteral> OnMarkerClicked { get; set; }
+
+	public List<Marker> Markers { get; set; } = [];
+
+	private GoogleMap Map { get; set; } = default!;
+	private MapOptions MapOption { get; set; } = default!;
+
+	private const string UserMarkerIcon = "https://carrentalminisa.blob.core.windows.net/comparer-makes/user.png";
+	private const string CarMarkerIcon = "https://carrentalminisa.blob.core.windows.net/comparer-makes/location.png";
+
+	protected override void OnInitialized()
+	{
+		MapOption = new MapOptions()
+			{
+				Zoom = 13,
+				Center = new LatLngLiteral()
+				{
+					Lat = 52.22227, // Warsaw, MiNI
+					Lng = 21.00713
+				},
+				MapTypeId = MapTypeId.Roadmap
+			};
+	}
+
+	public async Task AddMarkerAsync(double lat, double lng, bool user = false)
+	{
+		var position = new LatLngLiteral()
+			{
+				Lat = lat,
+				Lng = lng
+			};
+
+		var markerOptions = new MarkerOptions()
+			{
+				Clickable = true,
+				Position = position,
+				Map = Map.InteropObject,
+				Icon = user ? UserMarkerIcon : CarMarkerIcon
+			};
+
+		var marker = await Marker.CreateAsync(Map.JsRuntime, markerOptions);
+
+		await marker.AddListener<GoogleMapsComponents.Maps.MouseEvent>("click", async e =>
+		{
+			await OnMarkerClicked.InvokeAsync(e.LatLng);
+		});
+
+		Markers.Add(marker);
+	}
+
+	public async void SetMapCenter(LatLngLiteral center)
+	{
+		await Map.InteropObject.SetCenter(center);
+	}
+
+	public async ValueTask DisposeAsync()
+	{
+		foreach (var marker in Markers)
+		{
+			await marker.DisposeAsync();
+		}
+
+		await Map.DisposeAsync();
+	}
+}

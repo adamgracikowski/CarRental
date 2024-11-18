@@ -2,8 +2,8 @@
 
 namespace CarRental.Comparer.Web.Requests.DTOs.Makes;
 
-public sealed record MakeWithModelsDto(
+public sealed record MakeDto(
     string Name,
-    ICollection<ModelWithCarsDto> Models,
+    ICollection<ModelDto> Models,
     string LogoUrl
 );

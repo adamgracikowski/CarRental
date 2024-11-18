@@ -8,5 +8,6 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 builder.Services.RegisterInfrastructureServices(builder.Configuration);
+builder.Services.ConfigureGoogleMaps(builder.Configuration);
 
 await builder.Build().RunAsync();

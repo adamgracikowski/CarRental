@@ -1,8 +1,7 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
-using System.Text.Json;
+﻿using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
-using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Text.Json;
 
 namespace CarRental.Comparer.Infrastructure.Cache;
 

@@ -1,0 +1,56 @@
+﻿@using CarRental.Comparer.Web.Requests.DTOs.Offers
+@using Darnton.Blazor.DeviceInterop.Geolocation
+
+@inject IGeolocationService GeolocationService
+
+<MudDialog>
+	<TitleContent>
+		<MudText Typo="Typo.h6">
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Fill required details
+		</MudText>
+	</TitleContent>
+	<DialogContent>
+		<EditForm Model="CreateOfferDto" OnValidSubmit="Submit">
+			<DataAnnotationsValidator />
+			<MudStack Spacing="3" Class="mt-4">
+				<MudNumericField @bind-Value="CreateOfferDto.DrivingLicenseYears" Label="Driving License Years" Required="true"/>
+				<MudNumericField @bind-Value="CreateOfferDto.Age" Label="Age" Required="true"/>
+				<MudNumericField @bind-Value="CreateOfferDto.Latitude" Label="Latitude" Required="true"/>
+				<MudNumericField @bind-Value="CreateOfferDto.Longitude" Label="Longitude" Required="true"/>
+			</MudStack>
+		</EditForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Submit" Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">Submit</MudButton>
+		<MudButton OnClick="Cancel" ButtonType="ButtonType.Button">Cancel</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter] 
+	private MudDialogInstance? MudDialog { get; set; }
+
+	private CreateOfferDto CreateOfferDto { get; set; } = new(2, 21, 0, 0);
+
+	protected override async Task OnInitializedAsync()
+	{
+		GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
+		if (currentPositionResult.IsSuccess)
+		{
+			CreateOfferDto.Longitude = (decimal)currentPositionResult.Position.Coords.Longitude;
+			CreateOfferDto.Latitude = (decimal)currentPositionResult.Position.Coords.Latitude;
+		}
+
+		StateHasChanged();
+	}
+
+	private void Submit()
+	{
+		MudDialog?.Close(DialogResult.Ok(CreateOfferDto));
+	}
+
+	private void Cancel()
+	{
+		MudDialog?.Cancel();
+	}
+}

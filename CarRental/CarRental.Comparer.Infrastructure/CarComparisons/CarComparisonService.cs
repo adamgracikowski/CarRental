@@ -19,7 +19,6 @@ public sealed class CarComparisonService : ICarComparisonService
     private readonly IBlobStorageService blobStorageService;
     private readonly BlobContainersOptions options;
     private readonly string StorageAccountName = string.Empty;
-    private readonly IRepositoryBase<Provider> providersRepository;
     private readonly ILogger<CarComparisonService> logger;
     private readonly ICacheKeyGenerator keyGenerator;
     private readonly ICacheService cacheService;
@@ -37,7 +36,6 @@ public sealed class CarComparisonService : ICarComparisonService
         this.carProviderServices = carProviderServices;
         this.blobStorageService = blobStorageService;
         this.options = options.Value;
-        this.providersRepository = providersRepository;
         this.logger = logger;
         StorageAccountName = configuration.GetValue<string>($"AzureBlobStorage:StorageAccountName") ?? string.Empty;
         this.keyGenerator = keyGenerator;
