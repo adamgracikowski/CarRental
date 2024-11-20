@@ -9,4 +9,6 @@ public sealed class RedisOptions
     public int ExpirationTimeInMinutes { get; set; }
 
     public string InstanceName {  get; set; } = string.Empty;
+
+    public bool UseRedis {  get; set; }
 }

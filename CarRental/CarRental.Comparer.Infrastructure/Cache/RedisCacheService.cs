@@ -20,7 +20,9 @@ public sealed class RedisCacheService : ICacheService
 
     public async Task AddDataAsync<T>(string key, T data) where T : class
     {
-        var serializedObject = JsonSerializer.Serialize<T>(data);
+		if (!this.redisOptions.UseRedis) return;
+
+		var serializedObject = JsonSerializer.Serialize<T>(data);
 
         var options = new DistributedCacheEntryOptions()
         {
@@ -32,7 +34,9 @@ public sealed class RedisCacheService : ICacheService
 
     public async Task AddDataAsync<T>(string key, T data, DateTime expirationTime) where T : class
     {
-        var serializedObject = JsonSerializer.Serialize<T>(data);
+		if (!this.redisOptions.UseRedis) return;
+
+		var serializedObject = JsonSerializer.Serialize<T>(data);
 
         var dateTimeNow = dateTimeProvider.UtcNow;
 
@@ -46,6 +50,8 @@ public sealed class RedisCacheService : ICacheService
 
     public async Task<T?> GetDataByKeyAsync<T>(string key) where T : class
     {
+        if (!this.redisOptions.UseRedis) return null;
+
         var serializedObject = await cache.GetStringAsync(key);
 
         if (serializedObject == null)
