@@ -115,7 +115,7 @@
 
     private void OnMakeClick(MakeDto make)
     {
-        var navArgs = new HomeToRentalCars(cars); 
+        var navArgs = new HomeToRentalCars(); 
         navArgs.SelectedMake = make.Name;
         StateContainer.AddRoutingObjectParameter(navArgs);
 
@@ -124,7 +124,7 @@
 
     private void OnMakeModelClick(string make, string model)
     {
-        var navArgs = new HomeToRentalCars(cars);
+        var navArgs = new HomeToRentalCars();
         navArgs.SelectedMake = make;
         navArgs.SelectedModel = model;
         StateContainer.AddRoutingObjectParameter(navArgs);

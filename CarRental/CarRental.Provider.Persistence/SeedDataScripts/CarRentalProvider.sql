@@ -124,7 +124,17 @@ VALUES
     (18, 2019, 2, 1, 21.015059, 52.237049, 0),
     (19, 2021, 0, 0, 21.036473, 52.245781, 0),
     (20, 2022, 1, 1, 21.045208, 52.232378, 0),
-    (21, 2020, 2, 1, 21.012229, 52.229676, 0)
+    (21, 2020, 2, 1, 21.012229, 52.229676, 0),
+    (1, 2020, 0, 0, 21.001229, 52.221676, 0), -- Manual, Benzyna
+    (1, 2021, 1, 1, 21.011229, 52.231676, 0), -- Automatyczna, Diesel
+    (1, 2019, 2, 0, 21.021229, 52.241676, 0), -- Manual, Hybryda
+    (1, 2022, 3, 1, 21.031229, 52.251676, 0), -- Automatyczna, Elektryczna
+    (1, 2018, 0, 1, 21.041229, 52.261676, 0), -- Automatyczna, Benzyna
+    (1, 2020, 1, 0, 21.051229, 52.271676, 0), -- Manual, Diesel
+    (1, 2017, 2, 1, 21.061229, 52.281676, 0), -- Automatyczna, Hybryda
+    (1, 2023, 0, 0, 21.071229, 52.291676, 0), -- Manual, Benzyna
+    (1, 2021, 3, 1, 21.081229, 52.301676, 0), -- Automatyczna, Elektryczna
+    (1, 2022, 0, 0, 21.091229, 52.311676, 0); -- Manual, Benzyna
 
 INSERT INTO Offers (CarId, GeneratedAt, ExpiresAt, RentalPricePerDay, InsurancePricePerDay, RentalId, [Key], GeneratedBy)
 VALUES

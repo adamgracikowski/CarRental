@@ -1,11 +1,14 @@
 ﻿@page "/rentalcars/{SetHashCode:int}"
 @using CarRental.Comparer.Web.PagesNavModels
+@using CarRental.Comparer.Web.Requests.CarServices
 @using CarRental.Comparer.Web.Services
 @using CarRental.Comparer.Web.Services.StateContainer
 @using CarRental.Comparer.Web.Extensions
 @using CarRental.Comparer.Web.Requests.DTOs.Cars
 @inject StateContainer StateContainer
 @inject NavigationManager Navigation
+@inject ICarService CarService
+
 
 <div style="display: flex;">
 	<div style="width: 20%; padding: 10px;">
@@ -187,13 +190,14 @@
 		SortBy = sortBy;
 	}
 
-	protected override void OnInitialized()
+	protected override async Task OnInitializedAsync()
 	{
+		var makeList = await CarService.GetAvailableCars();
 		var data = StateContainer.GetRoutingObjectParameter<HomeToRentalCars>(SetHashCode);
 
-		if (data?.Makes != null)
+		if (makeList?.Makes != null)
 		{
-			CarList = data.Makes.SelectMany(make =>
+			CarList = makeList.Makes.SelectMany(make =>
 				make.Models.SelectMany(model =>
 					model.Cars.Select(car => {
 						var carDisplayDto = new CarDisplayDto(
@@ -210,9 +214,15 @@
 					))).Distinct().ToList();
 
 			FilteredCarList = new List<CarDisplayDto>(CarList);
-			SetUpInitalFilters(data.SelectedMake, data.SelectedModel);
+
+			if (data != null)
+			{
+				SetUpInitalFilters(data.SelectedMake, data.SelectedModel);
+			}
+
 			FilterCarList();
 			UpdateAvailableFilterOptions();
+			StateHasChanged();
 		}
 	}
 
