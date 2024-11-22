@@ -5,7 +5,9 @@ namespace CarRental.Comparer.Infrastructure.Cache;
 
 public interface ICacheKeyGenerator
 {
-    string GenerateCarsKey();
+	string GenerateCarsKey();
 
-    string GenerateTokenKey(string name);
+	string GenerateTokenKey(string name);
+
+	string GenerateRentalHistoryKey(string email, string status);
 }

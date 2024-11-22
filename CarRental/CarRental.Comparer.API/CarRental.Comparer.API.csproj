@@ -1,43 +1,43 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
-  <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UserSecretsId>0a91f4bf-c6c2-47a4-98f1-18cc0a8ac826</UserSecretsId>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UserSecretsId>0a91f4bf-c6c2-47a4-98f1-18cc0a8ac826</UserSecretsId>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Ardalis.Result" Version="10.1.0" />
-    <PackageReference Include="Ardalis.Result.AspNetCore" Version="10.1.0" />
-    <PackageReference Include="Ardalis.Result.FluentValidation" Version="10.1.0" />
-    <PackageReference Include="AutoMapper" Version="13.0.1" />
-    <PackageReference Include="FluentValidation" Version="11.10.0" />
-    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
-    <PackageReference Include="Hangfire.AspNetCore" Version="1.8.15" />
-    <PackageReference Include="Hangfire.Core" Version="1.8.15" />
-    <PackageReference Include="Hangfire.SqlServer" Version="1.8.15" />
-    <PackageReference Include="MediatR" Version="12.4.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-      <PrivateAssets>all</PrivateAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0" />
-    <PackageReference Include="StackExchange.Redis" Version="2.8.16" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="Ardalis.Result" Version="10.1.0" />
+		<PackageReference Include="Ardalis.Result.AspNetCore" Version="10.1.0" />
+		<PackageReference Include="Ardalis.Result.FluentValidation" Version="10.1.0" />
+		<PackageReference Include="AutoMapper" Version="13.0.1" />
+		<PackageReference Include="FluentValidation" Version="11.10.0" />
+		<PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.15" />
+		<PackageReference Include="Hangfire.Core" Version="1.8.15" />
+		<PackageReference Include="Hangfire.SqlServer" Version="1.8.15" />
+		<PackageReference Include="MediatR" Version="12.4.1" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+			<PrivateAssets>all</PrivateAssets>
+		</PackageReference>
+		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.0" />
+		<PackageReference Include="StackExchange.Redis" Version="2.8.16" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CarRental.Comparer.Infrastructure\CarRental.Comparer.Infrastructure.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CarRental.Comparer.Infrastructure\CarRental.Comparer.Infrastructure.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="DTOs\Cars\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="DTOs\Cars\" />
+	</ItemGroup>
 
 </Project>

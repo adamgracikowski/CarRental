@@ -9,65 +9,65 @@ namespace CarRental.Comparer.API.BackgroundJobs.RentalServices;
 
 public class RentalComparerStatusCheckerService : IRentalComparerStatusCheckerService
 {
-    private readonly IRepositoryBase<RentalTransaction> rentalTransactionsRepository;
-    private readonly ILogger<RentalComparerStatusCheckerService> logger;
-    private readonly ICarComparisonService carComparisonService;
-    private readonly IDateTimeProvider dateTimeProvider;
+	private readonly IRepositoryBase<RentalTransaction> rentalTransactionsRepository;
+	private readonly ILogger<RentalComparerStatusCheckerService> logger;
+	private readonly ICarComparisonService carComparisonService;
+	private readonly IDateTimeProvider dateTimeProvider;
 
-    public RentalComparerStatusCheckerService(
-        IRepositoryBase<RentalTransaction> rentalTransactionsRepository,
-        ILogger<RentalComparerStatusCheckerService> logger,
-        ICarComparisonService carComparisonService,
-        IDateTimeProvider dateTimeProvider)
-    {
-        this.rentalTransactionsRepository = rentalTransactionsRepository;
-        this.logger = logger;
-        this.carComparisonService = carComparisonService;
-        this.dateTimeProvider = dateTimeProvider;
-    }
+	public RentalComparerStatusCheckerService(
+		IRepositoryBase<RentalTransaction> rentalTransactionsRepository,
+		ILogger<RentalComparerStatusCheckerService> logger,
+		ICarComparisonService carComparisonService,
+		IDateTimeProvider dateTimeProvider)
+	{
+		this.rentalTransactionsRepository = rentalTransactionsRepository;
+		this.logger = logger;
+		this.carComparisonService = carComparisonService;
+		this.dateTimeProvider = dateTimeProvider;
+	}
 
-    public async Task CheckAndUpdateRentalStatusAsync(
-        string providerName, 
-        int innerRentalId, 
-        int outerRentalId, 
-        string jobId, 
-        DateTime jobExpirationTime, 
-        CancellationToken cancellationToken)
-    {
-        if (dateTimeProvider.Now >= jobExpirationTime)
-        {
-            logger.LogInformation($"Job with Id = {jobId} has expired.");
-            RecurringJob.RemoveIfExists(jobId);
-            return;
-        }
-        
-        var rentalStatusDto = await carComparisonService.GetRentalStatusByIdAsync(providerName, outerRentalId, cancellationToken);
+	public async Task CheckAndUpdateRentalStatusAsync(
+		string providerName,
+		int innerRentalId,
+		int outerRentalId,
+		string jobId,
+		DateTime jobExpirationTime,
+		CancellationToken cancellationToken)
+	{
+		if (dateTimeProvider.UtcNow >= jobExpirationTime)
+		{
+			logger.LogInformation($"Job with Id = {jobId} has expired.");
+			RecurringJob.RemoveIfExists(jobId);
+			return;
+		}
 
-        if(rentalStatusDto is null)
-        {
-            logger.LogInformation($"Rental with Id = {outerRentalId} does not exist in providerDB.");
-            RecurringJob.RemoveIfExists(jobId);
-            return;
-        }
+		var rentalStatusDto = await carComparisonService.GetRentalStatusByIdAsync(providerName, outerRentalId, cancellationToken);
 
-        if(rentalStatusDto.status == RentalStatus.Active.ToString() || rentalStatusDto.status == RentalStatus.Rejected.ToString())
-        {
-            var rentalTransaction = await rentalTransactionsRepository.GetByIdAsync(innerRentalId, cancellationToken);
+		if (rentalStatusDto is null)
+		{
+			logger.LogInformation($"Rental with Id = {outerRentalId} does not exist in providerDB.");
+			RecurringJob.RemoveIfExists(jobId);
+			return;
+		}
 
-            if(rentalTransaction is null)
-            {
-                logger.LogInformation($"RentalTransaction with id = {innerRentalId} does not exist in comparerDB.");
-                RecurringJob.RemoveIfExists(jobId);
-                return;
-            }
+		if (rentalStatusDto.status == RentalStatus.Active.ToString() || rentalStatusDto.status == RentalStatus.Rejected.ToString())
+		{
+			var rentalTransaction = await rentalTransactionsRepository.GetByIdAsync(innerRentalId, cancellationToken);
 
-            rentalTransaction.Status = rentalStatusDto.status == RentalStatus.Active.ToString() ? RentalStatus.Active : RentalStatus.Rejected;
+			if (rentalTransaction is null)
+			{
+				logger.LogInformation($"RentalTransaction with id = {innerRentalId} does not exist in comparerDB.");
+				RecurringJob.RemoveIfExists(jobId);
+				return;
+			}
 
-            await rentalTransactionsRepository.UpdateAsync(rentalTransaction, cancellationToken);
-            await rentalTransactionsRepository.SaveChangesAsync(cancellationToken);
+			rentalTransaction.Status = rentalStatusDto.status == RentalStatus.Active.ToString() ? RentalStatus.Active : RentalStatus.Rejected;
 
-            RecurringJob.RemoveIfExists(jobId);
-            return;
-        }
-    }
+			await rentalTransactionsRepository.UpdateAsync(rentalTransaction, cancellationToken);
+			await rentalTransactionsRepository.SaveChangesAsync(cancellationToken);
+
+			RecurringJob.RemoveIfExists(jobId);
+			return;
+		}
+	}
 }

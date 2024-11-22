@@ -4,10 +4,11 @@
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
     <AuthorizeView>
         <Authorized>
-            <MudNavLink Href="profile" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Profile</MudNavLink>
+	        <MudNavLink Href="profile" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Profile</MudNavLink>
+	        <MudNavLink Href="rentals" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.DirectionsCar">Your rentals</MudNavLink>
         </Authorized>
         <NotAuthorized>
-            <MudNavLink Href="loginpage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Login</MudNavLink>
+	        <MudNavLink Href="loginpage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Login</MudNavLink>
         </NotAuthorized>
     </AuthorizeView>
 

@@ -1,0 +1,72 @@
+﻿@using MudBlazor
+@using CarRental.Comparer.Web.Requests.DTOs.RentalTransactions;
+
+<div class="d-flex flex-grow-1 gap-4" style="height: 60px; margin-right: 40px; margin-left: 20px">
+	<MudPaper Class="flex-none d-flex py-8" Width="30%" Elevation="0">
+		<h6>Model</h6>
+	</MudPaper>
+	<MudPaper Class="flex-1 d-flex py-8" Width="30%" Elevation="0">
+		<h6>Make</h6>
+	</MudPaper>
+	<MudPaper Class="flex-1 d-flex py-8" Elevation="0">
+		<h6>Start Date</h6>
+	</MudPaper>
+</div>
+<MudExpansionPanels>
+	@foreach (var rental in Data.RentalList)
+	{
+		<MudExpansionPanel MaxHeight="150">
+			<TitleContent>
+				<div class="d-flex flex-grow-1 gap-4" style="height: 60px">
+					<MudPaper Class="flex-none d-flex py-8" Width="30%" Elevation="0"> @rental.Model</MudPaper>
+					<MudPaper Class="flex-1 d-flex py-8" Width="30%" Elevation="0"> @rental.Make </MudPaper>
+					<MudPaper Class="flex-1 d-flex py-8" Elevation="0"> @rental.RentedAt.ToString("dd-MM-yyyy") </MudPaper>
+				</div>
+			</TitleContent>
+			<ChildContent>
+				<div class="d-flex flex-grow-1 gap-4" style="height: 100px">
+					<MudPaper Class="flex-none d-flex py-8" Width="30%" Elevation="0">
+						<div Class="d-flex" Style="flex-direction: column;">
+							<div>
+								<h6>Rental price per day:</h6>
+							</div>
+							<div>
+								<h6>Insurance price per day:</h6>
+							</div>
+							<div>
+								<h6>Return date:</h6>
+							</div>
+							
+						</div>
+					</MudPaper>
+					<MudPaper Class="flex-1 d-flex py-8" Width="30%" Elevation="0">
+						<div Class="d-flex" Style="flex-direction: column;">
+							<div>
+								<MudText Color="Color.Success">@rental.RentalPricePerDay $</MudText>
+							</div>
+							<div>
+								<MudText Color="Color.Success">@rental.InsurancePricePerDay $</MudText>
+							</div>
+							<div>
+								<h6>@(rental.ReturnedAt == null ? "-" : ((DateTime)rental.ReturnedAt).ToString("dd-MM-yyyy"))</h6>
+							</div>
+
+						</div>
+					</MudPaper>
+					<MudPaper Class="flex-1 justify-content-end d-flex py-8" Elevation="0">
+						@if (rental.Status == "Active")
+						{
+							<MudButton Variant="Variant.Filled" Color="Color.Secondary">Return</MudButton>
+						}
+					</MudPaper>
+				</div>
+			</ChildContent>
+		</MudExpansionPanel>
+	}
+
+</MudExpansionPanels>
+
+@code {
+
+	[Parameter] public RentalListDto Data { get; set; }
+}

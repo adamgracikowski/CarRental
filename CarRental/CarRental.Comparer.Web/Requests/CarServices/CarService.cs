@@ -6,30 +6,30 @@ namespace CarRental.Comparer.Web.Requests.CarServices;
 
 public class CarService : ICarService
 {
-    private readonly HttpClient httpClient;
+	private readonly HttpClient httpClient;
 
-    public CarService(HttpClient httpClient)
-    {
-        this.httpClient = httpClient;
-    }
+	public CarService(HttpClient httpClient)
+	{
+		this.httpClient = httpClient;
+	}
 
-    public async Task<MakeListDto> GetAvailableCars(CancellationToken cancellationToken = default)
-    {
-        try
-        {
-            return await this.httpClient.GetFromJsonAsync<MakeListDto>("Cars/Available") 
-                ?? new MakeListDto([]);
-        }
-        catch (Exception)
-        {
-            return new MakeListDto([]);
-        }
-    }
+	public async Task<MakeListDto> GetAvailableCars(CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			return await this.httpClient.GetFromJsonAsync<MakeListDto>("Cars/Available")
+				?? new MakeListDto([]);
+		}
+		catch (Exception)
+		{
+			return new MakeListDto([]);
+		}
+	}
 
 	public async Task<ModelDetailsDto?> GetModelDetailsAsync(
-		string makeName, 
-		string modelName, 
-		IEqualityComparer<string> equalityComparer, 
+		string makeName,
+		string modelName,
+		IEqualityComparer<string> equalityComparer,
 		CancellationToken cancellationToken = default)
 	{
 		var availableCars = await this.GetAvailableCars(cancellationToken);

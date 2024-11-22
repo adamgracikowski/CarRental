@@ -1,6 +1,7 @@
 ﻿using CarRental.Comparer.Web.Requests.CarServices;
 using CarRental.Comparer.Web.Requests.OfferServices;
 using CarRental.Comparer.Web.Requests.ProvidersServices;
+using CarRental.Comparer.Web.Requests.RentalTransactionService;
 using CarRental.Comparer.Web.Requests.UserServices;
 using CarRental.Comparer.Web.Services;
 using CarRental.Comparer.Web.Services.StateContainer;
@@ -37,19 +38,20 @@ public static class DependencyInjection
 		return services;
 	}
 
-    public static IServiceCollection ConfigureHttpClients(this IServiceCollection services, IConfiguration configuration)
-    {
+	public static IServiceCollection ConfigureHttpClients(this IServiceCollection services, IConfiguration configuration)
+	{
 		var baseUrl = configuration.GetValue<string>("ComparerApiSettings:BaseUrl");
 
-        ArgumentException.ThrowIfNullOrEmpty(baseUrl, "BaseUrl can not be null.");
+		ArgumentException.ThrowIfNullOrEmpty(baseUrl, "BaseUrl can not be null.");
 
-        services.AddHttpClient<ICarService, CarService>(client => client.BaseAddress = new Uri(baseUrl));
-        services.AddHttpClient<IUserService, UserService>(client => client.BaseAddress = new Uri(baseUrl));
-        services.AddHttpClient<IProviderService, ProviderService>(client => client.BaseAddress = new Uri(baseUrl));
-        services.AddHttpClient<IOfferService, OfferService>(client => client.BaseAddress = new Uri(baseUrl));
+		services.AddHttpClient<ICarService, CarService>(client => client.BaseAddress = new Uri(baseUrl));
+		services.AddHttpClient<IUserService, UserService>(client => client.BaseAddress = new Uri(baseUrl));
+		services.AddHttpClient<IProviderService, ProviderService>(client => client.BaseAddress = new Uri(baseUrl));
+		services.AddHttpClient<IOfferService, OfferService>(client => client.BaseAddress = new Uri(baseUrl));
+		services.AddHttpClient<IRentalTransactionService, RentalTransactionService>(client => client.BaseAddress = new Uri(baseUrl));
 
-        return services;
-    }
+		return services;
+	}
 
 	public static IServiceCollection ConfigureGoogleMaps(this IServiceCollection services, IConfiguration configuration)
 	{

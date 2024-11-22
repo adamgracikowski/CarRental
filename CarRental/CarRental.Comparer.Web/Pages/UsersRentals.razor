@@ -1,0 +1,215 @@
+@page "/rentals"
+@using MudBlazor
+@using System.Linq
+@using System.Runtime.CompilerServices
+@using CarRental.Comparer.Web.Requests.DTOs.RentalTransactions
+@using CarRental.Comparer.Web.Requests.RentalTransactionService
+@using CarRental.Comparer.Web.Pages.RentalDetails
+@using CarRental.Comparer.Web.Requests.DTOs.Pagination
+@inject IRentalTransactionService rentalTransactionService
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+
+<PageTitle>Rentals</PageTitle>
+
+<AuthorizeView>
+	<Authorized>
+		<MudTabs ActivePanelIndexChanged="OnActivePanelChangeAsync">
+
+			@{
+				var status0 = rentalStatuses[0];
+				var rentals0 = rentalListsDto[status0];
+			}
+			<MudTabPanel Text="@status0">
+				<MudPaper Class="pa-4">
+					<RentalList Data="@rentals0"></RentalList>
+					<MudPaper Class="d-flex justify-center p-4">
+						@if (rentals0.Pagination.NumberOfPages > 1)
+						{
+							<MudPagination Color="Color.Primary" Count="@(rentalListsDto[status0].Pagination.NumberOfPages)" SelectedChanged="OnPageChangedAsync0"/>
+						}
+					</MudPaper>
+				</MudPaper>
+			</MudTabPanel>
+
+			@{
+				var status1 = rentalStatuses[1];
+				var rentals1 = rentalListsDto[status1];
+			}
+			<MudTabPanel Text="@status1">
+				<MudPaper Class="pa-4">
+					<RentalList Data="rentals1"></RentalList>
+					<MudPaper Class="d-flex justify-center p-4">
+						@if (rentals1.Pagination.NumberOfPages > 1)
+						{
+							<MudPagination Color="Color.Primary" Count="@(rentalListsDto[status1].Pagination.NumberOfPages)" SelectedChanged="OnPageChangedAsync1"/>
+						}
+					</MudPaper>
+				</MudPaper>
+			</MudTabPanel>
+
+			@{
+				var status2 = rentalStatuses[2];
+				var rentals2 = rentalListsDto[status2];
+			}
+			<MudTabPanel Text="@status2">
+				<MudPaper Class="pa-4">
+					<RentalList Data="rentals2"></RentalList>
+					<MudPaper Class="d-flex justify-center p-4">
+						@if (rentals2.Pagination.NumberOfPages > 1)
+						{
+							<MudPagination Color="Color.Primary" Count="@(rentalListsDto[status2].Pagination.NumberOfPages)" SelectedChanged="OnPageChangedAsync2"/>
+						}
+					</MudPaper>
+				</MudPaper>
+			</MudTabPanel>
+
+			@{
+				var status3 = rentalStatuses[3];
+				var rentals3 = rentalListsDto[status3];
+			}
+			<MudTabPanel Text="@status3">
+				<MudPaper Class="pa-4">
+					<RentalList Data="rentals3"></RentalList>
+					<MudPaper Class="d-flex justify-center p-4">
+						@if (rentals3.Pagination.NumberOfPages > 1)
+						{
+							<MudPagination Color="Color.Primary" Count="@(rentalListsDto[status3].Pagination.NumberOfPages)" SelectedChanged="OnPageChangedAsync3"/>
+						}
+					</MudPaper>
+				</MudPaper>
+			</MudTabPanel>
+
+			@{
+				var status4 = rentalStatuses[4];
+				var rentals4 = rentalListsDto[status4];
+			}
+			<MudTabPanel Text="@status4">
+				<MudPaper Class="pa-4">
+					<RentalList Data="rentals4"></RentalList>
+					<MudPaper Class="d-flex justify-center p-4">
+						@if (rentals4.Pagination.NumberOfPages > 1)
+						{
+							<MudPagination Color="Color.Primary" Count="@(rentalListsDto[status4].Pagination.NumberOfPages)" SelectedChanged="OnPageChangedAsync4"/>
+						}
+					</MudPaper>
+				</MudPaper>
+			</MudTabPanel>
+
+
+		</MudTabs>
+	</Authorized>
+
+	<NotAuthorized>
+		<RedirectToLogin/>
+	</NotAuthorized>
+
+</AuthorizeView>
+
+@code {
+
+
+	private string[] rentalStatuses = new[] { "Active", "Unconfirmed", "Rejected", "Ready for return", "Returned" };
+	private Dictionary<string, string> apiStatusNames = new()
+	{
+		{ "Active", "Active" }, 
+		{ "Unconfirmed", "Unconfirmed" }, 
+		{ "Rejected", "Rejected" }, 
+		{"Ready for return", "ReadyForReturn"}, 
+		{"Returned", "Returned"}
+	};
+	private Dictionary<string, RentalListDto> rentalListsDto;
+
+	private string email = string.Empty;
+
+	protected override async Task OnInitializedAsync()
+	{
+		rentalListsDto = new();
+
+		foreach (var status in rentalStatuses)
+		{
+			rentalListsDto[status] = new RentalListDto(new PaginationInfoDto(1, 0, 0), new List<RentalDisplayDto>());
+		}
+
+		await InitializeUserEmailAsync();
+
+		foreach (var status in rentalStatuses)
+		{
+			var rentalListDto = await GetPaginatedRentalsByStatusAsync(status, 1);
+
+			rentalListsDto[status] = rentalListDto;
+		}
+
+		return;
+	}
+
+	private async Task InitializeUserEmailAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+
+		if (!user.Identity.IsAuthenticated)
+		{
+			return;
+		}
+
+
+		var userEmail = user.FindFirst(c => c.Type == "email")?.Value;
+
+		if (userEmail == null)
+		{
+			return;
+		}
+
+		email = userEmail;
+	}
+
+	private async Task<RentalListDto> GetPaginatedRentalsByStatusAsync(string status, int pageIndex)
+	{
+		var rentals = await rentalTransactionService.GetUsersRentalsByStatusPaginated(email, apiStatusNames[status], pageIndex);
+		if (rentals != null)
+		{
+			return rentals;
+		}
+
+		return new RentalListDto(new PaginationInfoDto(1, 0, 0), new List<RentalDisplayDto>());
+	}
+
+	private async Task OnActivePanelChangeAsync(int currentStatus)
+	{
+		foreach (var status in rentalStatuses)
+		{
+			if (rentalListsDto[status].Pagination.PageNumber != 1)
+			{
+				rentalListsDto[status] = await GetPaginatedRentalsByStatusAsync(status, 1);
+			}
+		}
+	}
+
+
+	private async Task OnPageChangedAsync0(int newPage)
+	{
+		rentalListsDto[rentalStatuses[0]] = await GetPaginatedRentalsByStatusAsync(rentalStatuses[0], newPage);
+	}
+
+	private async Task OnPageChangedAsync1(int newPage)
+	{
+		rentalListsDto[rentalStatuses[1]] = await GetPaginatedRentalsByStatusAsync(rentalStatuses[1], newPage);
+	}
+
+	private async Task OnPageChangedAsync2(int newPage)
+	{
+		rentalListsDto[rentalStatuses[2]] = await GetPaginatedRentalsByStatusAsync(rentalStatuses[2], newPage);
+	}
+
+	private async Task OnPageChangedAsync3(int newPage)
+	{
+		rentalListsDto[rentalStatuses[3]] = await GetPaginatedRentalsByStatusAsync(rentalStatuses[3], newPage);
+	}
+
+	private async Task OnPageChangedAsync4(int newPage)
+	{
+		rentalListsDto[rentalStatuses[4]] = await GetPaginatedRentalsByStatusAsync(rentalStatuses[4], newPage);
+	}
+
+}
