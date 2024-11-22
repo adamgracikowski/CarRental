@@ -101,6 +101,10 @@
         {
             _user = fetchedUser;
         }
+        else
+        {
+            Navigation.NavigateTo("/additional-info");
+        }
     }
 
     private async Task OnValidSubmit()
