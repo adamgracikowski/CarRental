@@ -10,11 +10,11 @@
 		</MudText>
 	</TitleContent>
 	<DialogContent>
-		<EditForm Model="CreateOfferDto" OnValidSubmit="Submit">
+		<EditForm EditContext="editContext">
 			<DataAnnotationsValidator />
 			<MudStack Spacing="3" Class="mt-4">
-				<MudNumericField @bind-Value="CreateOfferDto.DrivingLicenseYears" Label="Driving License Years" Required="true"/>
-				<MudNumericField @bind-Value="CreateOfferDto.Age" Label="Age" Required="true"/>
+				<MudNumericField @bind-Value="CreateOfferDto.DrivingLicenseYears" Label="Driving License Years" For="@(() => CreateOfferDto.DrivingLicenseYears)" Required="true" />
+				<MudNumericField @bind-Value="CreateOfferDto.Age" Label="Age" For="@(() => CreateOfferDto.Age)" Required="true" />
 				<MudNumericField @bind-Value="CreateOfferDto.Latitude" Label="Latitude" Required="true"/>
 				<MudNumericField @bind-Value="CreateOfferDto.Longitude" Label="Longitude" Required="true"/>
 			</MudStack>
@@ -31,9 +31,12 @@
 	private MudDialogInstance? MudDialog { get; set; }
 
 	private CreateOfferDto CreateOfferDto { get; set; } = new(2, 21, 0, 0);
+	private EditContext editContext;
 
 	protected override async Task OnInitializedAsync()
 	{
+		editContext = new EditContext(CreateOfferDto);
+
 		GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
 		if (currentPositionResult.IsSuccess)
 		{
@@ -46,7 +49,8 @@
 
 	private void Submit()
 	{
-		MudDialog?.Close(DialogResult.Ok(CreateOfferDto));
+		if (editContext.Validate()) 
+			MudDialog?.Close(DialogResult.Ok(CreateOfferDto));
 	}
 
 	private void Cancel()

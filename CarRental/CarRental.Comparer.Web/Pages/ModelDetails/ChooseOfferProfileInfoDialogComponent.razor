@@ -1,0 +1,90 @@
+﻿@using CarRental.Comparer.Web.Requests.DTOs.Users
+@using CarRental.Comparer.Web.Requests.DTOs.Offers
+@using Darnton.Blazor.DeviceInterop.Geolocation
+@using CarRental.Comparer.Web.Requests.UserServices
+@using System.ComponentModel.DataAnnotations
+
+@inject IGeolocationService GeolocationService
+@inject IUserService userService
+
+<MudDialog>
+	<TitleContent>
+		<MudText Typo="Typo.h6">
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Fill required details
+		</MudText>
+	</TitleContent>
+	<DialogContent>
+		<EditForm EditContext="editContext">
+			<DataAnnotationsValidator />
+			<MudStack Spacing="3" Class="mt-4">
+				<MudTextField @bind-Value="UserDto.Name" Label="Name" For="@(() => UserDto.Name)" Required="true" />
+				<MudTextField @bind-Value="UserDto.Lastname" Label="Last Name" For="@(() => UserDto.Lastname)" Required="true" />
+				<MudNumericField @bind-Value="UserDto.DrivingLicenseYears" For="@(() => UserDto.DrivingLicenseYears)" Label="Driving License Years" Required="true"/>
+				<MudNumericField @bind-Value="UserDto.Age" Label="Age" For="@(() => UserDto.Age)" Required="true" />
+				<MudNumericField @bind-Value="UserDto.Latitude" Label="Latitude" For="@(() => UserDto.Latitude)" Required="true" />
+				<MudNumericField @bind-Value="UserDto.Longitude" Label="Longitude" For="@(() => UserDto.Longitude)" Required="true" />
+			</MudStack>
+		</EditForm>
+	</DialogContent>
+	<DialogActions>
+		<MudButton OnClick="Submit" Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit">Submit</MudButton>
+		<MudButton OnClick="Cancel" ButtonType="ButtonType.Button">Cancel</MudButton>
+	</DialogActions>
+</MudDialog>
+
+@code {
+	[CascadingParameter] 
+	private MudDialogInstance? MudDialog { get; set; }
+
+
+	[Parameter]
+	public string Name { get; set; }
+
+	[Parameter]
+	public string LastName { get; set; }
+
+	[Parameter]
+	public string Email { get; set; }
+
+	private UserDto UserDto { get; set; }
+
+	private EditContext editContext;
+
+	protected override async Task OnInitializedAsync()
+	{
+		UserDto = new()
+			{
+				Email = Email,
+				Name = Name,
+				Lastname = LastName,
+				Age = 20,
+				DrivingLicenseYears = 2
+			};
+
+		editContext = new EditContext(UserDto);
+
+		GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
+		if (currentPositionResult.IsSuccess)
+		{
+			UserDto.Longitude = currentPositionResult.Position.Coords.Longitude;
+			UserDto.Latitude = currentPositionResult.Position.Coords.Latitude;
+		}
+
+		StateHasChanged();
+	}
+
+	private async Task Submit()
+	{
+		if (!editContext.Validate())
+			return;
+
+		await userService.CreateUserAsync(UserDto);
+		var createOfferDto = new CreateOfferDto(UserDto.DrivingLicenseYears, UserDto.Age, (decimal)UserDto.Latitude, (decimal)UserDto.Longitude);
+		MudDialog?.Close(DialogResult.Ok(createOfferDto));
+	}
+
+	private void Cancel()
+	{
+		MudDialog?.Cancel();
+	}
+}

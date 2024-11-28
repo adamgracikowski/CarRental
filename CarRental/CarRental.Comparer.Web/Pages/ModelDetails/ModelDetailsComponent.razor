@@ -243,14 +243,24 @@ else
 		{
 			var userDto = await UserService.GetUserByEmailAsync(UserEmailAddress);
 
-			if (userDto is null) return false;
+			if (userDto is null)
+			{
+				var dialogResult = await OpenFillInProfileInfoDialogAsync(UserEmailAddress);
 
-			CreateOfferDto = new CreateOfferDto(
-				drivingLicenseYears: userDto.DrivingLicenseYears,
-				age: userDto.Age,
-				latitude: (decimal)userDto.Latitude,
-				longitude: (decimal)userDto.Longitude
-			);
+				if (dialogResult is null || dialogResult.Canceled)
+				{
+					return false;
+				}
+			}
+			else
+			{
+				CreateOfferDto = new CreateOfferDto(
+					drivingLicenseYears: userDto.DrivingLicenseYears,
+					age: userDto.Age,
+					latitude: (decimal)userDto.Latitude,
+					longitude: (decimal)userDto.Longitude
+				);	
+			}
 
 			GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
 
@@ -424,6 +434,40 @@ else
 		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
 
 		var dialog = await DialogService.ShowAsync<ChooseOfferDialogComponent>("User details", options);
+		var result = await dialog.Result;
+
+		if (result is not null && !result.Canceled)
+		{
+			CreateOfferDto = (CreateOfferDto)result.Data!;
+		}
+
+		return result;
+	}
+
+	private async Task<DialogResult?> OpenFillInProfileInfoDialogAsync(string email)
+	{
+		var nameAndLastName = AuthenticationState?.User?.Claims.FirstOrDefault(c => c.Type == "name")?.Value.Split();
+
+		var name = String.Empty;
+		var lastName = String.Empty;
+
+		if(nameAndLastName != null)
+		{
+			name = nameAndLastName.Length > 0 ? nameAndLastName[0] : String.Empty;
+			lastName = nameAndLastName.Length > 1 ? nameAndLastName[1] : String.Empty;
+		}
+		
+
+		var parameters = new DialogParameters
+		{
+			{ "Email", email },
+			{ "Name", name },
+			{ "LastName", lastName }
+		};
+
+		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+
+		var dialog = await DialogService.ShowAsync<ChooseOfferProfileInfoDialogComponent>("User details", parameters, options);
 		var result = await dialog.Result;
 
 		if (result is not null && !result.Canceled)
