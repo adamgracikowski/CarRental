@@ -12,7 +12,7 @@ public interface ICarComparisonService
 
     Task<OfferDto?> CreateOfferAsync(string providerName, int carsId, CreateOfferDto createOfferDto, CancellationToken cancellationToken);
 
-    Task<RentalIdDto?> ChooseOfferAsync(string providerName, int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken);
+    Task<RentalIdWithDateTimesDto?> ChooseOfferAsync(string providerName, int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken);
 
     Task<RentalStatusDto?> GetRentalStatusByIdAsync(string providerName, string rentalId, CancellationToken cancellationToken);
 }

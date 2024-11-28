@@ -139,7 +139,7 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
 
         this.logger.LogInformation($"Scheduled status check in {delay.TotalMinutes} minutes.");
 
-        var rentalDto = this.mapper.Map<RentalDto>(rental);
+        var rentalDto = new RentalDto(rental.Id, rental.Offer.GeneratedAt, rental.Offer.ExpiresAt);
 
         return Result<RentalDto>.Created(rentalDto);
     }

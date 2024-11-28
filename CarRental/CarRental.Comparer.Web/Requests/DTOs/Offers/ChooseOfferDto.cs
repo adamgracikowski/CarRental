@@ -12,7 +12,5 @@ public sealed record ChooseOfferDto(
 	int NumerOfDoors,
 	int NumberOfSeats,
 	decimal RentalPricePerDay,
-	decimal InsurancePricePerDay,
-	DateTime RentedAt,
-	DateTime ExpiresAt
+	decimal InsurancePricePerDay
 );

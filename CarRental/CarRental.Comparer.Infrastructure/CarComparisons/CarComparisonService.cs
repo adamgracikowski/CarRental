@@ -77,15 +77,15 @@ public sealed class CarComparisonService : ICarComparisonService
     }
 
 
-    public async Task<RentalIdDto?> ChooseOfferAsync(string providerName, int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken)
+    public async Task<RentalIdWithDateTimesDto?> ChooseOfferAsync(string providerName, int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken)
     {
         var carProviderService = GetCarProviderServiceByName(providerName);
 
         if (carProviderService is null) return null;
 
-        var rentalIdDto = await carProviderService.ChooseOfferAsync(offerId, providerChooseOfferDto, cancellationToken);
+        var rentalIdWithDateTimesDto = await carProviderService.ChooseOfferAsync(offerId, providerChooseOfferDto, cancellationToken);
 
-        return rentalIdDto; 
+        return rentalIdWithDateTimesDto; 
     }
 
     public async Task<RentalStatusDto?> GetRentalStatusByIdAsync(string providerName, string rentalId, CancellationToken cancellationToken)

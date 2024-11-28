@@ -5,4 +5,4 @@ using MediatR;
 
 namespace CarRental.Comparer.API.Requests.Providers.Commands;
 
-public sealed record ChooseOfferCommand(int id, int offerId, ChooseOfferDto chooseOfferDto) : IRequest<Result<RentalTransactionIdDto>>;
+public sealed record ChooseOfferCommand(int id, int offerId, ChooseOfferDto chooseOfferDto) : IRequest<Result<RentalTransactionIdWithDateTimesDto>>;

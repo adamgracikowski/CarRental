@@ -71,7 +71,7 @@ public sealed class InternalCarProviderService : ICarProviderService
         }
     }
 
-    public async Task<RentalIdDto?> ChooseOfferAsync(int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken)
+    public async Task<RentalIdWithDateTimesDto?> ChooseOfferAsync(int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken)
     {
         try
         {
@@ -79,16 +79,20 @@ public sealed class InternalCarProviderService : ICarProviderService
 
             if (response.IsSuccessStatusCode)
             {
-                var internalRentalIdDto = await response.Content.ReadFromJsonAsync<InternalRentalIdDto>(cancellationToken);
+                var internalRentalIdWithDateTimesDto = await response.Content.ReadFromJsonAsync<InternalRentalIdWithDateTimesDto>(cancellationToken);
 
-                if(internalRentalIdDto is null)
+                if(internalRentalIdWithDateTimesDto is null)
                 {
                     logger.LogWarning("internal id is null");
                     return null;
                 }
 
-                var rentalIdDto = new RentalIdDto(internalRentalIdDto.id.ToString());
-                return rentalIdDto;
+                var rentalIdWithDateTimesDto = new RentalIdWithDateTimesDto(
+                    internalRentalIdWithDateTimesDto.id.ToString(),
+                    internalRentalIdWithDateTimesDto.GeneratedAt,
+                    internalRentalIdWithDateTimesDto.ExpiresAt);
+
+                return rentalIdWithDateTimesDto;
             }
             else
             {

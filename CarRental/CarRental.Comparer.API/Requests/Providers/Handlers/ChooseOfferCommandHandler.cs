@@ -16,7 +16,7 @@ using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 
 namespace CarRental.Comparer.API.Requests.Providers.Handlers;
 
-public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Result<RentalTransactionIdDto>>
+public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Result<RentalTransactionIdWithDateTimesDto>>
 {
     private readonly IRepositoryBase<Provider> providersRepository;
     private readonly ILogger<ChooseOfferCommandHandler> logger;
@@ -49,13 +49,13 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
         this.rentalComparerStatusCheckerService = rentalComparerStatusCheckerService;
     }
 
-    public async Task<Result<RentalTransactionIdDto>> Handle(ChooseOfferCommand request, CancellationToken cancellationToken)
+    public async Task<Result<RentalTransactionIdWithDateTimesDto>> Handle(ChooseOfferCommand request, CancellationToken cancellationToken)
     {
         var validation = await validator.ValidateAsync(request.chooseOfferDto, cancellationToken);
 
         if (!validation.IsValid)
         {
-            return Result<RentalTransactionIdDto>.Invalid(validation.AsErrors());
+            return Result<RentalTransactionIdWithDateTimesDto>.Invalid(validation.AsErrors());
         }
 
         var provider = await providersRepository.GetByIdAsync(request.id, cancellationToken);
@@ -63,7 +63,7 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
         if (provider?.Name is null)
         {
             logger.LogWarning($"Provider with ID {request.id} not found.");
-            return Result<RentalTransactionIdDto>.NotFound();
+            return Result<RentalTransactionIdWithDateTimesDto>.NotFound();
         }
 
         var userSpecification = new UserByEmailSpecification(request.chooseOfferDto.EmailAddress);
@@ -73,7 +73,7 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
         if (user is null)
         {
             logger.LogWarning($"User with email {request.chooseOfferDto.EmailAddress} not found.");
-            return Result<RentalTransactionIdDto>.NotFound();
+            return Result<RentalTransactionIdWithDateTimesDto>.NotFound();
         }
 
         var providerChooseOfferDto = new ProviderChooseOfferDto(
@@ -82,11 +82,15 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
             user.Lastname
         );
 
-        var outerRentalIdDto = await carComparisonService.ChooseOfferAsync(provider.Name, request.offerId, providerChooseOfferDto, cancellationToken);
+        var outerRentalIdWithDateTimesDto = await carComparisonService.ChooseOfferAsync(
+            provider.Name, 
+            request.offerId, 
+            providerChooseOfferDto, 
+            cancellationToken);
 
-        if (outerRentalIdDto is null)
+        if (outerRentalIdWithDateTimesDto is null)
         {
-            return Result<RentalTransactionIdDto>.Error();
+            return Result<RentalTransactionIdWithDateTimesDto>.Error();
         }
 
         var carDetails = new CarDetails
@@ -110,16 +114,19 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
             User = user,
             Provider = provider,
             CarDetails = carDetails,
-            RentalOuterId = outerRentalIdDto.id,
+            RentalOuterId = outerRentalIdWithDateTimesDto.id,
             RentalPricePerDay = request.chooseOfferDto.RentalPricePerDay,
             InsurancePricePerDay = request.chooseOfferDto.InsurancePricePerDay,
-            RentedAt = request.chooseOfferDto.RentedAt,
+            RentedAt = outerRentalIdWithDateTimesDto.GeneratedAt,
         };
 
         await rentalTransactionsRepository.AddAsync(rentalTransaction, cancellationToken);
         await rentalTransactionsRepository.SaveChangesAsync(cancellationToken);
 
-        var comparerRentalTransactionIdDto = new RentalTransactionIdDto(rentalTransaction.Id);
+        var comparerRentalTransactionIdDto = new RentalTransactionIdWithDateTimesDto(
+            rentalTransaction.Id, 
+            rentalTransaction.RentedAt, 
+            outerRentalIdWithDateTimesDto.ExpiresAt);
 
         var recurringJobId = $"RentalStatusChecker-{rentalTransaction.Id}";
 
@@ -127,13 +134,13 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
             recurringJobId,
             () => rentalComparerStatusCheckerService.CheckAndUpdateRentalStatusAsync(
                 provider.Name, 
-                comparerRentalTransactionIdDto.id,
-                outerRentalIdDto.id,
+                comparerRentalTransactionIdDto.Id,
+                outerRentalIdWithDateTimesDto.id,
                 recurringJobId,
-                request.chooseOfferDto.ExpiresAt.AddMinutes(5),
+                outerRentalIdWithDateTimesDto.ExpiresAt.AddMinutes(5),
                 cancellationToken), 
             Cron.Minutely);
 
-        return Result<RentalTransactionIdDto>.Success(comparerRentalTransactionIdDto);
+        return Result<RentalTransactionIdWithDateTimesDto>.Success(comparerRentalTransactionIdDto);
     }
 }

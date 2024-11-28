@@ -39,7 +39,7 @@ public sealed class OfferService : IOfferService
 		}
 	}
 
-	public async Task<RentalTransactionIdDto?> ChooseOfferAsync(
+	public async Task<RentalTransactionIdWithDateTimesDto?> ChooseOfferAsync(
 		int providerId,
 		string offerId,
 		ChooseOfferDto chooseOfferDto,
@@ -55,9 +55,9 @@ public sealed class OfferService : IOfferService
 				return null;
 			}
 
-			var rentalIdDto = await response.Content.ReadFromJsonAsync<RentalTransactionIdDto>(cancellationToken);
+			var rentalIdWithDateTimesDto = await response.Content.ReadFromJsonAsync<RentalTransactionIdWithDateTimesDto>(cancellationToken);
 
-			return rentalIdDto;
+			return rentalIdWithDateTimesDto;
 		}
 		catch (Exception)
 		{

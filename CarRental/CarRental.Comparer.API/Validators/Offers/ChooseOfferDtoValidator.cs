@@ -25,10 +25,6 @@ public sealed class ChooseOfferDtoValidator : AbstractValidator<ChooseOfferDto>
             .GreaterThanOrEqualTo(0)
             .WithMessage("{PropertyName} must be greater than or equal to 0.");
 
-        RuleFor(x => x.RentedAt)
-            .NotEmpty()
-            .WithMessage("{PropertyName} is required.");
-
         RuleFor(x => x.CarOuterId)
             .NotEmpty()
             .WithMessage("{PropertyName} is required.");
@@ -42,10 +38,6 @@ public sealed class ChooseOfferDtoValidator : AbstractValidator<ChooseOfferDto>
             .WithMessage("{PropertyName} is required.");
 
         RuleFor(x => x.YearOfProduction)
-            .NotEmpty()
-            .WithMessage("{PropertyName} is required.");
-
-        RuleFor(x => x.ExpiresAt)
             .NotEmpty()
             .WithMessage("{PropertyName} is required.");
     }

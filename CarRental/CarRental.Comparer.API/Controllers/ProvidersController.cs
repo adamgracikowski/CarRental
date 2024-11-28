@@ -36,7 +36,7 @@ public sealed class ProvidersController : ControllerBase
 
     [TranslateResultToActionResult]
     [HttpPost("{id}/Offers/{offerId}")]
-    public async Task<Result<RentalTransactionIdDto>> ChooseOffer(int id, int offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken)
+    public async Task<Result<RentalTransactionIdWithDateTimesDto>> ChooseOffer(int id, int offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken)
     {
         var command = new ChooseOfferCommand(id, offerId, chooseOfferDto);
 
