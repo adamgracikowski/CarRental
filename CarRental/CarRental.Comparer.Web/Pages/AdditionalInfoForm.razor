@@ -17,7 +17,7 @@
             Please provide the additional information to complete your registration.
         </MudText>
 
-        <EditForm Model="user" OnValidSubmit="OnValidSubmit">
+        <EditForm Model="user" OnValidSubmit="OnValidSubmitAsync">
             <DataAnnotationsValidator/>
             <MudStack Spacing="3" Class="mt-4">
                 <MudTextField Label="First Name" @bind-Value="user.Name" For="@(() => user.Name)" Required="true" />
@@ -25,8 +25,24 @@
                 <MudTextField Label="Email" @bind-Value="user.Email" Required="true" For="@(() => user.Email)" Disabled="true" />
                 <MudNumericField Label="Age" @bind-Value="user.Age" Required="true" For="@(() => user.Age)" />
                 <MudNumericField Label="Driving License Years" @bind-Value="user.DrivingLicenseYears" For="@(() => user.DrivingLicenseYears)" Required="true" />
-                <MudTextField Label="Longitude" @bind-Value="user.Longitude" For="@(() => user.Longitude)" />
-                <MudTextField Label="Latitude" @bind-Value="user.Latitude" For="@(() => user.Latitude)" />
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudTextField Label="Longitude"
+                                  @bind-Value="user.Longitude"
+                                  For="@(() => user.Longitude)"
+                                  Required="true"
+                                  Class="flex-grow-1" />
+
+                    <MudTextField Label="Latitude"
+                                  @bind-Value="user.Latitude"
+                                  For="@(() => user.Latitude)"
+                                  Required="true"
+                                  Class="flex-grow-1" />
+
+                    <MudIconButton Icon="@Icons.Material.Filled.MyLocation"
+                                   Color="Color.Primary"
+                                   OnClick="GetCurrentLocationAsync"
+                                   Class="ml-2" />
+                </MudStack>
 
                 <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" FullWidth>
                     Submit
@@ -60,24 +76,28 @@
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var userClaims = authState.User;
 
-        user.Email = userClaims?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+        var email = userClaims?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
 
-        var doesUserExist = await SetUserByEmail(user.Email);
-
-        if(doesUserExist)
+        if (email != null)
         {
-            Navigation.NavigateTo("/profile");
-            return;
+            user.Email = email;
+
+            var doesUserExist = await SetUserByEmailAsync(user.Email);
+
+            if (doesUserExist)
+            {
+                Navigation.NavigateTo("/profile");
+                return;
+            }
         }
 
         var nameAndLastName = userClaims?.Claims.FirstOrDefault(c => c.Type == "name")?.Value.Split();
-        if(nameAndLastName == null)
+        if(nameAndLastName != null && nameAndLastName.Count() != 0)
         {
-            Console.WriteLine("name and last name null");
+            user.Name = nameAndLastName[0];
+            if(nameAndLastName.Count() > 1)
+                user.Lastname = nameAndLastName[1];
         }
-        user.Name = nameAndLastName[0];
-        if(nameAndLastName.Count() > 1)
-            user.Lastname = nameAndLastName[1];
 
         GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
         if (currentPositionResult.IsSuccess)
@@ -87,7 +107,17 @@
         }
     }
 
-    private async Task<bool> SetUserByEmail(string email)
+    private async Task GetCurrentLocationAsync()
+    {
+        GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
+        if (currentPositionResult.IsSuccess)
+        {
+            user.Longitude = currentPositionResult.Position.Coords.Longitude;
+            user.Latitude = currentPositionResult.Position.Coords.Latitude;
+        }
+    }
+
+    private async Task<bool> SetUserByEmailAsync(string email)
     {
         var fetchedUser = await UserService.GetUserByEmailAsync(email);
 
@@ -101,7 +131,7 @@
         }
     }
 
-    private async Task OnValidSubmit(EditContext context)
+    private async Task OnValidSubmitAsync(EditContext context)
     {
         success = true;
         StateHasChanged();

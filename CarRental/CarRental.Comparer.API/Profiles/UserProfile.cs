@@ -8,8 +8,8 @@ public sealed class UserProfile : Profile
 {
     public UserProfile()
     {
-        CreateMap<CreateUserDto, User>()
+        CreateMap<UserDto, User>()
             .ReverseMap();
-        CreateMap<User, UserDto>();
+        CreateMap<User, UserIdDto>();
     }
 }

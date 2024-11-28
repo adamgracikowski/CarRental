@@ -2,11 +2,13 @@
 @using CarRental.Comparer.Web.Dialogs
 @using CarRental.Comparer.Web.Requests.DTOs.Users
 @using CarRental.Comparer.Web.Requests.UserServices
+@using Darnton.Blazor.DeviceInterop.Geolocation
+
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IUserService UserService
 @inject NavigationManager Navigation
-@inject SignOutSessionStateManager SignOutManager
 @inject IDialogService DialogService
+@inject IGeolocationService GeolocationService
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-5">
     <MudPaper Elevation="4" Class="p-4">
@@ -18,13 +20,41 @@
         <MudStack Spacing="3" Class="mt-4">
             @if (_user != null)
             {
-                <EditForm Model="_user" OnValidSubmit="OnValidSubmit">
+                <EditForm Model="_user" OnValidSubmit="OnValidSubmitAsync">
                     <DataAnnotationsValidator />
                     <MudTextField Label="Email" @bind-Value="_user.Email" Required="true" For="@(() => _user.Email)" Disabled="true" />
+                    <MudDivider Class="my-2" />
                     <MudTextField Label="First Name" @bind-Value="_user.Name" For="@(() => _user.Name)" Required="true" Disabled="!isEditMode" />
+                    <MudDivider Class="my-2" />
                     <MudTextField Label="Last Name" @bind-Value="_user.Lastname" For="@(() => _user.Lastname)" Required="true" Disabled="!isEditMode" />
+                    <MudDivider Class="my-2" />
                     <MudNumericField Label="Age" @bind-Value="_user.Age" Required="true" For="@(() => _user.Age)" Disabled="!isEditMode" />
+                    <MudDivider Class="my-2" />
                     <MudNumericField Label="Driving License Years" @bind-Value="_user.DrivingLicenseYears" For="@(() => _user.DrivingLicenseYears)" Required="true" Disabled="!isEditMode" />
+                    <MudDivider Class="my-2" />
+                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                        <MudTextField Label="Longitude"
+                                      @bind-Value="_user.Longitude"
+                                      For="@(() => _user.Longitude)"
+                                      Disabled="!isEditMode"
+                                      Required="true"
+                                      Class="flex-grow-1" />
+
+                        <MudTextField Label="Latitude"
+                                      @bind-Value="_user.Latitude"
+                                      For="@(() => _user.Latitude)"
+                                      Disabled="!isEditMode"
+                                      Required="true"
+                                      Class="flex-grow-1" />
+
+                        <MudIconButton Icon="@Icons.Material.Filled.MyLocation"
+                                       Color="Color.Primary"
+                                       OnClick="GetCurrentLocationAsync"
+                                       Disabled="!isEditMode"
+                                       Class="ml-2" />
+                    </MudStack>
+
+                    <MudDivider Class="my-4" />
 
                     <MudStack Direction="Direction.Row" Spacing="2" JustifyContent="JustifyContent.SpaceBetween">
                         <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ToggleEditMode" FullWidth>
@@ -45,7 +75,7 @@
                             </MudButton>
                         }
 
-                        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteUser" FullWidth>
+                        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteUserAsync" FullWidth>
                             Delete User
                         </MudButton>
                     </MudStack>
@@ -95,35 +125,39 @@
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var email = authState.User?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
-
-        var fetchedUser = await UserService.GetUserByEmailAsync(email);
-        if (fetchedUser != null)
+        if(email != null)
         {
-            _user = fetchedUser;
-        }
-        else
-        {
-            Navigation.NavigateTo("/additional-info");
-        }
-    }
-
-    private async Task OnValidSubmit()
-    {
-        validationSuccess = true;
-        var deleteUserSuccess = await UserService.DeleteUserByEmailAsync(_user.Email);
-
-        if (deleteUserSuccess)
-        {
-            var createUserSuccess = await UserService.CreateUserAsync(_user);
-
-            if (createUserSuccess)
+            var fetchedUser = await UserService.GetUserByEmailAsync(email);
+            if (fetchedUser != null)
             {
-                Navigation.NavigateTo("/profile");
+                _user = fetchedUser;
             }
             else
             {
-                Navigation.NavigateTo("/");
+                Navigation.NavigateTo("/additional-info");
             }
+        }
+    }
+
+    private async Task GetCurrentLocationAsync()
+    {
+        GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
+        if (currentPositionResult.IsSuccess)
+        {
+            _user.Longitude = currentPositionResult.Position.Coords.Longitude;
+            _user.Latitude = currentPositionResult.Position.Coords.Latitude;
+        }
+    }
+
+    private async Task OnValidSubmitAsync()
+    {
+        validationSuccess = true;
+        var editUserSuccess = await UserService.EditUserByEmailAsync(_user.Email, _user);
+
+        if (editUserSuccess)
+        {
+            //StateHasChanged();
+            Navigation.NavigateTo("/profile"); // for tests causes api get
         }
         else
         {
@@ -143,7 +177,7 @@
         else if (!isEditMode)
         {
             _user = CloneUser(_backupUser);
-            OnInitializedAsync();
+            StateHasChanged();
         }
     }
 
@@ -155,7 +189,9 @@
                 Lastname = source.Lastname,
                 Email = source.Email,
                 Age = source.Age,
-                DrivingLicenseYears = source.DrivingLicenseYears
+                DrivingLicenseYears = source.DrivingLicenseYears,
+                Longitude = source.Longitude,
+                Latitude = source.Latitude
             };
     }
 
@@ -163,13 +199,13 @@
     {
         var options = new DialogOptions { CloseOnEscapeKey = true };
 
-        var dialog = DialogService.Show<DeleteUserDialog>("Title of the dialog", options);
+        var dialog = DialogService.Show<DeleteUserDialog>("Delete Confirmation", options);
         var result = await dialog.Result;
 
-        return !result.Canceled;
+        return !result!.Canceled;
     }
 
-    private async Task DeleteUser()
+    private async Task DeleteUserAsync()
     {
         var confirmation = await OpenDialogAsync();
         if (confirmation == false)
@@ -183,8 +219,7 @@
             if (deleteUserSuccess)
             {
                 isDeleted = true;
-                await SignOutManager.SetSignOutState();
-                Navigation.NavigateTo("authentication/logout");
+                Navigation.NavigateToLogout("authentication/logout");
             }
             else
             {

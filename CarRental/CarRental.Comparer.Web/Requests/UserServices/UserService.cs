@@ -50,4 +50,17 @@ public class UserService : IUserService
             return false;
         }
     }
+
+    public async Task<bool> EditUserByEmailAsync(string email, UserDto user)
+    {
+        try
+        {
+            var response = await _httpClient.PutAsJsonAsync<UserDto>($"{Users}/{email}",user);
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+    }
 }

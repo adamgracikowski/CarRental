@@ -95,7 +95,7 @@
 </MudContainer>
 @code 
 {
-    protected override async void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         var makeList = await CarService.GetAvailableCars();
         cars = makeList.Makes;
@@ -103,15 +103,15 @@
         StateHasChanged();
     }
 
-    public string Search { get; set; }
+    public string? Search { get; set; }
 
     private string Error = "error";
 
-    private string Make { get; set; } 
+    private string? Make { get; set; } 
 
-    private string Model { get; set; }
+    private string? Model { get; set; }
 
-    private ICollection<MakeDto> cars {get; set;}
+    private ICollection<MakeDto>? cars {get; set;}
 
     private void OnMakeClick(MakeDto make)
     {
@@ -122,11 +122,20 @@
         NavigationManager.NavigateTo($"rentalcars/{navArgs.GetHashCode()}");
     }
 
-    private void OnMakeModelClick(string make, string model)
+    private void OnMakeModelClick(string? make, string? model)
     {
         var navArgs = new HomeToRentalCars();
-        navArgs.SelectedMake = make;
-        navArgs.SelectedModel = model;
+
+        if(make != null )
+        {
+            navArgs.SelectedMake = make;
+        }
+
+        if(model != null)
+        {
+            navArgs.SelectedModel = model;
+        }
+
         StateContainer.AddRoutingObjectParameter(navArgs);
 
         NavigationManager.NavigateTo($"rentalcars/{navArgs.GetHashCode()}");

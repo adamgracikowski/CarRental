@@ -9,7 +9,7 @@ using MediatR;
 
 namespace CarRental.Comparer.API.Requests.Users.Handlers;
 
-public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<UserDto>>
+public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Result<UserIdDto>>
 {
     private readonly IRepositoryBase<User> usersRepository;
     private readonly IMapper mapper;
@@ -22,7 +22,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
         this.logger = logger;
     }
 
-    public async Task<Result<UserDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
+    public async Task<Result<UserIdDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
         var user = this.mapper.Map<User>(request.CreateUserDto);
 
@@ -32,13 +32,13 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
 
         if (userInDatabase != null)
         {
-            return Result<UserDto>.Conflict();
+            return Result<UserIdDto>.Conflict();
         }
 
         await this.usersRepository.AddAsync(user, cancellationToken);
 
-        var userDto = this.mapper.Map<UserDto>(user);
+        var userDto = this.mapper.Map<UserIdDto>(user);
 
-        return Result<UserDto>.Created(userDto);
+        return Result<UserIdDto>.Created(userDto);
     }
 }

@@ -9,7 +9,7 @@ using MediatR;
 
 namespace CarRental.Comparer.API.Requests.Users.Handlers;
 
-public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, Result<CreateUserDto>>
+public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, Result<UserDto>>
 {
     private readonly IRepositoryBase<User> usersRepository;
     private readonly IMapper mapper;
@@ -22,7 +22,7 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
         this.mapper = mapper;
     }
 
-    public async Task<Result<CreateUserDto>> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
+    public async Task<Result<UserDto>> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
     {
         var specification = new UserByEmailSpecification(request.email);
 
@@ -30,11 +30,11 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
 
         if (user == null)
         {
-            return Result<CreateUserDto>.NotFound();
+            return Result<UserDto>.NotFound();
         }
 
-        var createUserDto = this.mapper.Map<CreateUserDto>(user);
+        var createUserDto = this.mapper.Map<UserDto>(user);
 
-        return Result<CreateUserDto>.Success(createUserDto);
+        return Result<UserDto>.Success(createUserDto);
     }
 }

@@ -21,7 +21,7 @@ public sealed class UsersController : ControllerBase
 
     [TranslateResultToActionResult]
     [HttpPost]
-    public async Task<Result<UserDto>> CreateUser(CreateUserDto createUserDto, CancellationToken cancellationToken)
+    public async Task<Result<UserIdDto>> CreateUser(UserDto createUserDto, CancellationToken cancellationToken)
     {
         var command = new CreateUserCommand(createUserDto);
 
@@ -32,7 +32,7 @@ public sealed class UsersController : ControllerBase
 
     [TranslateResultToActionResult]
     [HttpGet("{email}")]
-    public async Task<Result<CreateUserDto>> GetUser(string email, CancellationToken cancellationToken)
+    public async Task<Result<UserDto>> GetUser(string email, CancellationToken cancellationToken)
     {
         var query = new GetUserByEmailQuery(email);
 
@@ -52,4 +52,14 @@ public sealed class UsersController : ControllerBase
         return response;
     }
 
+    [TranslateResultToActionResult]
+    [HttpPut("{email}")]
+    public async Task<Result> EditUserByEmail(string email, UserDto createUserDto, CancellationToken cancellationToken)
+    {
+        var command = new EditUserByEmailCommand(email, createUserDto);
+
+        var response = await this.mediator.Send(command, cancellationToken);
+
+        return response;
+    }
 }

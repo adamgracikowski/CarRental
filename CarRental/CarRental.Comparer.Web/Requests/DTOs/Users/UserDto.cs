@@ -32,8 +32,14 @@ public sealed class UserDto
     public int DrivingLicenseYears { get; set; }
 
     [Required(ErrorMessage = UserDtoValidationConstants.PositionConstants.PositionIsRequired)]
+    [Range(UserDtoValidationConstants.PositionConstants.LongtitudeMin,
+        UserDtoValidationConstants.PositionConstants.LongtitudeMax, 
+        ErrorMessage = UserDtoValidationConstants.PositionConstants.InvalidLongitude)]
     public double Longitude { get; set; }
 
     [Required(ErrorMessage = UserDtoValidationConstants.PositionConstants.PositionIsRequired)]
+    [Range(UserDtoValidationConstants.PositionConstants.LatitudeMin,
+        UserDtoValidationConstants.PositionConstants.LatitudeMax, 
+        ErrorMessage = UserDtoValidationConstants.PositionConstants.InvalidLatitude)]
     public double Latitude { get; set; }
 }

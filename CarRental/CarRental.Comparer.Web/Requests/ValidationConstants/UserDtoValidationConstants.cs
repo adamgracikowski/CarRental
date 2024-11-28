@@ -40,6 +40,14 @@ public static class UserDtoValidationConstants
 
     public static class PositionConstants
     {
+        public const int LongtitudeMax = 180;
+        public const int LongtitudeMin = -180;
+
+        public const int LatitudeMax = 90;
+        public const int LatitudeMin = -90;
+
         public const string PositionIsRequired = "Position is required.";
+        public const string InvalidLongitude = "Longitude must be between -180 and 180.";
+        public const string InvalidLatitude = "Latitude must be between -90 and 90.";
     }
 }

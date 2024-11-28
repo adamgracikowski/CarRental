@@ -1,7 +1,6 @@
 ﻿@using CarRental.Comparer.Web.Services
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
-@inject SignOutSessionStateManager SignOutManager
 @inject ThemeService ThemeService
 
 <MudThemeProvider Theme="@ThemeService.CustomTheme" IsDarkMode="_isDarkMode" />
@@ -54,22 +53,18 @@
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
 
-    [CascadingParameter]
-    private Task<AuthenticationState> authenticationStateTask { get; set; }
-
     protected override void OnInitialized()
     {
         base.OnInitialized();
     }
 
-    private async Task LogIn()
+    private void LogIn()
     {
         NavigationManager.NavigateTo("loginpage");
     }
-    private async Task SignOut()
+    private void SignOut()
     {
-        await SignOutManager.SetSignOutState();
-        NavigationManager.NavigateTo("authentication/logout");
+        NavigationManager.NavigateToLogout("authentication/logout");
     }
 
     private void DrawerToggle()
