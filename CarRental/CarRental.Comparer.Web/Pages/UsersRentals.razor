@@ -118,7 +118,7 @@
 		{"Ready for return", "ReadyForReturn"}, 
 		{"Returned", "Returned"}
 	};
-	private Dictionary<string, RentalListDto> rentalListsDto;
+	private Dictionary<string, RentalTransactionListDto> rentalListsDto;
 
 	private string email = string.Empty;
 
@@ -128,7 +128,7 @@
 
 		foreach (var status in rentalStatuses)
 		{
-			rentalListsDto[status] = new RentalListDto(new PaginationInfoDto(1, 0, 0), new List<RentalDisplayDto>());
+			rentalListsDto[status] = new RentalTransactionListDto(new PaginationInfoDto(1, 0, 0), new List<RentalTransactionDisplayDto>());
 		}
 
 		await InitializeUserEmailAsync();
@@ -164,7 +164,7 @@
 		email = userEmail;
 	}
 
-	private async Task<RentalListDto> GetPaginatedRentalsByStatusAsync(string status, int pageIndex)
+	private async Task<RentalTransactionListDto> GetPaginatedRentalsByStatusAsync(string status, int pageIndex)
 	{
 		var rentals = await rentalTransactionService.GetUsersRentalsByStatusPaginated(email, apiStatusNames[status], pageIndex);
 		if (rentals != null)
@@ -172,7 +172,7 @@
 			return rentals;
 		}
 
-		return new RentalListDto(new PaginationInfoDto(1, 0, 0), new List<RentalDisplayDto>());
+		return new RentalTransactionListDto(new PaginationInfoDto(1, 0, 0), new List<RentalTransactionDisplayDto>());
 	}
 
 	private async Task OnActivePanelChangeAsync(int currentStatus)

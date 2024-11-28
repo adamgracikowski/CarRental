@@ -5,6 +5,7 @@ using CarRental.Comparer.API.Requests.Providers.Queries;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Providers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +36,7 @@ public sealed class ProvidersController : ControllerBase
 
     [TranslateResultToActionResult]
     [HttpPost("{id}/Offers/{offerId}")]
-    public async Task<Result<RentalIdDto>> ChooseOffer(int id, int offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken)
+    public async Task<Result<RentalTransactionIdDto>> ChooseOffer(int id, int offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken)
     {
         var command = new ChooseOfferCommand(id, offerId, chooseOfferDto);
 

@@ -1,6 +1,7 @@
 ﻿using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 
 namespace CarRental.Comparer.Infrastructure.CarProviders;
@@ -15,5 +16,5 @@ public interface ICarProviderService
 
     Task<RentalIdDto?> ChooseOfferAsync(int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken);
 
-    Task<RentalStatusDto?> GetRentalStatusByIdAsync(int rentalId, CancellationToken cancellationToken);
+    Task<RentalStatusDto?> GetRentalStatusByIdAsync(string rentalId, CancellationToken cancellationToken);
 }

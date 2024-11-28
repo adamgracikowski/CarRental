@@ -1,11 +1,11 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using CarRental.Comparer.Infrastructure.CarComparisons;
-using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
 using CarRental.Comparer.API.Requests.RentalTransactions.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using CarRental.Comparer.API.DTOs.RentalTransactions;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 
 namespace CarRental.Comparer.API.Controllers;
 
@@ -22,9 +22,9 @@ public sealed class RentalTransactionsController : ControllerBase
 
 	[TranslateResultToActionResult]
 	[HttpGet("{id}/status")]
-	public async Task<Result<RentalStatusDto>> GetRentalStatus(int id, CancellationToken cancellationToken)
+	public async Task<Result<RentalTransactionStatusDto>> GetRentalTransactionStatus(int id, CancellationToken cancellationToken)
 	{
-		var query = new GetRentalStatusByIdQuery(id);
+		var query = new GetRentalTransactionStatusByIdQuery(id);
 
 		var response = await mediator.Send(query, cancellationToken);
 

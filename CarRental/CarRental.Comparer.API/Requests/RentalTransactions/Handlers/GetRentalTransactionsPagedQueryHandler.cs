@@ -105,7 +105,7 @@ public class
 			if (transaction.Status == RentalStatus.Returned)
 				continue;
 
-			var statusName = await carComparisonService.GetRentalStatusByIdAsync(transaction.Provider.Name, int.Parse(transaction.RentalOuterId), cancellationToken);
+			var statusName = await carComparisonService.GetRentalStatusByIdAsync(transaction.Provider.Name, transaction.RentalOuterId, cancellationToken);
 
 			if (statusName == null)
 				continue;

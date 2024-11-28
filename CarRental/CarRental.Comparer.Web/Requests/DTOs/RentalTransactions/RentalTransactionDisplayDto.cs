@@ -1,6 +1,6 @@
 ﻿namespace CarRental.Comparer.Web.Requests.DTOs.RentalTransactions;
 
-public sealed record RentalDisplayDto(
+public sealed record RentalTransactionDisplayDto(
 	string Make,
 	string Model,
 	int Id,

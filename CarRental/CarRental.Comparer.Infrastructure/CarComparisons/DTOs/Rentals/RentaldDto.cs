@@ -6,4 +6,4 @@ using System.Threading.Tasks;
 
 namespace CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
 
-public sealed record RentalIdDto(int id);
+public sealed record RentalIdDto(string id);

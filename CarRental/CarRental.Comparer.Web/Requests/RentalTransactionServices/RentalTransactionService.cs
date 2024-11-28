@@ -14,11 +14,11 @@ public sealed class RentalTransactionService : IRentalTransactionService
 		this.httpClient = httpClient;
 	}
 
-	public async Task<RentalListDto?> GetUsersRentalsByStatusPaginated(string email, string status, int pageNumber)
+	public async Task<RentalTransactionListDto?> GetUsersRentalsByStatusPaginated(string email, string status, int pageNumber)
 	{
 		try
 		{
-			return await httpClient.GetFromJsonAsync<RentalListDto>($"{RentalTransactions}/{email}/{status}?page={pageNumber}&size={pageSize}");
+			return await httpClient.GetFromJsonAsync<RentalTransactionListDto>($"{RentalTransactions}/{email}/{status}?page={pageNumber}&size={pageSize}");
 		}
 		catch (Exception)
 		{

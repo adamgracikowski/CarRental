@@ -3,8 +3,10 @@ using CarRental.Comparer.Infrastructure.Cache;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Cars;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
+using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Rentals;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Net.Http.Json;
@@ -77,7 +79,15 @@ public sealed class InternalCarProviderService : ICarProviderService
 
             if (response.IsSuccessStatusCode)
             {
-                var rentalIdDto = await response.Content.ReadFromJsonAsync<RentalIdDto>(cancellationToken);
+                var internalRentalIdDto = await response.Content.ReadFromJsonAsync<InternalRentalIdDto>(cancellationToken);
+
+                if(internalRentalIdDto is null)
+                {
+                    logger.LogWarning("internal id is null");
+                    return null;
+                }
+
+                var rentalIdDto = new RentalIdDto(internalRentalIdDto.id.ToString());
                 return rentalIdDto;
             }
             else
@@ -94,15 +104,30 @@ public sealed class InternalCarProviderService : ICarProviderService
         }
     }
 
-    public async Task<RentalStatusDto?> GetRentalStatusByIdAsync(int rentalId, CancellationToken cancellationToken)
+    public async Task<RentalStatusDto?> GetRentalStatusByIdAsync(string rentalId, CancellationToken cancellationToken)
     {
         try
         {
-            var response = await httpClient.GetAsync($"/Rentals/{rentalId}/status", cancellationToken);
+            int internalRentalId;
+
+            if (int.TryParse(rentalId, out internalRentalId))
+            {
+                logger.LogWarning("rentalId is not a number, parse failed");
+            }
+
+            var response = await httpClient.GetAsync($"/Rentals/{internalRentalId}/status", cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
-                var rentalStatusDto = await response.Content.ReadFromJsonAsync<RentalStatusDto>(cancellationToken);
+                var internalRentalStatusDto = await response.Content.ReadFromJsonAsync<InternalRentalStatusDto>(cancellationToken);
+
+                if(internalRentalStatusDto is null)
+                {
+                    logger.LogWarning("internalRentalStatusDto is null");
+                    return null;
+                }
+
+                var rentalStatusDto = new RentalStatusDto(internalRentalStatusDto.id.ToString(), internalRentalStatusDto.status);
                 return rentalStatusDto;
             }
             else

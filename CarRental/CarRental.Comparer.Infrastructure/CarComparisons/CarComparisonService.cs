@@ -5,6 +5,7 @@ using CarRental.Comparer.Infrastructure.Cache;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 using CarRental.Comparer.Infrastructure.CarProviders;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using Microsoft.Extensions.Configuration;
@@ -87,7 +88,7 @@ public sealed class CarComparisonService : ICarComparisonService
         return rentalIdDto; 
     }
 
-    public async Task<RentalStatusDto?> GetRentalStatusByIdAsync(string providerName, int rentalId, CancellationToken cancellationToken)
+    public async Task<RentalStatusDto?> GetRentalStatusByIdAsync(string providerName, string rentalId, CancellationToken cancellationToken)
     {
         var carProviderService = GetCarProviderServiceByName(providerName);
 

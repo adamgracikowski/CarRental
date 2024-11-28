@@ -28,8 +28,8 @@ public class RentalComparerStatusCheckerService : IRentalComparerStatusCheckerSe
 
 	public async Task CheckAndUpdateRentalStatusAsync(
 		string providerName,
-		int innerRentalId,
-		int outerRentalId,
+		int rentalTransactionId,
+		string outerRentalId,
 		string jobId,
 		DateTime jobExpirationTime,
 		CancellationToken cancellationToken)
@@ -52,11 +52,11 @@ public class RentalComparerStatusCheckerService : IRentalComparerStatusCheckerSe
 
 		if (rentalStatusDto.status == RentalStatus.Active.ToString() || rentalStatusDto.status == RentalStatus.Rejected.ToString())
 		{
-			var rentalTransaction = await rentalTransactionsRepository.GetByIdAsync(innerRentalId, cancellationToken);
+			var rentalTransaction = await rentalTransactionsRepository.GetByIdAsync(rentalTransactionId, cancellationToken);
 
 			if (rentalTransaction is null)
 			{
-				logger.LogInformation($"RentalTransaction with id = {innerRentalId} does not exist in comparerDB.");
+				logger.LogInformation($"RentalTransaction with id = {rentalTransactionId} does not exist in comparerDB.");
 				RecurringJob.RemoveIfExists(jobId);
 				return;
 			}

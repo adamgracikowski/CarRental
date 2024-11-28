@@ -2,7 +2,7 @@
 
 namespace CarRental.Comparer.Web.Requests.DTOs.RentalTransactions;
 
-public sealed record RentalListDto(
+public sealed record RentalTransactionListDto(
 	PaginationInfoDto Pagination,
-	ICollection<RentalDisplayDto> RentalList
+	ICollection<RentalTransactionDisplayDto> RentalList
 );

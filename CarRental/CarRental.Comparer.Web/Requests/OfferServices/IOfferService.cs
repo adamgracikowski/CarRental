@@ -7,5 +7,5 @@ public interface IOfferService
 {
 	Task<OfferDto?> CreateOfferAsync(int providerId, int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken = default);
 
-	Task<RentalIdDto?> ChooseOfferAsync(int providerId, string offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken = default);
+	Task<RentalTransactionIdDto?> ChooseOfferAsync(int providerId, string offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken = default);
 }

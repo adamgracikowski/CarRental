@@ -10,8 +10,8 @@ public interface IRentalComparerStatusCheckerService
 {
     Task CheckAndUpdateRentalStatusAsync(
         string providerName, 
-        int innerRentalId, 
-        int outerRentalId, 
+        int rentalTransactionId, 
+        string outerRentalId, 
         string jobId, 
         DateTime jobExpirationTime, 
         CancellationToken cancellationToken);
