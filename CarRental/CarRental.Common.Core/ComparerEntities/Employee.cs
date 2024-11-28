@@ -2,13 +2,13 @@
 
 public sealed class Employee : EntityBase
 {
-    public string Email { get; set; }
+    public required string Email { get; set; }
 
     public int ProviderId { get; set; }
 
-    public string FirstName { get; set; }
+    public required string FirstName { get; set; }
 
-    public string LastName { get; set; }
+	public required string LastName { get; set; }
 
-    public Provider Provider { get; set; }
+    public required Provider Provider { get; set; }
 }

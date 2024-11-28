@@ -1,4 +1,5 @@
 ﻿using Ardalis.Specification;
+using CarRental.Provider.Persistence.Data;
 using CarRental.Provider.Persistence.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

@@ -1,13 +1,12 @@
 ﻿using Ardalis.Result;
 using Ardalis.Specification;
-using Azure.Core;
-using CarRental.Common.Core.ProviderEntities;
-using CarRental.Provider.API.DTOs.RentalReturns;
-using CarRental.Provider.API.Requests.Rentals.Commands;
-using CarRental.Provider.Persistence.Specifications.Rentals;
 using CarRental.Common.Core.Enums;
+using CarRental.Common.Core.ProviderEntities;
+using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
+using CarRental.Provider.API.Requests.Rentals.Commands;
+using CarRental.Provider.Infrastructure.EmailServices;
+using CarRental.Provider.Persistence.Specifications.Rentals;
 using MediatR;
-using CarRental.Provider.Infrastructure.EmailService;
 
 namespace CarRental.Provider.API.Requests.Rentals.Handlers;
 
@@ -15,17 +14,20 @@ public sealed class ConfirmRentalCommandHandler : IRequestHandler<ConfirmRentalC
 {
     private IRepositoryBase<Rental> rentalsRepository;
     private readonly IEmailService emailService;
-    private readonly IEmailInputMaker emailInputMaker;
+	private readonly IDateTimeProvider dateTimeProvider;
+	private readonly IEmailInputMaker emailInputMaker;
 
     public ConfirmRentalCommandHandler(
         IRepositoryBase<Rental> rentalsRepository,
         IEmailInputMaker emailInputMaker,
-        IEmailService emailService)
+        IEmailService emailService,
+        IDateTimeProvider dateTimeProvider)
     {
         this.rentalsRepository = rentalsRepository;
         this.emailInputMaker = emailInputMaker;
         this.emailService = emailService;
-    }
+		this.dateTimeProvider = dateTimeProvider;
+	}
     public async Task<Result> Handle(ConfirmRentalCommand command, CancellationToken cancellationToken)
     {
         var specification = new RentalByIdWithOfferCarModelMakeClientSpecification(command.Id);
@@ -36,7 +38,12 @@ public sealed class ConfirmRentalCommandHandler : IRequestHandler<ConfirmRentalC
             return Result.NotFound();
         }
 
-        if (rental.Status == RentalStatus.Active)
+        if (rental.Offer.ExpiresAt <= this.dateTimeProvider.UtcNow)
+        {
+			return Result.Invalid(new ValidationError(nameof(Offer.ExpiresAt), "The offer associated with rental has expired."));
+		}
+
+		if (rental.Status == RentalStatus.Active)
         {
             return Result.Success();
         }
@@ -72,7 +79,5 @@ public sealed class ConfirmRentalCommandHandler : IRequestHandler<ConfirmRentalC
         await emailService.SendEmailAsync(emailInput);
 
         return Result.Success();
-
     }
 }
-

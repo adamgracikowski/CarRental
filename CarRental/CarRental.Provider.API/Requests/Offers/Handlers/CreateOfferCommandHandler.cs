@@ -19,21 +19,18 @@ namespace CarRental.Provider.API.Requests.Offers.Handlers;
 public sealed class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Result<OfferDto>>
 {
 	private readonly IRepositoryBase<Car> carsRepository;
-	private readonly IValidator<CreateOfferCommand> validator;
 	private readonly IOfferCalculatorService offerCalculatorService;
 	private readonly IRandomStringProvider randomStringProvider;
 	private readonly IMapper mapper;
 
 	public CreateOfferCommandHandler(
 		IRepositoryBase<Car> carsRepository,
-		IValidator<CreateOfferCommand> validator,
 		IOfferCalculatorService offerCalculatorService,
 		IRandomStringProvider randomStringProvider,
 		IMapper mapper
 		)
 	{
 		this.carsRepository = carsRepository;
-		this.validator = validator;
 		this.offerCalculatorService = offerCalculatorService;
 		this.randomStringProvider = randomStringProvider;
 		this.mapper = mapper;
@@ -41,13 +38,6 @@ public sealed class CreateOfferCommandHandler : IRequestHandler<CreateOfferComma
 
 	public async Task<Result<OfferDto>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
 	{
-		var validation = await this.validator.ValidateAsync(request, cancellationToken);
-
-		if (!validation.IsValid)
-		{
-			return Result<OfferDto>.Invalid(validation.AsErrors());
-		}
-
 		var specification = new CarByIdWithModelSegmentInsuranceSpecification(request.CarId);
 
 		var car = await this.carsRepository.FirstOrDefaultAsync(specification, cancellationToken);

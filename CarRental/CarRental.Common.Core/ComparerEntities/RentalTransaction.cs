@@ -8,7 +8,7 @@ public sealed class RentalTransaction : EntityBase
 
     public int ProviderId { get; set; }
 
-    public string RentalOuterId { get; set; }
+    public required string RentalOuterId { get; set; }
 
     public decimal RentalPricePerDay { get; set; }
 
@@ -22,9 +22,9 @@ public sealed class RentalTransaction : EntityBase
 
     public RentalStatus Status { get; set; }
 
-    public User User { get; set; }
+    public required User User { get; set; }
 
-    public Provider Provider { get; set; }
+    public required Provider Provider { get; set; }
 
-    public CarDetails CarDetails { get; set; }
+    public required CarDetails CarDetails { get; set; }
 }

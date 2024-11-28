@@ -5,19 +5,19 @@ using CarRental.Common.Infrastructure.Providers.RandomStringProvider;
 using CarRental.Common.Infrastructure.Storages.BlobStorage;
 using CarRental.Provider.API.Authorization.JwtTokenService;
 using CarRental.Provider.API.Authorization.TrustedClientService;
+using CarRental.Provider.API.Validators;
 using CarRental.Provider.Infrastructure.BackgroundJobs.RentalServices;
 using CarRental.Provider.Infrastructure.Calculators.OfferCalculator;
 using CarRental.Provider.Infrastructure.Calculators.RentalBillCalculator;
-using CarRental.Provider.Infrastructure.EmailService;
-using CarRental.Provider.Infrastructure.EmailService.Options;
-using CarRental.Provider.Infrastructure.EmailService.TemplateProviders;
+using CarRental.Provider.Infrastructure.EmailServices;
+using CarRental.Provider.Infrastructure.EmailServices.Options;
+using CarRental.Provider.Infrastructure.EmailServices.TemplateProviders;
 using CarRental.Provider.Persistence.Options;
 using FluentValidation;
 using Hangfire;
+using MediatR;
 using SendGrid;
 using System.Reflection;
-using System.IO;
-using Microsoft.Extensions.Configuration;
 
 namespace CarRental.Provider.API;
 
@@ -70,6 +70,7 @@ public static class DependencyInjection
         });
 
         services.AddValidatorsFromAssemblyContaining(typeof(Program));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         return services;
     }

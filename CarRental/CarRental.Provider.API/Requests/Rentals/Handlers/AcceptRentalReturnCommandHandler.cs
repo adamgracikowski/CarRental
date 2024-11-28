@@ -10,10 +10,10 @@ using CarRental.Provider.API.DTOs.RentalReturns;
 using CarRental.Provider.API.Requests.Rentals.Commands;
 using CarRental.Provider.Infrastructure.Calculators.RentalBillCalculator;
 using CarRental.Provider.Persistence.Specifications.Rentals;
-using CarRental.Provider.Infrastructure.EmailService;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Options;
+using CarRental.Provider.Infrastructure.EmailServices;
 
 namespace CarRental.Provider.API.Requests.Rentals.Handlers;
 
@@ -21,7 +21,6 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
 {
     private readonly IRepositoryBase<Rental> rentalsRepository;
     private readonly IRepositoryBase<RentalReturn> rentalReturnsRepository;
-    private readonly IValidator<AcceptRentalReturnCommand> validator;
     private readonly IBlobStorageService blobStorageService;
     private readonly ILogger<AcceptRentalReturnCommandHandler> logger;
     private readonly IMapper mapper;
@@ -34,7 +33,6 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
     public AcceptRentalReturnCommandHandler(
         IRepositoryBase<Rental> rentalsRepository,
         IRepositoryBase<RentalReturn> rentalReturnsRepository,
-        IValidator<AcceptRentalReturnCommand> validator,
         IBlobStorageService blobStorageService,
         ILogger<AcceptRentalReturnCommandHandler> logger,
         IMapper mapper,
@@ -46,7 +44,6 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
     {
         this.rentalsRepository = rentalsRepository;
         this.rentalReturnsRepository = rentalReturnsRepository;
-        this.validator = validator;
         this.blobStorageService = blobStorageService;
         this.logger = logger;
         this.mapper = mapper;
@@ -59,13 +56,6 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
 
     public async Task<Result<RentalReturnDto>> Handle(AcceptRentalReturnCommand request, CancellationToken cancellationToken)
     {
-        var validation = await this.validator.ValidateAsync(request, cancellationToken);
-
-        if (!validation.IsValid)
-        {
-            return Result<RentalReturnDto>.Invalid(validation.AsErrors());
-        }
-
         var specification = new RentalByIdWithRentalReturnClientOfferCarModelMakeSpecification(request.Id);
 
         var rental = await this.rentalsRepository.FirstOrDefaultAsync(specification, cancellationToken);

@@ -7,7 +7,6 @@ using CarRental.Provider.API.Requests.Rentals.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace CarRental.Provider.API.Controllers;
 

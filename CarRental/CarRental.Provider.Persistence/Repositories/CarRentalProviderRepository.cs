@@ -1,4 +1,5 @@
 ﻿using Ardalis.Specification.EntityFrameworkCore;
+using CarRental.Provider.Persistence.Data;
 
 namespace CarRental.Provider.Persistence.Repositories;
 

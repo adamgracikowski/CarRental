@@ -8,7 +8,7 @@ using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Provider.API.Requests.Offers.Commands;
 using CarRental.Provider.API.Requests.Rentals.DTOs;
 using CarRental.Provider.Infrastructure.BackgroundJobs.RentalServices;
-using CarRental.Provider.Infrastructure.EmailService;
+using CarRental.Provider.Infrastructure.EmailServices;
 using CarRental.Provider.Persistence.Specifications.Customers;
 using CarRental.Provider.Persistence.Specifications.Offers;
 using FluentValidation;
@@ -24,7 +24,6 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
     private readonly IRepositoryBase<Rental> rentalsRepository;
     private readonly IMapper mapper;
     private readonly ILogger<ChooseOfferCommandHandler> logger;
-    private readonly IValidator<ChooseOfferCommand> validator;
     private readonly IBackgroundJobClient backgroundJobClient;
     private readonly IDateTimeProvider dateTimeProvider;
     private readonly IEmailService emailService;
@@ -36,7 +35,6 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
         IRepositoryBase<Rental> rentalsRepository,
         IMapper mapper,
         ILogger<ChooseOfferCommandHandler> logger,
-        IValidator<ChooseOfferCommand> validator,
         IBackgroundJobClient backgroundJobClient,
         IDateTimeProvider dateTimeProvider,
         IEmailService emailService,
@@ -47,7 +45,6 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
         this.rentalsRepository = rentalsRepository;
         this.mapper = mapper;
         this.logger = logger;
-        this.validator = validator;
         this.backgroundJobClient = backgroundJobClient;
         this.dateTimeProvider = dateTimeProvider;
         this.emailService = emailService;
@@ -56,13 +53,6 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
 
     public async Task<Result<RentalDto>> Handle(ChooseOfferCommand request, CancellationToken cancellationToken)
     {
-        var validation = await this.validator.ValidateAsync(request, cancellationToken);
-
-        if (!validation.IsValid)
-        {
-            return Result<RentalDto>.Invalid(validation.AsErrors());
-        }
-
         var offerSpecification = new OfferByIdWithRentalCarModelMakeSpecification(request.Id);
         var offer = await this.offersRepository.FirstOrDefaultAsync(offerSpecification, cancellationToken);
 

@@ -5,7 +5,7 @@ using CarRental.Common.Core.Enums;
 using CarRental.Common.Core.ProviderEntities;
 using CarRental.Provider.API.DTOs.Rentals;
 using CarRental.Provider.API.Requests.Rentals.Commands;
-using CarRental.Provider.Infrastructure.EmailService;
+using CarRental.Provider.Infrastructure.EmailServices;
 using CarRental.Provider.Persistence.Specifications.Rentals;
 using MediatR;
 
@@ -15,7 +15,6 @@ public class ReturnRentalCommandHandler : IRequestHandler<ReturnRentalCommand, R
 {
     private readonly IRepositoryBase<Rental> rentalsRepository;
     private readonly IMapper mapper;
-    private readonly IEmailService emailService;
     private readonly IEmailInputMaker emailInputMaker;
 
     public ReturnRentalCommandHandler(
@@ -27,7 +26,6 @@ public class ReturnRentalCommandHandler : IRequestHandler<ReturnRentalCommand, R
         this.rentalsRepository = rentalsRepository;
         this.mapper = mapper;
         this.emailInputMaker = emailInputMaker;
-        this.emailService = emailService;
     }
 
     public async Task<Result<RentalStatusDto>> Handle(ReturnRentalCommand request, CancellationToken cancellationToken)

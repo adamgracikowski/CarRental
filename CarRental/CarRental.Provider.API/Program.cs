@@ -4,7 +4,7 @@ using CarRental.Provider.API;
 using CarRental.Provider.API.Authorization;
 using CarRental.Provider.API.Swagger;
 using CarRental.Provider.Persistence;
-using CarRental.Provider.Persistence.Repositories;
+using CarRental.Provider.Persistence.Data;
 using Hangfire;
 using Microsoft.Extensions.Options;
 using Swashbuckle.AspNetCore.SwaggerGen;

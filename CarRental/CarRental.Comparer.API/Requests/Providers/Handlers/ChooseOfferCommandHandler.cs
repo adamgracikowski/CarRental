@@ -106,13 +106,13 @@ public class ChooseOfferCommandHandler : IRequestHandler<ChooseOfferCommand, Res
 
         var rentalTransaction = new RentalTransaction
         {
-            UserId = user.Id,
-            ProviderId = provider.Id,
+            User = user,
+            Provider = provider,
+            CarDetails = carDetails,
             RentalOuterId = outerRentalIdDto.id.ToString(),
             RentalPricePerDay = request.chooseOfferDto.RentalPricePerDay,
             InsurancePricePerDay = request.chooseOfferDto.InsurancePricePerDay,
             RentedAt = request.chooseOfferDto.RentedAt,
-            CarDetailsId = carDetails.Id,
         };
 
         await rentalTransactionsRepository.AddAsync(rentalTransaction, cancellationToken);

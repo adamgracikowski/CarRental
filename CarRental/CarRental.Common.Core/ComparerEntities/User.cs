@@ -2,11 +2,11 @@
 
 public sealed class User : EntityBase
 {
-    public string Email { get; set; } 
+    public required string Email { get; set; }
 
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
-    public string Lastname { get; set; }
+    public required string Lastname { get; set; }
 
     public int Age { get; set; }
 
@@ -16,5 +16,5 @@ public sealed class User : EntityBase
 
     public double Latitude { get; set; }
 
-    public ICollection<RentalTransaction> RentalTransactions { get; set; }
+    public ICollection<RentalTransaction> RentalTransactions { get; set; } = [];
 }

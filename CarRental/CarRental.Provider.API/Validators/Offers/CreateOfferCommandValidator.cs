@@ -13,12 +13,14 @@ public sealed class CreateOfferCommandValidator : AbstractValidator<CreateOfferC
         this.createOfferDtoValidator = createOfferDtoValidator;
 
         RuleFor(c => c.CarId)
-            .GreaterThan(0)
+            .NotEmpty()
+			.WithMessage("{PropertyName} is required.")
+			.GreaterThan(0)
             .WithMessage("{PropertyName} must be greater than {ComparisonValue}.");
 
         RuleFor(c => c.Audience)
             .NotEmpty()
-            .WithMessage("{PropertyName} must be non-empty.");
+            .WithMessage("{PropertyName} is required.");
 
         RuleFor(c => c.CreateOfferDto)
             .SetValidator(this.createOfferDtoValidator)

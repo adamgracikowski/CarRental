@@ -13,12 +13,14 @@ public class AcceptRentalReturnCommandValidator : AbstractValidator<AcceptRental
         this.acceptRentalReturnDtoValidator = acceptRentalReturnDtoValidator;
 
         RuleFor(a => a.Id)
-            .GreaterThan(0)
+            .NotEmpty()
+			.WithMessage("{PropertyName} is required.")
+			.GreaterThan(0)
             .WithMessage("{PropertyName} must be greater than {ComparisonValue}.");
 
         RuleFor(a => a.Audience)
             .NotEmpty()
-            .WithMessage("{PropertyName} must be non-empty.");
+            .WithMessage("{PropertyName} is required.");
 
         RuleFor(a => a.AcceptRentalReturnDto)
             .SetValidator(this.acceptRentalReturnDtoValidator)

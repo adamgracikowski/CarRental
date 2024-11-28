@@ -21,11 +21,15 @@ public sealed class AcceptRentalReturnDtoValidator : AbstractValidator<AcceptRen
         });
 
         RuleFor(a => a.Latitude)
-            .InclusiveBetween(ValidatorsConstants.LocalizationConstants.LatitudeMin, ValidatorsConstants.LocalizationConstants.LatitudeMax)
+            .NotNull()
+			.WithMessage("{PropertyName} is required.")
+			.InclusiveBetween(ValidatorsConstants.LocalizationConstants.LatitudeMin, ValidatorsConstants.LocalizationConstants.LatitudeMax)
             .WithMessage("{PropertyName} must be between {From} and {To}.");
 
         RuleFor(a => a.Longitude)
-            .InclusiveBetween(ValidatorsConstants.LocalizationConstants.LongitudeMin, ValidatorsConstants.LocalizationConstants.LongitudeMax)
+			.NotNull()
+			.WithMessage("{PropertyName} is required.")
+			.InclusiveBetween(ValidatorsConstants.LocalizationConstants.LongitudeMin, ValidatorsConstants.LocalizationConstants.LongitudeMax)
             .WithMessage("{PropertyName} must be between {From} and {To}.");
     }
 

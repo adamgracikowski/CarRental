@@ -2,9 +2,9 @@
 
 public sealed class Provider : EntityBase
 {
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
-    public ICollection<RentalTransaction> RentalTransactions { get; set; }
+    public ICollection<RentalTransaction> RentalTransactions { get; set; } = [];
 
-    public ICollection<Employee> Employees { get; set; }
+    public ICollection<Employee> Employees { get; set; } = [];
 }
