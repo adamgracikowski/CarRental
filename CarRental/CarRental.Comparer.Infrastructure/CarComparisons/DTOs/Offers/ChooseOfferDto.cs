@@ -6,7 +6,6 @@ public sealed record ChooseOfferDto(
     string EmailAddress, 
     decimal RentalPricePerDay,
     decimal InsurancePricePerDay,
-    DateTime RentedAt,
     string CarOuterId,
     string Make,
     string Model,
@@ -15,6 +14,4 @@ public sealed record ChooseOfferDto(
     string? TransmissionType,
     int YearOfProduction,
     int? NumberOfDoors,
-    int? NumberOfSeats,
-    DateTime ExpiresAt
-   );
+    int? NumberOfSeats);

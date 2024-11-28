@@ -398,15 +398,13 @@ else
 			NumerOfDoors: Model.NumberOfDoors,
 			NumberOfSeats: Model.NumberOfSeats,
 			RentalPricePerDay: offerButton.Offer.RentalPricePerDay,
-			InsurancePricePerDay: offerButton.Offer.InsurancePricePerDay,
-			RentedAt: DateTime.UtcNow, // to pole jest błędne w API porównywarki, powinno być zwracane z API dostawcy...
-			ExpiresAt: offerButton.Offer.ExpiresAt
+			InsurancePricePerDay: offerButton.Offer.InsurancePricePerDay
 		);
 
-		var rentalIdDto = await OfferService
+		var rentalIdWithRentedAtDto = await OfferService
 			.ChooseOfferAsync(provider.ProviderId, offerButton.Offer.Id.ToString(), chooseOfferDto);
 
-		if (rentalIdDto is not null)
+		if (rentalIdWithRentedAtDto is not null)
 		{
 			offerButton.Disabled = true;
 
