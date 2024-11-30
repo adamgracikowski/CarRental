@@ -2,27 +2,39 @@
 @using CarRental.Comparer.Web.Requests.DTOs.Offers
 @using Darnton.Blazor.DeviceInterop.Geolocation
 @using CarRental.Comparer.Web.Requests.UserServices
-@using System.ComponentModel.DataAnnotations
+@using CarRental.Comparer.Web.DateExtensions
 
 @inject IGeolocationService GeolocationService
 @inject IUserService userService
+@inject IDateTimeProvider DateTimeProvider
+@inject IYearsCalculator YearsCalculator
 
 <MudDialog>
 	<TitleContent>
 		<MudText Typo="Typo.h6">
-			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3" /> Fill required details
+			<MudIcon Icon="@Icons.Material.Filled.Edit" Class="mr-3"/> Fill required details
 		</MudText>
 	</TitleContent>
 	<DialogContent>
 		<EditForm EditContext="editContext">
-			<DataAnnotationsValidator />
+			<DataAnnotationsValidator/>
 			<MudStack Spacing="3" Class="mt-4">
-				<MudTextField @bind-Value="UserDto.Name" Label="Name" For="@(() => UserDto.Name)" Required="true" />
-				<MudTextField @bind-Value="UserDto.Lastname" Label="Last Name" For="@(() => UserDto.Lastname)" Required="true" />
-				<MudNumericField @bind-Value="UserDto.DrivingLicenseYears" For="@(() => UserDto.DrivingLicenseYears)" Label="Driving License Years" Required="true"/>
-				<MudNumericField @bind-Value="UserDto.Age" Label="Age" For="@(() => UserDto.Age)" Required="true" />
-				<MudNumericField @bind-Value="UserDto.Latitude" Label="Latitude" For="@(() => UserDto.Latitude)" Required="true" />
-				<MudNumericField @bind-Value="UserDto.Longitude" Label="Longitude" For="@(() => UserDto.Longitude)" Required="true" />
+				<MudTextField @bind-Value="UserDto.Name" Label="Name" For="@(() => UserDto.Name)" Required="true"/>
+				<MudTextField @bind-Value="UserDto.Lastname" Label="Last Name" For="@(() => UserDto.Lastname)" Required="true"/>
+				<MudDatePicker Label="Birthday"
+				               @bind-Date="UserDto.Birthday"
+				               For="@(() => UserDto.Birthday)"
+				               Required="true"
+				               MaxDate="DateTimeProvider.UtcNow.AddYears(-18)"
+				               MinDate="DateTimeProvider.UtcNow.AddYears(-100)"/>
+				<MudDatePicker Label="Driving License Date"
+				               @bind-Date="UserDto.DrivingLicenseDate"
+				               For="@(() => UserDto.DrivingLicenseDate)"
+				               Required="true"
+				               MaxDate="DateTimeProvider.UtcNow"
+				               MinDate="DateTimeProvider.UtcNow.AddYears(-100)"/>
+				<MudNumericField @bind-Value="UserDto.Latitude" Label="Latitude" For="@(() => UserDto.Latitude)" Required="true"/>
+				<MudNumericField @bind-Value="UserDto.Longitude" Label="Longitude" For="@(() => UserDto.Longitude)" Required="true"/>
 			</MudStack>
 		</EditForm>
 	</DialogContent>
@@ -33,18 +45,14 @@
 </MudDialog>
 
 @code {
-	[CascadingParameter] 
-	private MudDialogInstance? MudDialog { get; set; }
+	[CascadingParameter] private MudDialogInstance? MudDialog { get; set; }
 
 
-	[Parameter]
-	public string Name { get; set; }
+	[Parameter] public string Name { get; set; }
 
-	[Parameter]
-	public string LastName { get; set; }
+	[Parameter] public string LastName { get; set; }
 
-	[Parameter]
-	public string Email { get; set; }
+	[Parameter] public string Email { get; set; }
 
 	private UserDto UserDto { get; set; }
 
@@ -53,13 +61,13 @@
 	protected override async Task OnInitializedAsync()
 	{
 		UserDto = new()
-			{
-				Email = Email,
-				Name = Name,
-				Lastname = LastName,
-				Age = 20,
-				DrivingLicenseYears = 2
-			};
+		{
+			Email = Email,
+			Name = Name,
+			Lastname = LastName,
+			Birthday = DateTimeProvider.UtcNow.AddYears(-25),
+			DrivingLicenseDate = DateTimeProvider.UtcNow.AddYears(-5)
+		};
 
 		editContext = new EditContext(UserDto);
 
@@ -79,7 +87,11 @@
 			return;
 
 		await userService.CreateUserAsync(UserDto);
-		var createOfferDto = new CreateOfferDto(UserDto.DrivingLicenseYears, UserDto.Age, (decimal)UserDto.Latitude, (decimal)UserDto.Longitude);
+
+		var age = YearsCalculator.CalculateDifferenceInYearsFromUtcNow(UserDto.Birthday.Value);
+		var drivingLicenseYears = YearsCalculator.CalculateDifferenceInYearsFromUtcNow(UserDto.DrivingLicenseDate.Value);
+
+		var createOfferDto = new CreateOfferDto(drivingLicenseYears, age, (decimal)UserDto.Latitude, (decimal)UserDto.Longitude);
 		MudDialog?.Close(DialogResult.Ok(createOfferDto));
 	}
 
@@ -87,4 +99,5 @@
 	{
 		MudDialog?.Cancel();
 	}
+
 }

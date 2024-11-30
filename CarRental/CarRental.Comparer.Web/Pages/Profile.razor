@@ -1,4 +1,5 @@
 ﻿@page "/profile"
+@using CarRental.Comparer.Web.DateExtensions
 @using CarRental.Comparer.Web.Dialogs
 @using CarRental.Comparer.Web.Requests.DTOs.Users
 @using CarRental.Comparer.Web.Requests.UserServices
@@ -9,222 +10,235 @@
 @inject NavigationManager Navigation
 @inject IDialogService DialogService
 @inject IGeolocationService GeolocationService
+@inject IDateTimeProvider DateTimeProvider
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-5">
-    <MudPaper Elevation="4" Class="p-4">
-        <MudText Typo="Typo.h5" Align="Align.Center">Profile Management</MudText>
-        <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary">
-            Manage your profile here.
-        </MudText>
+	<MudPaper Elevation="4" Class="p-4">
+		<MudText Typo="Typo.h5" Align="Align.Center">Profile Management</MudText>
+		<MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary">
+			Manage your profile here.
+		</MudText>
 
-        <MudStack Spacing="3" Class="mt-4">
-            @if (_user != null)
-            {
-                <EditForm Model="_user" OnValidSubmit="OnValidSubmitAsync">
-                    <DataAnnotationsValidator />
-                    <MudTextField Label="Email" @bind-Value="_user.Email" Required="true" For="@(() => _user.Email)" Disabled="true" />
-                    <MudDivider Class="my-2" />
-                    <MudTextField Label="First Name" @bind-Value="_user.Name" For="@(() => _user.Name)" Required="true" Disabled="!isEditMode" />
-                    <MudDivider Class="my-2" />
-                    <MudTextField Label="Last Name" @bind-Value="_user.Lastname" For="@(() => _user.Lastname)" Required="true" Disabled="!isEditMode" />
-                    <MudDivider Class="my-2" />
-                    <MudNumericField Label="Age" @bind-Value="_user.Age" Required="true" For="@(() => _user.Age)" Disabled="!isEditMode" />
-                    <MudDivider Class="my-2" />
-                    <MudNumericField Label="Driving License Years" @bind-Value="_user.DrivingLicenseYears" For="@(() => _user.DrivingLicenseYears)" Required="true" Disabled="!isEditMode" />
-                    <MudDivider Class="my-2" />
-                    <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                        <MudTextField Label="Longitude"
-                                      @bind-Value="_user.Longitude"
-                                      For="@(() => _user.Longitude)"
-                                      Disabled="!isEditMode"
-                                      Required="true"
-                                      Class="flex-grow-1" />
+		<MudStack Spacing="3" Class="mt-4">
+			@if (_user != null)
+			{
+				<EditForm Model="_user" OnValidSubmit="OnValidSubmitAsync">
+					<DataAnnotationsValidator/>
+					<MudTextField Label="Email" @bind-Value="_user.Email" Required="true" For="@(() => _user.Email)" Disabled="true"/>
+					<MudDivider Class="my-2"/>
+					<MudTextField Label="First Name" @bind-Value="_user.Name" For="@(() => _user.Name)" Required="true" Disabled="!isEditMode"/>
+					<MudDivider Class="my-2"/>
+					<MudTextField Label="Last Name" @bind-Value="_user.Lastname" For="@(() => _user.Lastname)" Required="true" Disabled="!isEditMode"/>
+					<MudDatePicker Label="Birthday"
+					               @bind-Date="_user.Birthday"
+					               For="@(() => _user.Birthday)"
+					               Required="true"
+					               MaxDate="DateTimeProvider.UtcNow.AddYears(-18)"
+					               MinDate="DateTimeProvider.UtcNow.AddYears(-100)"
+					               Disabled="!isEditMode"/>
+					<MudDatePicker Label="Driving License Date"
+					               @bind-Date="_user.DrivingLicenseDate"
+					               For="@(() => _user.DrivingLicenseDate)"
+					               Required="true"
+					               MaxDate="DateTimeProvider.UtcNow"
+					               MinDate="DateTimeProvider.UtcNow.AddYears(-100)"
+					               Disabled="!isEditMode"/>
+					<MudDivider Class="my-2"/>
+					<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+						<MudTextField Label="Longitude"
+						              @bind-Value="_user.Longitude"
+						              For="@(() => _user.Longitude)"
+						              Disabled="!isEditMode"
+						              Required="true"
+						              Class="flex-grow-1"/>
 
-                        <MudTextField Label="Latitude"
-                                      @bind-Value="_user.Latitude"
-                                      For="@(() => _user.Latitude)"
-                                      Disabled="!isEditMode"
-                                      Required="true"
-                                      Class="flex-grow-1" />
+						<MudTextField Label="Latitude"
+						              @bind-Value="_user.Latitude"
+						              For="@(() => _user.Latitude)"
+						              Disabled="!isEditMode"
+						              Required="true"
+						              Class="flex-grow-1"/>
 
-                        <MudIconButton Icon="@Icons.Material.Filled.MyLocation"
-                                       Color="Color.Primary"
-                                       OnClick="GetCurrentLocationAsync"
-                                       Disabled="!isEditMode"
-                                       Class="ml-2" />
-                    </MudStack>
+						<MudIconButton Icon="@Icons.Material.Filled.MyLocation"
+						               Color="Color.Primary"
+						               OnClick="GetCurrentLocationAsync"
+						               Disabled="!isEditMode"
+						               Class="ml-2"/>
+					</MudStack>
 
-                    <MudDivider Class="my-4" />
+					<MudDivider Class="my-4"/>
 
-                    <MudStack Direction="Direction.Row" Spacing="2" JustifyContent="JustifyContent.SpaceBetween">
-                        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ToggleEditMode" FullWidth>
-                            @if (isEditMode)
-                            {
-                                <text>Cancel</text>
-                            }
-                            else
-                            {
-                                <text>Edit</text>
-                            }
-                        </MudButton>
+					<MudStack Direction="Direction.Row" Spacing="2" JustifyContent="JustifyContent.SpaceBetween">
+						<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ToggleEditMode" FullWidth>
+							@if (isEditMode)
+							{
+								<text>Cancel</text>
+							}
+							else
+							{
+								<text>Edit</text>
+							}
+						</MudButton>
 
-                        @if (isEditMode)
-                        {
-                            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" FullWidth>
-                                Save Changes
-                            </MudButton>
-                        }
+						@if (isEditMode)
+						{
+							<MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" FullWidth>
+								Save Changes
+							</MudButton>
+						}
 
-                        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteUserAsync" FullWidth>
-                            Delete User
-                        </MudButton>
-                    </MudStack>
-                        <MudItem xs="12" sm="5">
-                            <MudPaper Class="pa-4 mud-height-full">
-                                <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
-                                @if (validationSuccess)
-                                {
-                                    <MudText Color="Color.Success">Success</MudText>
-                                }
-                                else
-                                {
-                                    <MudText Color="@Color.Error">
-                                        <ValidationSummary />
-                                    </MudText>
-                                }
-                            </MudPaper>
-                        </MudItem>
-                </EditForm>
+						<MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteUserAsync" FullWidth>
+							Delete User
+						</MudButton>
+					</MudStack>
+					<MudItem xs="12" sm="5">
+						<MudPaper Class="pa-4 mud-height-full">
+							<MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+							@if (validationSuccess)
+							{
+								<MudText Color="Color.Success">Success</MudText>
+							}
+							else
+							{
+								<MudText Color="@Color.Error">
+									<ValidationSummary/>
+								</MudText>
+							}
+						</MudPaper>
+					</MudItem>
+				</EditForm>
 
-                @if (isDeleted)
-                {
-                    <MudText Color="Color.Success">User deleted successfully.</MudText>
-                }
-                else if (deleteError)
-                {
-                    <MudText Color="Color.Error">Failed to delete the user.</MudText>
-                }
-            }
-            else
-            {
-                <MudText Color="Color.Error">User not found.</MudText>
-            }
-        </MudStack>
-    </MudPaper>
+				@if (isDeleted)
+				{
+					<MudText Color="Color.Success">User deleted successfully.</MudText>
+				}
+				else if (deleteError)
+				{
+					<MudText Color="Color.Error">Failed to delete the user.</MudText>
+				}
+			}
+			else
+			{
+				<MudText Color="Color.Error">User not found.</MudText>
+			}
+		</MudStack>
+	</MudPaper>
 </MudContainer>
 
 @code {
-    private UserDto _user = new UserDto();
-    private bool isDeleted = false;
-    private bool deleteError = false;
-    bool validationSuccess;
-    private bool isEditMode = false;
-    private UserDto _backupUser = new UserDto();
+	private UserDto _user = new UserDto();
+	private bool isDeleted = false;
+	private bool deleteError = false;
+	bool validationSuccess;
+	private bool isEditMode = false;
+	private UserDto _backupUser = new UserDto();
 
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var email = authState.User?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
-        if(email != null)
-        {
-            var fetchedUser = await UserService.GetUserByEmailAsync(email);
-            if (fetchedUser != null)
-            {
-                _user = fetchedUser;
-            }
-            else
-            {
-                Navigation.NavigateTo("/additional-info");
-            }
-        }
-    }
 
-    private async Task GetCurrentLocationAsync()
-    {
-        GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
-        if (currentPositionResult.IsSuccess)
-        {
-            _user.Longitude = currentPositionResult.Position.Coords.Longitude;
-            _user.Latitude = currentPositionResult.Position.Coords.Latitude;
-        }
-    }
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var email = authState.User?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+		if (email != null)
+		{
+			var fetchedUser = await UserService.GetUserByEmailAsync(email);
+			if (fetchedUser != null)
+			{
+				_user = fetchedUser;
+			}
+			else
+			{
+				Navigation.NavigateTo("/additional-info");
+			}
+		}
+	}
 
-    private async Task OnValidSubmitAsync()
-    {
-        validationSuccess = true;
-        var editUserSuccess = await UserService.EditUserByEmailAsync(_user.Email, _user);
+	private async Task GetCurrentLocationAsync()
+	{
+		GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
+		if (currentPositionResult.IsSuccess)
+		{
+			_user.Longitude = currentPositionResult.Position.Coords.Longitude;
+			_user.Latitude = currentPositionResult.Position.Coords.Latitude;
+		}
+	}
 
-        if (editUserSuccess)
-        {
-            //StateHasChanged();
-            Navigation.NavigateTo("/profile"); // for tests causes api get
-        }
-        else
-        {
-            Navigation.NavigateTo("/");
-        }
+	private async Task OnValidSubmitAsync()
+	{
+		validationSuccess = true;
+		var editUserSuccess = await UserService.EditUserByEmailAsync(_user.Email, _user);
 
-        isEditMode = false;
-    }
+		if (editUserSuccess)
+		{
+			//StateHasChanged();
+			Navigation.NavigateTo("/profile"); // for tests causes api get
+		}
+		else
+		{
+			Navigation.NavigateTo("/");
+		}
 
-    private void ToggleEditMode()
-    {
-        isEditMode = !isEditMode;
-        if(isEditMode)
-        {
-            _backupUser = CloneUser(_user);
-        }
-        else if (!isEditMode)
-        {
-            _user = CloneUser(_backupUser);
-            StateHasChanged();
-        }
-    }
+		isEditMode = false;
+	}
 
-    private UserDto CloneUser(UserDto source)
-    {
-        return new UserDto
-            {
-                Name = source.Name,
-                Lastname = source.Lastname,
-                Email = source.Email,
-                Age = source.Age,
-                DrivingLicenseYears = source.DrivingLicenseYears,
-                Longitude = source.Longitude,
-                Latitude = source.Latitude
-            };
-    }
+	private void ToggleEditMode()
+	{
+		isEditMode = !isEditMode;
+		if (isEditMode)
+		{
+			_backupUser = CloneUser(_user);
+		}
+		else if (!isEditMode)
+		{
+			_user = CloneUser(_backupUser);
+			StateHasChanged();
+		}
+	}
 
-    private async Task<bool> OpenDialogAsync()
-    {
-        var options = new DialogOptions { CloseOnEscapeKey = true };
+	private UserDto CloneUser(UserDto source)
+	{
+		return new UserDto
+		{
+			Name = source.Name,
+			Lastname = source.Lastname,
+			Email = source.Email,
+			Birthday = source.Birthday,
+			DrivingLicenseDate = source.DrivingLicenseDate,
+			Longitude = source.Longitude,
+			Latitude = source.Latitude
+		};
+	}
 
-        var dialog = DialogService.Show<DeleteUserDialog>("Delete Confirmation", options);
-        var result = await dialog.Result;
+	private async Task<bool> OpenDialogAsync()
+	{
+		var options = new DialogOptions { CloseOnEscapeKey = true };
 
-        return !result!.Canceled;
-    }
+		var dialog = DialogService.Show<DeleteUserDialog>("Delete Confirmation", options);
+		var result = await dialog.Result;
 
-    private async Task DeleteUserAsync()
-    {
-        var confirmation = await OpenDialogAsync();
-        if (confirmation == false)
-            return;
+		return !result!.Canceled;
+	}
 
-        if (_user != null)
-        {
-            deleteError = false;
-            var deleteUserSuccess = await UserService.DeleteUserByEmailAsync(_user.Email);
+	private async Task DeleteUserAsync()
+	{
+		var confirmation = await OpenDialogAsync();
+		if (confirmation == false)
+			return;
 
-            if (deleteUserSuccess)
-            {
-                isDeleted = true;
-                Navigation.NavigateToLogout("authentication/logout");
-            }
-            else
-            {
-                deleteError = true;
-            }
-        }
-    }
+		if (_user != null)
+		{
+			deleteError = false;
+			var deleteUserSuccess = await UserService.DeleteUserByEmailAsync(_user.Email);
+
+			if (deleteUserSuccess)
+			{
+				isDeleted = true;
+				Navigation.NavigateToLogout("authentication/logout");
+			}
+			else
+			{
+				deleteError = true;
+			}
+		}
+	}
+
 }

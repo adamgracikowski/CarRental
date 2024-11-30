@@ -10,9 +10,9 @@ public static class CreateOfferDtoValidationConstants
 	}
 	public static class DrivingLicenseYearsConstants
 	{
-		public const int LowerYears = 1;
+		public const int LowerYears = 0;
 		public const int UpperYears = 100;
-		public const string DrivingLicenseYearsRange = "Driving License Years must be between 1 and 100.";
+		public const string DrivingLicenseYearsRange = "Driving License Years must be between 0 and 100.";
 	}
 
 }

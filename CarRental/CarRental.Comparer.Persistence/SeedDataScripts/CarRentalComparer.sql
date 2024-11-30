@@ -12,13 +12,13 @@ DBCC CHECKIDENT ('Employees', RESEED, 0);
 DBCC CHECKIDENT ('Providers', RESEED, 0);
 DBCC CHECKIDENT ('Users', RESEED, 0);
 
-INSERT INTO Users (Email, Name, Lastname, Age, DrivingLicenseYears, Longitude, Latitude)
+INSERT INTO Users (Email, Name, Lastname, Birthday, DrivingLicenseDate, Longitude, Latitude)
 VALUES
-    ('jan.kowalski@example.com', 'Jan', 'Kowalski', 30, 5, 21.0122, 52.2297),
-    ('anna.nowak@example.com', 'Anna', 'Nowak', 28, 3, 21.0181, 52.2295),
-    ('piotr.zielinski@example.com', 'Piotr', 'Zielinski', 35, 10, 21.0059, 52.2380),
-    ('ewa.kowalczyk@example.com', 'Ewa', 'Kowalczyk', 40, 15, 21.0145, 52.2252),
-    ('tomasz.szymanski@example.com', 'Tomasz', 'Szymanski', 32, 7, 21.0070, 52.2396);
+    ('jan.kowalski@example.com', 'Jan', 'Kowalski', '1993-11-28', '2018-11-28', 21.0122, 52.2297),
+    ('anna.nowak@example.com', 'Anna', 'Nowak', '1995-11-28', '2020-11-28', 21.0181, 52.2295),
+    ('piotr.zielinski@example.com', 'Piotr', 'Zielinski', '1988-11-28', '2006-11-28', 21.0059, 52.2380),
+    ('ewa.kowalczyk@example.com', 'Ewa', 'Kowalczyk', '1983-11-28', '1998-11-28', 21.0145, 52.2252),
+    ('tomasz.szymanski@example.com', 'Tomasz', 'Szymanski', '1991-11-28', '2013-11-28', 21.0070, 52.2396);
 	
 INSERT INTO Providers (Name)
 VALUES

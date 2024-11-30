@@ -2,149 +2,161 @@
 @using CarRental.Comparer.Web.Requests.DTOs.Users
 @using CarRental.Comparer.Web.Requests.UserServices
 @using Darnton.Blazor.DeviceInterop.Geolocation
-@using System.ComponentModel.DataAnnotations
+@using CarRental.Comparer.Web.DateExtensions
 
 @inject IUserService UserService
-@inject IJSRuntime jsRuntime
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IGeolocationService GeolocationService
+@inject IDateTimeProvider DateTimeProvider
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-5">
-    <MudPaper Elevation="4" Class="p-4">
-        <MudText Typo="Typo.h5" Align="Align.Center">Complete Your Profile</MudText>
-        <MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary">
-            Please provide the additional information to complete your registration.
-        </MudText>
+	<MudPaper Elevation="4" Class="p-4">
+		<MudText Typo="Typo.h5" Align="Align.Center">Complete Your Profile</MudText>
+		<MudText Typo="Typo.subtitle1" Align="Align.Center" Color="Color.Secondary">
+			Please provide the additional information to complete your registration.
+		</MudText>
 
-        <EditForm Model="user" OnValidSubmit="OnValidSubmitAsync">
-            <DataAnnotationsValidator/>
-            <MudStack Spacing="3" Class="mt-4">
-                <MudTextField Label="First Name" @bind-Value="user.Name" For="@(() => user.Name)" Required="true" />
-                <MudTextField Label="Last Name" @bind-Value="user.Lastname" For="@(() => user.Lastname)" Required="true" />
-                <MudTextField Label="Email" @bind-Value="user.Email" Required="true" For="@(() => user.Email)" Disabled="true" />
-                <MudNumericField Label="Age" @bind-Value="user.Age" Required="true" For="@(() => user.Age)" />
-                <MudNumericField Label="Driving License Years" @bind-Value="user.DrivingLicenseYears" For="@(() => user.DrivingLicenseYears)" Required="true" />
-                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                    <MudTextField Label="Longitude"
-                                  @bind-Value="user.Longitude"
-                                  For="@(() => user.Longitude)"
-                                  Required="true"
-                                  Class="flex-grow-1" />
+		<EditForm Model="user" OnValidSubmit="OnValidSubmitAsync">
+			<DataAnnotationsValidator/>
+			<MudStack Spacing="3" Class="mt-4">
+				<MudTextField Label="First Name" @bind-Value="user.Name" For="@(() => user.Name)" Required="true"/>
+				<MudTextField Label="Last Name" @bind-Value="user.Lastname" For="@(() => user.Lastname)" Required="true"/>
+				<MudTextField Label="Email" @bind-Value="user.Email" Required="true" For="@(() => user.Email)" Disabled="true"/>
+				<MudDatePicker Label="Birthday"
+				               @bind-Date="user.Birthday"
+				               For="@(() => user.Birthday)"
+				               Required="true"
+				               MaxDate="DateTimeProvider.UtcNow.AddYears(-18)"
+				               MinDate="DateTimeProvider.UtcNow.AddYears(-100)"/>
+				<MudDatePicker Label="Driving License Date"
+				               @bind-Date="user.DrivingLicenseDate"
+				               For="@(() => user.DrivingLicenseDate)"
+				               Required="true"
+				               MaxDate="DateTimeProvider.UtcNow"
+				               MinDate="DateTimeProvider.UtcNow.AddYears(-100)"/>
+				<MudTextField Label="Longitude"
+				              @bind-Value="user.Longitude"
+				              For="@(() => user.Longitude)"
+				              Required="true"
+				              Class="flex-grow-1"/>
+				<MudTextField Label="Latitude"
+				              @bind-Value="user.Latitude"
+				              For="@(() => user.Latitude)"
+				              Required="true"
+				              Class="flex-grow-1"/>
 
-                    <MudTextField Label="Latitude"
-                                  @bind-Value="user.Latitude"
-                                  For="@(() => user.Latitude)"
-                                  Required="true"
-                                  Class="flex-grow-1" />
+				<MudIconButton Icon="@Icons.Material.Filled.MyLocation"
+				               Color="Color.Primary"
+				               OnClick="GetCurrentLocationAsync"
+				               Class="ml-2"/>
+			</MudStack>
 
-                    <MudIconButton Icon="@Icons.Material.Filled.MyLocation"
-                                   Color="Color.Primary"
-                                   OnClick="GetCurrentLocationAsync"
-                                   Class="ml-2" />
-                </MudStack>
-
-                <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" FullWidth>
-                    Submit
-                </MudButton>
-                <MudItem xs="12" sm="5">
-                    <MudPaper Class="pa-4 mud-height-full">
-                        <MudText Typo="Typo.subtitle2">Validation Summary</MudText>
-                        @if (success)
-                        {
-                            <MudText Color="Color.Success">Success</MudText>
-                        }
-                        else
-                        {
-                            <MudText Color="@Color.Error">
-                                <ValidationSummary />
-                            </MudText>
-                        }
-                    </MudPaper>
-                </MudItem>
-            </MudStack>
-        </EditForm>
-    </MudPaper>
+			<MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" FullWidth>
+				Submit
+			</MudButton>
+			<MudItem xs="12" sm="5">
+				<MudPaper Class="pa-4 mud-height-full">
+					<MudText Typo="Typo.subtitle2">Validation Summary</MudText>
+					@if (success)
+					{
+						<MudText Color="Color.Success">Success</MudText>
+					}
+					else
+					{
+						<MudText Color="@Color.Error">
+							<ValidationSummary/>
+						</MudText>
+					}
+				</MudPaper>
+			</MudItem>
+		</EditForm>
+	</MudPaper>
 </MudContainer>
 
 @code {
-    private UserDto user = new UserDto();
-    bool success;
+	private UserDto user = new UserDto();
+	bool success;
 
-    protected override async Task OnInitializedAsync()
-    {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var userClaims = authState.User;
 
-        var email = userClaims?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+	protected override async Task OnInitializedAsync()
+	{
+		user.Birthday = DateTimeProvider.UtcNow.AddYears(-25);
+		user.DrivingLicenseDate = DateTimeProvider.UtcNow.AddYears(-5);
 
-        if (email != null)
-        {
-            user.Email = email;
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var userClaims = authState.User;
 
-            var doesUserExist = await SetUserByEmailAsync(user.Email);
+		var email = userClaims?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
 
-            if (doesUserExist)
-            {
-                Navigation.NavigateTo("/profile");
-                return;
-            }
-        }
+		if (email != null)
+		{
+			user.Email = email;
 
-        var nameAndLastName = userClaims?.Claims.FirstOrDefault(c => c.Type == "name")?.Value.Split();
-        if(nameAndLastName != null && nameAndLastName.Count() != 0)
-        {
-            user.Name = nameAndLastName[0];
-            if(nameAndLastName.Count() > 1)
-                user.Lastname = nameAndLastName[1];
-        }
+			var doesUserExist = await SetUserByEmailAsync(user.Email);
 
-        GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
-        if (currentPositionResult.IsSuccess)
-        {
-            user.Longitude = currentPositionResult.Position.Coords.Longitude;
-            user.Latitude = currentPositionResult.Position.Coords.Latitude;
-        }
-    }
+			if (doesUserExist)
+			{
+				Navigation.NavigateTo("/profile");
+				return;
+			}
+		}
 
-    private async Task GetCurrentLocationAsync()
-    {
-        GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
-        if (currentPositionResult.IsSuccess)
-        {
-            user.Longitude = currentPositionResult.Position.Coords.Longitude;
-            user.Latitude = currentPositionResult.Position.Coords.Latitude;
-        }
-    }
+		var nameAndLastName = userClaims?.Claims.FirstOrDefault(c => c.Type == "name")?.Value.Split();
+		if (nameAndLastName != null && nameAndLastName.Count() != 0)
+		{
+			user.Name = nameAndLastName[0];
+			if (nameAndLastName.Count() > 1)
+				user.Lastname = nameAndLastName[1];
+		}
 
-    private async Task<bool> SetUserByEmailAsync(string email)
-    {
-        var fetchedUser = await UserService.GetUserByEmailAsync(email);
+		GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
+		if (currentPositionResult.IsSuccess)
+		{
+			user.Longitude = currentPositionResult.Position.Coords.Longitude;
+			user.Latitude = currentPositionResult.Position.Coords.Latitude;
+		}
+	}
 
-        if (fetchedUser != null)
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
+	private async Task GetCurrentLocationAsync()
+	{
+		GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
+		if (currentPositionResult.IsSuccess)
+		{
+			user.Longitude = currentPositionResult.Position.Coords.Longitude;
+			user.Latitude = currentPositionResult.Position.Coords.Latitude;
+		}
+	}
 
-    private async Task OnValidSubmitAsync(EditContext context)
-    {
-        success = true;
-        StateHasChanged();
+	private async Task<bool> SetUserByEmailAsync(string email)
+	{
+		var fetchedUser = await UserService.GetUserByEmailAsync(email);
 
-        var createUserSuccess = await UserService.CreateUserAsync(user);
+		if (fetchedUser != null)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
 
-        if (createUserSuccess)
-        {
-            Navigation.NavigateTo("/profile");
-        }
-        else
-        {
-            Navigation.NavigateTo("/");
-        }
-    }
+	private async Task OnValidSubmitAsync(EditContext context)
+	{
+		success = true;
+		StateHasChanged();
+
+		var createUserSuccess = await UserService.CreateUserAsync(user);
+
+		if (createUserSuccess)
+		{
+			Navigation.NavigateTo("/profile");
+		}
+		else
+		{
+			Navigation.NavigateTo("/");
+		}
+	}
+
 }

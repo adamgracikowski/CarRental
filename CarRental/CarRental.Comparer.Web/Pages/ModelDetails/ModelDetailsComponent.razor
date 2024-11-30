@@ -1,5 +1,6 @@
 ﻿@page "/offers/{MakeName}/{ModelName}"
 
+@using CarRental.Comparer.Web.DateExtensions
 @using CarRental.Comparer.Web.Extensions
 @using CarRental.Comparer.Web.Requests.CarServices
 @using CarRental.Comparer.Web.Requests.DTOs.Cars
@@ -20,6 +21,7 @@
 @inject IProviderService ProviderService
 @inject IOfferService OfferService
 @inject IUserService UserService
+@inject IYearsCalculator YearsCalculator
 
 @if (Model is not null)
 {
@@ -29,8 +31,12 @@
 				<div class="d-flex flex-column flex-md-row align-items-center">
 					<MudImage Class="rounded-lg" Src="@Model.LogoUrl" Alt="ModelName"></MudImage>
 					<div class="justify-content-center">
-						<MudText Typo="Typo.h2" Align="Align.Center" Class="mb-1"><b>@MakeName</b></MudText>
-						<MudText Typo="Typo.h3" Align="Align.Center" Class="mb-3"><b>@Model.Name</b></MudText>
+						<MudText Typo="Typo.h2" Align="Align.Center" Class="mb-1">
+							<b>@MakeName</b>
+						</MudText>
+						<MudText Typo="Typo.h3" Align="Align.Center" Class="mb-3">
+							<b>@Model.Name</b>
+						</MudText>
 					</div>
 				</div>
 			</MudCardHeader>
@@ -40,24 +46,24 @@
 				</MudCardActions>
 				@if (AreOffersBeingGenerated)
 					@foreach (var progress in ProviderProgresses)
-					{
-						<MudItem class="d-flex align-items-center mb-5">
-							<MudText Class="me-5" Style="width: 150px;">@progress.ProviderName</MudText>
-							@if (progress.IsTimeout)
-							{
-								<MudIcon Icon="@Icons.Material.Filled.TimerOff" Size="MudBlazor.Size.Medium" Color="Color.Error" Class="me-2" />
-							}
-							else if (progress.IsCompleted)
-							{
-								<MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="MudBlazor.Size.Medium" Color="Color.Success" Class="me-2" />
-							}
-							else
-							{
-								<MudIcon Icon="@Icons.Material.Filled.DirectionsCar" Size="MudBlazor.Size.Medium" Color="Color.Primary" Class="me-2" />
-							}
-							<MudProgressLinear Value="@(100.0 * progress.Progress / progress.Total)" Rounded="true" Size="MudBlazor.Size.Medium" Color="Color.Primary" Class="flex-grow-1" />
-						</MudItem>
-					}
+				{
+					<MudItem class="d-flex align-items-center mb-5">
+						<MudText Class="me-5" Style="width: 150px;">@progress.ProviderName</MudText>
+						@if (progress.IsTimeout)
+						{
+							<MudIcon Icon="@Icons.Material.Filled.TimerOff" Size="MudBlazor.Size.Medium" Color="Color.Error" Class="me-2"/>
+						}
+						else if (progress.IsCompleted)
+						{
+							<MudIcon Icon="@Icons.Material.Filled.CheckCircle" Size="MudBlazor.Size.Medium" Color="Color.Success" Class="me-2"/>
+						}
+						else
+						{
+							<MudIcon Icon="@Icons.Material.Filled.DirectionsCar" Size="MudBlazor.Size.Medium" Color="Color.Primary" Class="me-2"/>
+						}
+						<MudProgressLinear Value="@(100.0 * progress.Progress / progress.Total)" Rounded="true" Size="MudBlazor.Size.Medium" Color="Color.Primary" Class="flex-grow-1"/>
+					</MudItem>
+				}
 				<MudGrid>
 					<MudItem xs="12" md="9">
 						<CarMapComponent OnMarkerClicked="HandleMarkerClick" @ref="CarMap"></CarMapComponent>
@@ -65,7 +71,9 @@
 					<MudItem xs="12" md="3">
 						<MudCard>
 							<MudCardHeader>
-								<MudText Typo="Typo.h6" Align="Align.Left" Class="mb-1 text-muted"><b>Model details:</b></MudText>
+								<MudText Typo="Typo.h6" Align="Align.Left" Class="mb-1 text-muted">
+									<b>Model details:</b>
+								</MudText>
 							</MudCardHeader>
 							<MudCardContent>
 								@if (Model.EngineType is not null)
@@ -86,19 +94,19 @@
 		</MudCard>
 		<MudDataGrid Items="@Offers">
 			<Columns>
-				<HierarchyColumn T="OfferButton" />
-				<PropertyColumn Property="x => x.ProviderName" Title="Provider" />
-				<PropertyColumn Property="x => x.Total" Title="Price Per Day" Format="C" />
-				<PropertyColumn Property="x => x.Offer.Car.TransmissionType" Title="Transmission Type" />
-				<PropertyColumn Property="x => x.Offer.Car.FuelType" Title="Fuel Type" />
-				<PropertyColumn Property="x => x.Offer.Car.ProductionYear" Title="Production Year" />
+				<HierarchyColumn T="OfferButton"/>
+				<PropertyColumn Property="x => x.ProviderName" Title="Provider"/>
+				<PropertyColumn Property="x => x.Total" Title="Price Per Day" Format="C"/>
+				<PropertyColumn Property="x => x.Offer.Car.TransmissionType" Title="Transmission Type"/>
+				<PropertyColumn Property="x => x.Offer.Car.FuelType" Title="Fuel Type"/>
+				<PropertyColumn Property="x => x.Offer.Car.ProductionYear" Title="Production Year"/>
 				<TemplateColumn>
 					<CellTemplate>
 						<MudStack Row>
 							<MudButton style="width: 120px" Disabled="@context.Item.Disabled" OnClick="@(e => ChooseOfferAsync(context.Item))" Size="MudBlazor.Size.Small" Variant="Variant.Filled" Color="Color.Primary">
 								@if (@context.Item.RequestInProgress)
 								{
-									<MudProgressCircular Color="Color.Primary" Size="MudBlazor.Size.Small" Indeterminate="true" />
+									<MudProgressCircular Color="Color.Primary" Size="MudBlazor.Size.Small" Indeterminate="true"/>
 								}
 								else
 								{
@@ -115,23 +123,33 @@
 						<MudCardContent>
 							<MudGrid Spacing="3">
 								<MudItem xs="4">
-									<MudText Typo="Typo.subtitle1"><b>Car Details</b></MudText>
+									<MudText Typo="Typo.subtitle1">
+										<b>Car Details</b>
+									</MudText>
 									<MudText Typo="Typo.body2">Location: (@context.Item.Offer.Car.Latitude; @context.Item.Offer.Car.Longitude)</MudText>
 								</MudItem>
 								<MudItem xs="4">
-									<MudText Typo="Typo.subtitle1"><b>Insurance:</b></MudText>
+									<MudText Typo="Typo.subtitle1">
+										<b>Insurance:</b>
+									</MudText>
 									<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Insurance.Name</MudText>
 									@if (!string.IsNullOrEmpty(context.Item.Offer.Segment.Insurance.Description))
 									{
 										<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Insurance.Description</MudText>
 									}
-									<MudText Typo="Typo.caption" Color="Color.Success"> <b>@context.Item.Offer.InsurancePricePerDay.ToString("C")</b></MudText>
+									<MudText Typo="Typo.caption" Color="Color.Success">
+										<b>@context.Item.Offer.InsurancePricePerDay.ToString("C")</b>
+									</MudText>
 								</MudItem>
 								<MudItem xs="4">
-									<MudText Typo="Typo.subtitle1"><b>Segment:</b></MudText>
+									<MudText Typo="Typo.subtitle1">
+										<b>Segment:</b>
+									</MudText>
 									<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Name</MudText>
 									<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Description</MudText>
-									<MudText Typo="Typo.caption" Color="Color.Success"> <b>@context.Item.Offer.RentalPricePerDay.ToString("C")</b></MudText>
+									<MudText Typo="Typo.caption" Color="Color.Success">
+										<b>@context.Item.Offer.RentalPricePerDay.ToString("C")</b>
+									</MudText>
 								</MudItem>
 							</MudGrid>
 						</MudCardContent>
@@ -139,7 +157,7 @@
 				</MudCard>
 			</ChildRowContent>
 			<PagerContent>
-				<MudDataGridPager T="OfferButton" />
+				<MudDataGridPager T="OfferButton"/>
 			</PagerContent>
 		</MudDataGrid>
 	</MudContainer>
@@ -147,17 +165,15 @@
 else
 {
 	<div class="d-flex justify-content-center align-content-center h-100">
-		<MudProgressCircular Color="Color.Primary" Size="MudBlazor.Size.Large" Indeterminate="true" />
+		<MudProgressCircular Color="Color.Primary" Size="MudBlazor.Size.Large" Indeterminate="true"/>
 	</div>
 }
 
 
 @code {
-	[Parameter]
-	public string? MakeName { get; set; }
+	[Parameter] public string? MakeName { get; set; }
 
-	[Parameter]
-	public string? ModelName { get; set; }
+	[Parameter] public string? ModelName { get; set; }
 
 	private class OfferButton
 	{
@@ -223,12 +239,12 @@ else
 					var providerId = providerDto?.ProviderId ?? 0;
 					var carIds = c.Select(car => car.Id).ToList();
 					var providerProgress = new ProviderProgress
-						{
-							ProviderId = providerId,
-							ProviderName = c.Key,
-							CarIds = carIds,
-							Total = carIds.Count
-						};
+					{
+						ProviderId = providerId,
+						ProviderName = c.Key,
+						CarIds = carIds,
+						Total = carIds.Count
+					};
 
 					return providerProgress;
 				}).ToList();
@@ -254,12 +270,15 @@ else
 			}
 			else
 			{
+				var age = YearsCalculator.CalculateDifferenceInYearsFromUtcNow(userDto.Birthday.Value);
+				var drivingLicenseYears = YearsCalculator.CalculateDifferenceInYearsFromUtcNow(userDto.DrivingLicenseDate.Value);
+
 				CreateOfferDto = new CreateOfferDto(
-					drivingLicenseYears: userDto.DrivingLicenseYears,
-					age: userDto.Age,
+					drivingLicenseYears: drivingLicenseYears,
+					age : age,
 					latitude: (decimal)userDto.Latitude,
 					longitude: (decimal)userDto.Longitude
-				);	
+				);
 			}
 
 			GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
@@ -314,7 +333,6 @@ else
 
 		foreach (var carId in provider.CarIds)
 		{
-
 			var offerDto = await OfferService.CreateOfferAsync(provider.ProviderId, carId, CreateOfferDto, cancellationToken);
 
 			provider.Progress += 1;
@@ -324,13 +342,13 @@ else
 				lock (OffersLock)
 				{
 					Offers.Add(new OfferButton
-						{
-							Offer = offerDto,
-							Disabled = false,
-							ProviderName = provider.ProviderName,
-							RequestInProgress = false,
-							Total = offerDto.RentalPricePerDay + offerDto.InsurancePricePerDay
-						});
+					{
+						Offer = offerDto,
+						Disabled = false,
+						ProviderName = provider.ProviderName,
+						RequestInProgress = false,
+						Total = offerDto.RentalPricePerDay + offerDto.InsurancePricePerDay
+					});
 				}
 
 				await CarMap.AddMarkerAsync((double)offerDto.Car.Latitude, (double)offerDto.Car.Longitude);
@@ -449,12 +467,12 @@ else
 		var name = String.Empty;
 		var lastName = String.Empty;
 
-		if(nameAndLastName != null)
+		if (nameAndLastName != null)
 		{
 			name = nameAndLastName.Length > 0 ? nameAndLastName[0] : String.Empty;
 			lastName = nameAndLastName.Length > 1 ? nameAndLastName[1] : String.Empty;
 		}
-		
+
 
 		var parameters = new DialogParameters
 		{
@@ -475,4 +493,5 @@ else
 
 		return result;
 	}
+
 }

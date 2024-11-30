@@ -17,7 +17,7 @@ public sealed class CreateOfferDto
 		Longitude = longitude;
 	}
 
-	[Range(UserDtoValidationConstants.DrivingLicenseYearsConstants.LowerYears,
+	[Range(CreateOfferDtoValidationConstants.DrivingLicenseYearsConstants.LowerYears,
 	CreateOfferDtoValidationConstants.DrivingLicenseYearsConstants.UpperYears,
 	ErrorMessage = CreateOfferDtoValidationConstants.DrivingLicenseYearsConstants.DrivingLicenseYearsRange)]
 	public int DrivingLicenseYears { get; set; }

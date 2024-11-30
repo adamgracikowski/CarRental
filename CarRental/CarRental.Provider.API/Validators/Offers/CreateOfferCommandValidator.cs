@@ -6,24 +6,24 @@ namespace CarRental.Provider.API.Validators.Offers;
 
 public sealed class CreateOfferCommandValidator : AbstractValidator<CreateOfferCommand>
 {
-    private readonly IValidator<CreateOfferDto> createOfferDtoValidator;
+	private readonly IValidator<CreateOfferDto> createOfferDtoValidator;
 
-    public CreateOfferCommandValidator(IValidator<CreateOfferDto> createOfferDtoValidator)
-    {
-        this.createOfferDtoValidator = createOfferDtoValidator;
+	public CreateOfferCommandValidator(IValidator<CreateOfferDto> createOfferDtoValidator)
+	{
+		this.createOfferDtoValidator = createOfferDtoValidator;
 
-        RuleFor(c => c.CarId)
-            .NotEmpty()
+		RuleFor(c => c.CarId)
+			.NotEmpty()
 			.WithMessage("{PropertyName} is required.")
 			.GreaterThan(0)
-            .WithMessage("{PropertyName} must be greater than {ComparisonValue}.");
+			.WithMessage("{PropertyName} must be greater than {ComparisonValue}.");
 
-        RuleFor(c => c.Audience)
-            .NotEmpty()
-            .WithMessage("{PropertyName} is required.");
+		RuleFor(c => c.Audience)
+			.NotEmpty()
+			.WithMessage("{PropertyName} is required.");
 
-        RuleFor(c => c.CreateOfferDto)
-            .SetValidator(this.createOfferDtoValidator)
-            .OverridePropertyName(string.Empty);
-    }
+		RuleFor(c => c.CreateOfferDto)
+			.SetValidator(this.createOfferDtoValidator)
+			.OverridePropertyName(string.Empty);
+	}
 }

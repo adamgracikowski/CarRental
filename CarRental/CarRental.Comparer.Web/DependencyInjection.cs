@@ -1,4 +1,5 @@
-﻿using CarRental.Comparer.Web.Requests.CarServices;
+﻿using CarRental.Comparer.Web.DateExtensions;
+using CarRental.Comparer.Web.Requests.CarServices;
 using CarRental.Comparer.Web.Requests.OfferServices;
 using CarRental.Comparer.Web.Requests.ProvidersServices;
 using CarRental.Comparer.Web.Requests.RentalTransactionService;
@@ -24,6 +25,15 @@ public static class DependencyInjection
 		services.AddScoped<ThemeService>();
 		services.AddScoped<StateContainer>();
 
+		services.RegisterDateTimeServices();
+
+		return services;
+	}
+
+	public static IServiceCollection RegisterDateTimeServices(this IServiceCollection services)
+	{
+		services.AddScoped<IDateTimeProvider, DateTimeProvider>();
+		services.AddScoped<IYearsCalculator, YearsCalculator>();
 		return services;
 	}
 

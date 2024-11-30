@@ -10,36 +10,36 @@ namespace CarRental.Comparer.API.Requests.Providers.Handlers;
 
 public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Result<OfferDto>>
 {
-    private readonly IRepositoryBase<Provider> providersRepository;
-    private readonly ILogger<CreateOfferCommandHandler> logger;
-    private readonly ICarComparisonService carComparisonService;
+	private readonly IRepositoryBase<Provider> providersRepository;
+	private readonly ILogger<CreateOfferCommandHandler> logger;
+	private readonly ICarComparisonService carComparisonService;
 
-    public CreateOfferCommandHandler(IRepositoryBase<Provider> providersRepository,
-        ILogger<CreateOfferCommandHandler> logger,
-        ICarComparisonService carComparisonService)
-    {
-        this.providersRepository = providersRepository;
-        this.logger = logger;
-        this.carComparisonService = carComparisonService;
-    }
+	public CreateOfferCommandHandler(IRepositoryBase<Provider> providersRepository,
+		ILogger<CreateOfferCommandHandler> logger,
+		ICarComparisonService carComparisonService)
+	{
+		this.providersRepository = providersRepository;
+		this.logger = logger;
+		this.carComparisonService = carComparisonService;
+	}
 
-    public async Task<Result<OfferDto>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
-    {
-        var provider = await providersRepository.GetByIdAsync(request.id, cancellationToken);
+	public async Task<Result<OfferDto>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
+	{
+		var provider = await providersRepository.GetByIdAsync(request.id, cancellationToken);
 
-        if (provider?.Name is null)
-        {
-            logger.LogWarning($"Provider with ID {request.id} not found.");
-            return Result<OfferDto>.NotFound();
-        }
+		if (provider?.Name is null)
+		{
+			logger.LogWarning($"Provider with ID {request.id} not found.");
+			return Result<OfferDto>.NotFound();
+		}
 
-        var offerDto = await carComparisonService.CreateOfferAsync(provider.Name, request.carId, request.createOfferDto, cancellationToken);
+		var offerDto = await carComparisonService.CreateOfferAsync(provider.Name, request.carId, request.createOfferDto, cancellationToken);
 
-        if (offerDto is null)
-        {
-            return Result<OfferDto>.Error();
-        }
+		if (offerDto is null)
+		{
+			return Result<OfferDto>.Error();
+		}
 
-        return Result<OfferDto>.Success(offerDto);
-    }
+		return Result<OfferDto>.Success(offerDto);
+	}
 }
