@@ -5,7 +5,6 @@ using CarRental.Comparer.Infrastructure.Cache;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
-using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 using CarRental.Comparer.Infrastructure.CarProviders;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using Microsoft.Extensions.Configuration;
@@ -45,9 +44,9 @@ public sealed class CarComparisonService : ICarComparisonService
 
     public async Task<UnifiedCarListDto> GetAllAvailableCarsAsync(CancellationToken cancellationToken)
     {
-        var carsKey = keyGenerator.GenerateCarsKey();
+        var carsKey = this.keyGenerator.GenerateCarsKey();
 
-        var cacheResult = await cacheService.GetDataByKeyAsync<UnifiedCarListDto>(carsKey);
+        var cacheResult = await this.cacheService.GetDataByKeyAsync<UnifiedCarListDto>(carsKey);
 
         if (cacheResult != null && cacheResult.Makes.Count > 0)
         {
@@ -60,7 +59,7 @@ public sealed class CarComparisonService : ICarComparisonService
 
         var aggregatedResponse = await this.AggregateResponsesAsync(results, cancellationToken);
 
-        await cacheService.AddDataAsync(carsKey, aggregatedResponse);
+        await this.cacheService.AddDataAsync(carsKey, aggregatedResponse);
 
         return aggregatedResponse;
     }
@@ -79,7 +78,7 @@ public sealed class CarComparisonService : ICarComparisonService
 
     public async Task<RentalIdWithDateTimesDto?> ChooseOfferAsync(string providerName, int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken)
     {
-        var carProviderService = GetCarProviderServiceByName(providerName);
+        var carProviderService = this.GetCarProviderServiceByName(providerName);
 
         if (carProviderService is null) return null;
 
@@ -90,7 +89,7 @@ public sealed class CarComparisonService : ICarComparisonService
 
     public async Task<RentalStatusDto?> GetRentalStatusByIdAsync(string providerName, string rentalId, CancellationToken cancellationToken)
     {
-        var carProviderService = GetCarProviderServiceByName(providerName);
+        var carProviderService = this.GetCarProviderServiceByName(providerName);
 
         if (carProviderService is null) return null;
 
@@ -101,11 +100,11 @@ public sealed class CarComparisonService : ICarComparisonService
 
     private ICarProviderService? GetCarProviderServiceByName(string name)
     {
-        var carProviderService = carProviderServices.FirstOrDefault(providerService => providerService.ProviderName == name);
+        var carProviderService = this.carProviderServices.FirstOrDefault(providerService => providerService.ProviderName == name);
 
         if (carProviderService is null)
         {
-            logger.LogWarning($"No service found for provider name '{name}'.");
+            this.logger.LogWarning($"No service found for provider with name: '{name}'.");
             return null;
         }
 

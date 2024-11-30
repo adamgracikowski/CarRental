@@ -1,18 +1,17 @@
 ﻿using Ardalis.Result;
+using Ardalis.Result.FluentValidation;
 using Ardalis.Specification;
 using CarRental.Common.Core.ComparerEntities;
+using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
+using CarRental.Comparer.API.BackgroundJobs.RentalServices;
 using CarRental.Comparer.API.Requests.Providers.Commands;
 using CarRental.Comparer.Infrastructure.CarComparisons;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
-using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
-using FluentValidation;
-using MediatR;
-using Ardalis.Result.FluentValidation;
-using CarRental.Comparer.Persistence.Specifications.Users;
-using Hangfire;
-using CarRental.Comparer.API.BackgroundJobs.RentalServices;
-using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
+using CarRental.Comparer.Persistence.Specifications.Users;
+using FluentValidation;
+using Hangfire;
+using MediatR;
 
 namespace CarRental.Comparer.API.Requests.Providers.Handlers;
 

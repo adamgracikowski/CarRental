@@ -1,18 +1,18 @@
 ﻿using Azure.Storage.Blobs;
 using CarRental.Common.Infrastructure.Middlewares;
 using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
+using CarRental.Common.Infrastructure.Storages.BlobStorage;
+using CarRental.Comparer.API.BackgroundJobs.RentalServices;
+using CarRental.Comparer.Infrastructure.Cache;
 using CarRental.Comparer.Infrastructure.CarComparisons;
 using CarRental.Comparer.Infrastructure.CarProviders;
 using CarRental.Comparer.Infrastructure.CarProviders.Authorization;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders;
 using CarRental.Comparer.Infrastructure.CarProviders.Options;
-using CarRental.Common.Infrastructure.Storages.BlobStorage;
+using CarRental.Comparer.Infrastructure.CarProviders.RentalStatusConversions;
 using CarRental.Comparer.Persistence.Options;
-using CarRental.Comparer.Infrastructure.Cache;
-using Microsoft.Extensions.Configuration;
-using Hangfire;
 using FluentValidation;
-using CarRental.Comparer.API.BackgroundJobs.RentalServices;
+using Hangfire;
 
 namespace CarRental.Comparer.API;
 
@@ -26,6 +26,7 @@ public static class DependencyInjection
      
         services.Configure<CarProvidersOptions>(configuration.GetSection(CarProvidersOptions.SectionName));
         services.Configure<InternalProviderOptions>(configuration.GetSection(InternalProviderOptions.SectionName));
+        services.Configure<RentalStatusConversionOptions>(configuration.GetSection(RentalStatusConversionOptions.SectionName));
 
         return services;
     }
@@ -48,8 +49,9 @@ public static class DependencyInjection
         services.AddTransient<ICarProviderService, InternalCarProviderService>();
 
         services.AddScoped<IRentalComparerStatusCheckerService, RentalComparerStatusCheckerService>();
+		services.AddScoped<IRentalStatusConverter, RentalStatusConverter>();
 
-        return services;
+		return services;
     }
 
     public static IServiceCollection ConfigureRedis(this IServiceCollection services, IConfiguration configuration)

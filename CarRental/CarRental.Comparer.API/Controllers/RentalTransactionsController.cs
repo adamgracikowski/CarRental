@@ -1,11 +1,10 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
-using CarRental.Comparer.Infrastructure.CarComparisons;
+using CarRental.Comparer.API.DTOs.RentalTransactions;
 using CarRental.Comparer.API.Requests.RentalTransactions.Queries;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using CarRental.Comparer.API.DTOs.RentalTransactions;
-using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 
 namespace CarRental.Comparer.API.Controllers;
 
@@ -30,7 +29,6 @@ public sealed class RentalTransactionsController : ControllerBase
 
 		return response;
 	}
-
 
 	[TranslateResultToActionResult]
 	[HttpGet("{userEmail}/{status}")]

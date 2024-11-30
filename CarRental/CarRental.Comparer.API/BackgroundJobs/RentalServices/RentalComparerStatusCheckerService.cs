@@ -3,6 +3,7 @@ using CarRental.Common.Core.ComparerEntities;
 using CarRental.Common.Core.Enums;
 using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Comparer.Infrastructure.CarComparisons;
+using CarRental.Comparer.Infrastructure.CarProviders.RentalStatusConversions;
 using Hangfire;
 
 namespace CarRental.Comparer.API.BackgroundJobs.RentalServices;
@@ -13,17 +14,20 @@ public class RentalComparerStatusCheckerService : IRentalComparerStatusCheckerSe
 	private readonly ILogger<RentalComparerStatusCheckerService> logger;
 	private readonly ICarComparisonService carComparisonService;
 	private readonly IDateTimeProvider dateTimeProvider;
+	private readonly IRentalStatusConverter rentalStatusConverter;
 
 	public RentalComparerStatusCheckerService(
 		IRepositoryBase<RentalTransaction> rentalTransactionsRepository,
 		ILogger<RentalComparerStatusCheckerService> logger,
 		ICarComparisonService carComparisonService,
-		IDateTimeProvider dateTimeProvider)
+		IDateTimeProvider dateTimeProvider,
+		IRentalStatusConverter rentalStatusConverter)
 	{
 		this.rentalTransactionsRepository = rentalTransactionsRepository;
 		this.logger = logger;
 		this.carComparisonService = carComparisonService;
 		this.dateTimeProvider = dateTimeProvider;
+		this.rentalStatusConverter = rentalStatusConverter;
 	}
 
 	public async Task CheckAndUpdateRentalStatusAsync(
@@ -34,24 +38,26 @@ public class RentalComparerStatusCheckerService : IRentalComparerStatusCheckerSe
 		DateTime jobExpirationTime,
 		CancellationToken cancellationToken)
 	{
-		if (dateTimeProvider.UtcNow >= jobExpirationTime)
+		if (this.dateTimeProvider.UtcNow >= jobExpirationTime)
 		{
-			logger.LogInformation($"Job with Id = {jobId} has expired.");
+			this.logger.LogInformation($"Job with Id = {jobId} has expired.");
 			RecurringJob.RemoveIfExists(jobId);
 			return;
 		}
 
-		var rentalStatusDto = await carComparisonService.GetRentalStatusByIdAsync(providerName, outerRentalId, cancellationToken);
+		var rentalStatusDto = await this.carComparisonService.GetRentalStatusByIdAsync(providerName, outerRentalId, cancellationToken);
 
 		if (rentalStatusDto is null)
 		{
-			logger.LogInformation($"Rental with Id = {outerRentalId} does not exist in providerDB.");
+			this.logger.LogInformation($"Rental with Id = {outerRentalId} does not exist in providerDB.");
 			RecurringJob.RemoveIfExists(jobId);
 			return;
 		}
 
-		if (rentalStatusDto.status == RentalStatus.Active.ToString() || rentalStatusDto.status == RentalStatus.Rejected.ToString())
+		if (this.rentalStatusConverter.AreEquivalent(RentalStatus.Active, rentalStatusDto.Status, providerName) ||
+		   this.rentalStatusConverter.AreEquivalent(RentalStatus.Rejected, rentalStatusDto.Status, providerName))
 		{
+
 			var rentalTransaction = await rentalTransactionsRepository.GetByIdAsync(rentalTransactionId, cancellationToken);
 
 			if (rentalTransaction is null)
@@ -61,7 +67,14 @@ public class RentalComparerStatusCheckerService : IRentalComparerStatusCheckerSe
 				return;
 			}
 
-			rentalTransaction.Status = rentalStatusDto.status == RentalStatus.Active.ToString() ? RentalStatus.Active : RentalStatus.Rejected;
+			if (!this.rentalStatusConverter.TryConvertFromProviderRentalStatus(rentalStatusDto.Status, providerName, out var updatedStatus))
+			{
+				logger.LogInformation($"Rental status conversion for {rentalStatusDto.Status} has failed.");
+				RecurringJob.RemoveIfExists(jobId);
+				return;
+			}
+
+			rentalTransaction.Status = updatedStatus;
 
 			await rentalTransactionsRepository.UpdateAsync(rentalTransaction, cancellationToken);
 			await rentalTransactionsRepository.SaveChangesAsync(cancellationToken);
@@ -69,5 +82,7 @@ public class RentalComparerStatusCheckerService : IRentalComparerStatusCheckerSe
 			RecurringJob.RemoveIfExists(jobId);
 			return;
 		}
+
+		logger.LogInformation($"Rental status different from Active or Rejected... Trying again.");
 	}
 }

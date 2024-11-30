@@ -1,6 +1,4 @@
-﻿using CarRental.Common.Core.Enums;
-
-namespace CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
+﻿namespace CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
 
 public sealed record ChooseOfferDto(
     string EmailAddress, 

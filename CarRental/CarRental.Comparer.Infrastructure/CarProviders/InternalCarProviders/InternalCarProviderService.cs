@@ -1,9 +1,6 @@
-﻿using CarRental.Common.Core.ProviderEntities;
-using CarRental.Comparer.Infrastructure.Cache;
-using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
+﻿using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
-using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Cars;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Rentals;
@@ -26,8 +23,8 @@ public sealed class InternalCarProviderService : ICarProviderService
         IOptions<InternalProviderOptions> options,
         ILogger<InternalCarProviderService> logger)
     {
-        providerOptions = options.Value;
-        httpClient = httpClientFactory.CreateClient(providerOptions.Name);
+        this.providerOptions = options.Value;
+        this.httpClient = httpClientFactory.CreateClient(providerOptions.Name);
         this.logger = logger;
     }
 
@@ -35,13 +32,13 @@ public sealed class InternalCarProviderService : ICarProviderService
     {
         try
         {
-            var response = await httpClient.GetAsync("/Cars/Available");
-            var providerCarListDto = await MapResponseAsync(response, cancellationToken);
+            var response = await this.httpClient.GetAsync("/Cars/Available");
+            var providerCarListDto = await this.MapResponseAsync(response, cancellationToken);
             return providerCarListDto;
         }
         catch (Exception ex)
         {
-            logger.LogInformation($"{ex.Message}");
+            this.logger.LogInformation($"{ex.Message}");
             return null;
         }
     }
@@ -50,7 +47,7 @@ public sealed class InternalCarProviderService : ICarProviderService
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync($"/Cars/{carId}/Offers", createOfferDto, cancellationToken);
+            var response = await this.httpClient.PostAsJsonAsync($"/Cars/{carId}/Offers", createOfferDto, cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -60,13 +57,13 @@ public sealed class InternalCarProviderService : ICarProviderService
             else
             {
                 var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-                logger.LogInformation($"Error: {errorMessage}");
+                this.logger.LogInformation($"Error: {errorMessage}");
                 return null;
             }
         }
         catch (Exception ex)
         {
-            logger.LogInformation(ex.Message);
+            this.logger.LogInformation(ex.Message);
             return null;
         }
     }
@@ -75,7 +72,7 @@ public sealed class InternalCarProviderService : ICarProviderService
     {
         try
         {
-            var response = await httpClient.PostAsJsonAsync($"/Offers/{offerId}", providerChooseOfferDto, cancellationToken);
+            var response = await this.httpClient.PostAsJsonAsync($"/Offers/{offerId}", providerChooseOfferDto, cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -83,7 +80,7 @@ public sealed class InternalCarProviderService : ICarProviderService
 
                 if(internalRentalIdWithDateTimesDto is null)
                 {
-                    logger.LogWarning("internal id is null");
+                    this.logger.LogWarning("internal id is null");
                     return null;
                 }
 
@@ -97,13 +94,13 @@ public sealed class InternalCarProviderService : ICarProviderService
             else
             {
                 var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-                logger.LogInformation($"Error: {errorMessage}");
+                this.logger.LogInformation($"Error: {errorMessage}");
                 return null;
             }
         }
         catch (Exception ex)
         {
-            logger.LogInformation(ex.Message);
+            this.logger.LogInformation(ex.Message);
             return null;
         }
     }
@@ -112,14 +109,12 @@ public sealed class InternalCarProviderService : ICarProviderService
     {
         try
         {
-            int internalRentalId;
-
-            if (int.TryParse(rentalId, out internalRentalId))
+            if (int.TryParse(rentalId, out var internalRentalId))
             {
-                logger.LogWarning("rentalId is not a number, parse failed");
+                this.logger.LogWarning("rentalId is not a number, parse failed");
             }
 
-            var response = await httpClient.GetAsync($"/Rentals/{internalRentalId}/status", cancellationToken);
+            var response = await this.httpClient.GetAsync($"/Rentals/{internalRentalId}/status", cancellationToken);
 
             if (response.IsSuccessStatusCode)
             {
@@ -127,7 +122,7 @@ public sealed class InternalCarProviderService : ICarProviderService
 
                 if(internalRentalStatusDto is null)
                 {
-                    logger.LogWarning("internalRentalStatusDto is null");
+                    this.logger.LogWarning("internalRentalStatusDto is null");
                     return null;
                 }
 
@@ -137,13 +132,13 @@ public sealed class InternalCarProviderService : ICarProviderService
             else
             {
                 var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-                logger.LogInformation($"Error: {errorMessage}");
+                this.logger.LogInformation($"Error: {errorMessage}");
                 return null;
             }
         }
         catch (Exception ex)
         {
-            logger.LogInformation(ex.Message);
+            this.logger.LogInformation(ex.Message);
             return null;
         }
     }

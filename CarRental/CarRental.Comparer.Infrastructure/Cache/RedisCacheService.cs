@@ -29,7 +29,7 @@ public sealed class RedisCacheService : ICacheService
 			AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(redisOptions.ExpirationTimeInMinutes)
 		};
 
-		await cache.SetStringAsync(key, serializedObject, options);
+		await this.cache.SetStringAsync(key, serializedObject, options);
 	}
 
 	public async Task AddDataAsync<T>(string key, T data, int minutes) where T : class
@@ -43,7 +43,7 @@ public sealed class RedisCacheService : ICacheService
 			AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(minutes)
 		};
 
-		await cache.SetStringAsync(key, serializedObject, options);
+		await this.cache.SetStringAsync(key, serializedObject, options);
 	}
 
 	public async Task AddDataAsync<T>(string key, T data, DateTime expirationTime) where T : class
@@ -52,21 +52,21 @@ public sealed class RedisCacheService : ICacheService
 
 		var serializedObject = JsonSerializer.Serialize<T>(data);
 
-		var dateTimeNow = dateTimeProvider.UtcNow;
+		var dateTimeNow = this.dateTimeProvider.UtcNow;
 
 		var redisOptions = new DistributedCacheEntryOptions()
 		{
 			AbsoluteExpirationRelativeToNow = expirationTime - dateTimeNow
 		};
 
-		await cache.SetStringAsync(key, serializedObject, redisOptions);
+		await this.cache.SetStringAsync(key, serializedObject, redisOptions);
 	}
 
 	public async Task<T?> GetDataByKeyAsync<T>(string key) where T : class
 	{
 		if (!this.redisOptions.UseRedis) return null;
 
-		var serializedObject = await cache.GetStringAsync(key);
+		var serializedObject = await this.cache.GetStringAsync(key);
 
 		if (serializedObject == null)
 		{

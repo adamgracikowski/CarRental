@@ -1,7 +1,6 @@
 ﻿using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
-using CarRental.Comparer.Infrastructure.CarProviders.Authorization;
 using CarRental.Comparer.Infrastructure.Cache;
-using Microsoft.Extensions.Caching.Memory;
+using CarRental.Comparer.Infrastructure.CarProviders.Authorization;
 using Microsoft.Extensions.Options;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http.Json;

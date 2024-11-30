@@ -1,11 +1,8 @@
 ﻿using Ardalis.Result;
 using Ardalis.Specification;
 using CarRental.Common.Core.ComparerEntities;
-using CarRental.Comparer.API.Requests.Providers.Commands;
 using CarRental.Comparer.API.Requests.Providers.Queries;
-using CarRental.Comparer.Infrastructure.CarComparisons;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Providers;
-using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using MediatR;
 
 namespace CarRental.Comparer.API.Requests.Providers.Handlers;

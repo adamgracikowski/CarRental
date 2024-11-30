@@ -1,7 +1,4 @@
-﻿using CarRental.Comparer.Infrastructure.CarProviders;
-using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders;
-
-namespace CarRental.Comparer.Infrastructure.Cache;
+﻿namespace CarRental.Comparer.Infrastructure.Cache;
 
 public sealed class CacheKeyGenerator : ICacheKeyGenerator
 {

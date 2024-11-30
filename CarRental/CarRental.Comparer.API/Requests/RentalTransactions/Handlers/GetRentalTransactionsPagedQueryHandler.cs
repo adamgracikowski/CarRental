@@ -11,6 +11,7 @@ using CarRental.Comparer.API.Pagination;
 using MediatR;
 using Ardalis.Result.FluentValidation;
 using CarRental.Comparer.Infrastructure.CarComparisons;
+using CarRental.Comparer.Infrastructure.CarProviders.RentalStatusConversions;
 
 namespace CarRental.Comparer.API.Requests.RentalTransactions.Handlers;
 
@@ -18,21 +19,27 @@ public class
 	GetRentalTransactionsPagedQueryHandler : IRequestHandler<GetRentalTransactionsPagedQuery,
 	Result<RentalTransactionPaginatedListDto>>
 {
-	private readonly IRepositoryBase<User> userRepository;
+	private readonly IRepositoryBase<User> usersRepository;
 	private readonly IMapper mapper;
 	private readonly IValidator<GetRentalTransactionsPagedQuery> validator;
 	private readonly ICarComparisonService carComparisonService;
+	private readonly IRentalStatusConverter rentalStatusConverter;
+	private readonly ILogger<GetRentalTransactionsPagedQueryHandler> logger;
 
 	public GetRentalTransactionsPagedQueryHandler(
 		IRepositoryBase<User> userRepository,
 		IMapper mapper,
 		IValidator<GetRentalTransactionsPagedQuery> validator,
-		ICarComparisonService carComparisonService)
+		ICarComparisonService carComparisonService,
+		IRentalStatusConverter rentalStatusConverter,
+		ILogger<GetRentalTransactionsPagedQueryHandler> logger)
 	{
-		this.userRepository = userRepository;
+		this.usersRepository = userRepository;
 		this.mapper = mapper;
 		this.validator = validator;
 		this.carComparisonService = carComparisonService;
+		this.rentalStatusConverter = rentalStatusConverter;
+		this.logger = logger;
 	}
 
 	public async Task<Result<RentalTransactionPaginatedListDto>> Handle(GetRentalTransactionsPagedQuery request,
@@ -49,7 +56,7 @@ public class
 
 		var specification = new UserByEmailWithRentalsByStatusWithCarProviderSpecification(request.Email, rentalStatus);
 
-		var user = await userRepository.FirstOrDefaultAsync(specification);
+		var user = await usersRepository.FirstOrDefaultAsync(specification);
 
 		if (user == null)
 		{
@@ -69,7 +76,7 @@ public class
 		{
 			var readyForReturnSpecification = new UserByEmailWithRentalsByStatusWithCarProviderSpecification(request.Email, RentalStatus.ReadyForReturn);
 
-			user = await userRepository.FirstOrDefaultAsync(readyForReturnSpecification);
+			user = await usersRepository.FirstOrDefaultAsync(readyForReturnSpecification);
 
 			if (user == null)
 			{
@@ -87,7 +94,7 @@ public class
 
 		var rentalDtos = mapper.Map<List<RentalTransactionDto>>(rentalList);
 
-		int numberOfPages = rentalDtos.NumberOfPages(request.PageSize);
+		var numberOfPages = rentalDtos.NumberOfPages(request.PageSize);
 
 		var page = rentalDtos.GetPage(request.PageSize, request.PageNumber);
 
@@ -105,17 +112,21 @@ public class
 			if (transaction.Status == RentalStatus.Returned)
 				continue;
 
-			var statusName = await carComparisonService.GetRentalStatusByIdAsync(transaction.Provider.Name, transaction.RentalOuterId, cancellationToken);
+			var rentalStatusDto = await carComparisonService
+				.GetRentalStatusByIdAsync(transaction.Provider.Name, transaction.RentalOuterId, cancellationToken);
 
-			if (statusName == null)
+			if (rentalStatusDto == null)
 				continue;
 
-			if (!Enum.TryParse<RentalStatus>(statusName.status, true, out RentalStatus status))
+			if(!this.rentalStatusConverter.TryConvertFromProviderRentalStatus(rentalStatusDto.Status, transaction.Provider.Name, out var updatedStatus))
+			{
+				this.logger.LogWarning($"Rental status conversion for {rentalStatusDto.Status} has failed.");
 				continue;
+			}
 
-			transaction.Status = status;
+			transaction.Status = updatedStatus;
 		}
 
-		await userRepository.SaveChangesAsync(cancellationToken);
+		await usersRepository.SaveChangesAsync(cancellationToken);
 	}
 }

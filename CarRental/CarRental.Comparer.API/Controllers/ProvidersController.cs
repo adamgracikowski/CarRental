@@ -4,7 +4,6 @@ using CarRental.Comparer.API.Requests.Providers.Commands;
 using CarRental.Comparer.API.Requests.Providers.Queries;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Providers;
-using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using MediatR;

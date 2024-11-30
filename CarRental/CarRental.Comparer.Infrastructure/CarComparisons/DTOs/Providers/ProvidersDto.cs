@@ -1,3 +1,3 @@
 ﻿namespace CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Providers;
 
-public sealed record ProvidersDto(ICollection<ProviderDto> providers);
+public sealed record ProvidersDto(ICollection<ProviderDto> Providers);

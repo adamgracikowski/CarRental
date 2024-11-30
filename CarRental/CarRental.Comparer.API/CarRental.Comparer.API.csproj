@@ -8,6 +8,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <Compile Remove="DTOs\Cars\**" />
+	  <Content Remove="DTOs\Cars\**" />
+	  <EmbeddedResource Remove="DTOs\Cars\**" />
+	  <None Remove="DTOs\Cars\**" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Ardalis.Result" Version="10.1.0" />
 		<PackageReference Include="Ardalis.Result.AspNetCore" Version="10.1.0" />
 		<PackageReference Include="Ardalis.Result.FluentValidation" Version="10.1.0" />
@@ -34,10 +41,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\CarRental.Comparer.Infrastructure\CarRental.Comparer.Infrastructure.csproj" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="DTOs\Cars\" />
 	</ItemGroup>
 
 </Project>
