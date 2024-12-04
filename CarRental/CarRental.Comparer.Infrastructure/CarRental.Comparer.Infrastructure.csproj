@@ -8,6 +8,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.104.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\CarRental.Common.Infrastructure\CarRental.Common.Infrastructure.csproj" />
     <ProjectReference Include="..\CarRental.Comparer.Persistence\CarRental.Comparer.Persistence.csproj" />
   </ItemGroup>

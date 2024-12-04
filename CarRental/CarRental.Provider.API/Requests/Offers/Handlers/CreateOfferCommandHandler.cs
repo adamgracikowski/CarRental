@@ -1,17 +1,15 @@
 ﻿using Ardalis.Result;
-using Ardalis.Result.FluentValidation;
 using Ardalis.Specification;
 using AutoMapper;
 using CarRental.Common.Core.Enums;
 using CarRental.Common.Core.ProviderEntities;
+using CarRental.Common.Infrastructure.Providers.RandomStringProvider;
 using CarRental.Provider.API.DTOs.Cars;
 using CarRental.Provider.API.DTOs.Offers;
 using CarRental.Provider.API.DTOs.Segments;
 using CarRental.Provider.API.Requests.Offers.Commands;
 using CarRental.Provider.Infrastructure.Calculators.OfferCalculator;
 using CarRental.Provider.Persistence.Specifications.Cars;
-using CarRental.Common.Infrastructure.Providers.RandomStringProvider;
-using FluentValidation;
 using MediatR;
 
 namespace CarRental.Provider.API.Requests.Offers.Handlers;

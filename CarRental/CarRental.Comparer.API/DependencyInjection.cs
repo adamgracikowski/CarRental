@@ -10,9 +10,12 @@ using CarRental.Comparer.Infrastructure.CarProviders.Authorization;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders;
 using CarRental.Comparer.Infrastructure.CarProviders.Options;
 using CarRental.Comparer.Infrastructure.CarProviders.RentalStatusConversions;
+using CarRental.Comparer.Infrastructure.Reports;
+using CarRental.Comparer.Infrastructure.Reports.ExcelReports;
 using CarRental.Comparer.Persistence.Options;
 using FluentValidation;
 using Hangfire;
+using Microsoft.AspNetCore.StaticFiles;
 
 namespace CarRental.Comparer.API;
 
@@ -50,6 +53,9 @@ public static class DependencyInjection
 
         services.AddScoped<IRentalComparerStatusCheckerService, RentalComparerStatusCheckerService>();
 		services.AddScoped<IRentalStatusConverter, RentalStatusConverter>();
+
+        services.AddScoped<IPeriodicReportService, ExcelReportService>();
+		services.AddSingleton<FileExtensionContentTypeProvider>();
 
 		return services;
     }

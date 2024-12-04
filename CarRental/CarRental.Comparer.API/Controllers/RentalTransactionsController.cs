@@ -1,10 +1,13 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using CarRental.Comparer.API.DTOs.RentalTransactions;
+using CarRental.Comparer.API.DTOs.Reports;
+using CarRental.Comparer.API.Requests.RentalTransactions.Commands;
 using CarRental.Comparer.API.Requests.RentalTransactions.Queries;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace CarRental.Comparer.API.Controllers;
 
@@ -40,5 +43,31 @@ public sealed class RentalTransactionsController : ControllerBase
 		var response = await mediator.Send(query, cancellationToken);
 
 		return response;
+	}
+
+	[TranslateResultToActionResult]
+	[HttpPost("/Reports")]
+	public async Task<IActionResult> GenerateReport(GenerateReportDto generateReportDto, CancellationToken cancellationToken)
+	{
+		var email = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Email)?.Value;
+
+		var command = new GenerateReportCommand(email, generateReportDto);
+
+		var response = await mediator.Send(command, cancellationToken);
+
+		if (!response.IsSuccess)
+		{
+			return BadRequest(response.ValidationErrors.Select(e => new
+			{
+				e.Identifier,
+				e.ErrorMessage
+			}));
+		}
+
+		return File(
+			response.Value.ReportContents, 
+			response.Value.ContentType, 
+			fileDownloadName: response.Value.ReportName
+		);
 	}
 }

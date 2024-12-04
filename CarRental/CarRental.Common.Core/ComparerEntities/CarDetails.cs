@@ -1,6 +1,4 @@
-﻿using CarRental.Common.Core.Enums;
-
-namespace CarRental.Common.Core.ComparerEntities;
+﻿namespace CarRental.Common.Core.ComparerEntities;
 
 public sealed class CarDetails : EntityBase
 {
