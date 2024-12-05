@@ -1,8 +1,11 @@
 ﻿@page "/additional-info"
+@attribute [Authorize(Roles = AuthorizationRoles.User)]
 @using CarRental.Comparer.Web.Requests.DTOs.Users
 @using CarRental.Comparer.Web.Requests.UserServices
+@using CarRental.Comparer.Web.RoleModels
 @using Darnton.Blazor.DeviceInterop.Geolocation
 @using CarRental.Comparer.Web.DateExtensions
+@using CarRental.Comparer.Web.Extensions
 
 @inject IUserService UserService
 @inject NavigationManager Navigation
@@ -35,22 +38,27 @@
 				               Required="true"
 				               MaxDate="DateTimeProvider.UtcNow"
 				               MinDate="DateTimeProvider.UtcNow.AddYears(-100)"/>
+			</MudStack>
+			<MudDivider Class="my-2"/>
+			<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
 				<MudTextField Label="Longitude"
-				              @bind-Value="user.Longitude"
-				              For="@(() => user.Longitude)"
-				              Required="true"
-				              Class="flex-grow-1"/>
+							  @bind-Value="user.Longitude"
+							  For="@(() => user.Longitude)"
+							  Required="true"
+							  Class="flex-grow-1" />
+
 				<MudTextField Label="Latitude"
-				              @bind-Value="user.Latitude"
-				              For="@(() => user.Latitude)"
-				              Required="true"
-				              Class="flex-grow-1"/>
+							  @bind-Value="user.Latitude"
+							  For="@(() => user.Latitude)"
+							  Required="true"
+							  Class="flex-grow-1" />
 
 				<MudIconButton Icon="@Icons.Material.Filled.MyLocation"
-				               Color="Color.Primary"
-				               OnClick="GetCurrentLocationAsync"
-				               Class="ml-2"/>
+							   Color="Color.Primary"
+							   OnClick="GetCurrentLocationAsync"
+							   Class="ml-2" />
 			</MudStack>
+			<MudDivider Class="my-2" />
 
 			<MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" FullWidth>
 				Submit
@@ -87,7 +95,7 @@
 		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
 		var userClaims = authState.User;
 
-		var email = userClaims?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+		var email = userClaims.GetEmail();
 
 		if (email != null)
 		{
@@ -95,19 +103,19 @@
 
 			var doesUserExist = await SetUserByEmailAsync(user.Email);
 
-			if (doesUserExist)
-			{
-				Navigation.NavigateTo("/profile");
-				return;
-			}
-		}
+            if (doesUserExist) 
+            {
+                Navigation.NavigateTo("/profile");
+                return;
+            }
+        }
 
 		var nameAndLastName = userClaims?.Claims.FirstOrDefault(c => c.Type == "name")?.Value.Split();
 		if (nameAndLastName != null && nameAndLastName.Count() != 0)
 		{
-			user.Name = nameAndLastName[0];
+			user.Lastname = nameAndLastName[0];
 			if (nameAndLastName.Count() > 1)
-				user.Lastname = nameAndLastName[1];
+				user.Name = nameAndLastName[1];
 		}
 
 		GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();

@@ -10,19 +10,19 @@ namespace CarRental.Comparer.API.Controllers;
 [ApiController]
 public sealed class CarsController : ControllerBase
 {
-    private readonly ICarComparisonService carComparisonService;
+	private readonly ICarComparisonService carComparisonService;
 
-    public CarsController(ICarComparisonService carComparisonService)
-    {
-        this.carComparisonService = carComparisonService;
-    }
+	public CarsController(ICarComparisonService carComparisonService)
+	{
+		this.carComparisonService = carComparisonService;
+	}
 
-    [TranslateResultToActionResult]
-    [HttpGet("Available")]
-    public async Task<Result<UnifiedCarListDto>> GetAvailableCars(CancellationToken cancellationToken)
-    {
-        var unifiedCarListDto = await this.carComparisonService.GetAllAvailableCarsAsync(cancellationToken);
+	[TranslateResultToActionResult]
+	[HttpGet("Available")]
+	public async Task<Result<UnifiedCarListDto>> GetAvailableCars(CancellationToken cancellationToken)
+	{
+		var unifiedCarListDto = await this.carComparisonService.GetAllAvailableCarsAsync(cancellationToken);
 
-        return Result<UnifiedCarListDto>.Success(unifiedCarListDto);
-    }
+		return Result<UnifiedCarListDto>.Success(unifiedCarListDto);
+	}
 }

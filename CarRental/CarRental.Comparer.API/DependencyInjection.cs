@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs;
+using CarRental.Common.Core.Roles;
 using CarRental.Common.Infrastructure.Middlewares;
 using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Common.Infrastructure.Storages.BlobStorage;
@@ -15,7 +16,10 @@ using CarRental.Comparer.Infrastructure.Reports.ExcelReports;
 using CarRental.Comparer.Persistence.Options;
 using FluentValidation;
 using Hangfire;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.StaticFiles;
+using Microsoft.Identity.Web;
+using System.Security.Claims;
 
 namespace CarRental.Comparer.API;
 
@@ -26,7 +30,7 @@ public static class DependencyInjection
         services.Configure<ConnectionStringsOptions>(configuration.GetSection(ConnectionStringsOptions.SectionName));
         services.Configure<BlobContainersOptions>(configuration.GetSection(BlobContainersOptions.SectionName));
         services.Configure<RedisOptions>(configuration.GetSection(RedisOptions.SectionName));
-     
+
         services.Configure<CarProvidersOptions>(configuration.GetSection(CarProvidersOptions.SectionName));
         services.Configure<InternalProviderOptions>(configuration.GetSection(InternalProviderOptions.SectionName));
         services.Configure<RentalStatusConversionOptions>(configuration.GetSection(RentalStatusConversionOptions.SectionName));
@@ -43,21 +47,21 @@ public static class DependencyInjection
         services.ConfigureMediatR();
         services.ConfigureBlobStorage(configuration);
         services.ConfigureRedis(configuration);
-
         services.AddMemoryCache();
+
         services.AddSingleton<ITokenService, InternalProviderTokenService>();
         services.AddTransient<TokenAuthorizationHandler>();
-
         services.AddTransient<ICarComparisonService, CarComparisonService>();
         services.AddTransient<ICarProviderService, InternalCarProviderService>();
+        services.AddAuth(configuration);
 
         services.AddScoped<IRentalComparerStatusCheckerService, RentalComparerStatusCheckerService>();
-		services.AddScoped<IRentalStatusConverter, RentalStatusConverter>();
+        services.AddScoped<IRentalStatusConverter, RentalStatusConverter>();
 
         services.AddScoped<IPeriodicReportService, ExcelReportService>();
-		services.AddSingleton<FileExtensionContentTypeProvider>();
+        services.AddSingleton<FileExtensionContentTypeProvider>();
 
-		return services;
+        return services;
     }
 
     public static IServiceCollection ConfigureRedis(this IServiceCollection services, IConfiguration configuration)
@@ -69,6 +73,25 @@ public static class DependencyInjection
         });
         services.AddSingleton<ICacheService, RedisCacheService>();
         services.AddSingleton<ICacheKeyGenerator, CacheKeyGenerator>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddMicrosoftIdentityWebApi(options =>
+            {
+                configuration.Bind("AzureAd", options);
+                options.TokenValidationParameters.RoleClaimType = "roles";
+            },
+            options => { configuration.Bind("AzureAd", options); });
+
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(AuthorizationRoles.Employee, policy => policy.RequireClaim(ClaimTypes.Role, AuthorizationRoles.Employee));
+            options.AddPolicy(AuthorizationRoles.User, policy => policy.RequireClaim(ClaimTypes.Role, AuthorizationRoles.User));
+        });
 
         return services;
     }

@@ -1,9 +1,12 @@
 ﻿@page "/profile"
-@using CarRental.Comparer.Web.DateExtensions
+@attribute [Authorize(Roles = AuthorizationRoles.User)]
 @using CarRental.Comparer.Web.Dialogs
 @using CarRental.Comparer.Web.Requests.DTOs.Users
 @using CarRental.Comparer.Web.Requests.UserServices
+@using CarRental.Comparer.Web.RoleModels
 @using Darnton.Blazor.DeviceInterop.Geolocation
+@using CarRental.Comparer.Web.DateExtensions
+@using CarRental.Comparer.Web.Extensions
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IUserService UserService
@@ -29,6 +32,7 @@
 					<MudTextField Label="First Name" @bind-Value="_user.Name" For="@(() => _user.Name)" Required="true" Disabled="!isEditMode"/>
 					<MudDivider Class="my-2"/>
 					<MudTextField Label="Last Name" @bind-Value="_user.Lastname" For="@(() => _user.Lastname)" Required="true" Disabled="!isEditMode"/>
+					<MudDivider Class="my-2"/>
 					<MudDatePicker Label="Birthday"
 					               @bind-Date="_user.Birthday"
 					               For="@(() => _user.Birthday)"
@@ -36,6 +40,7 @@
 					               MaxDate="DateTimeProvider.UtcNow.AddYears(-18)"
 					               MinDate="DateTimeProvider.UtcNow.AddYears(-100)"
 					               Disabled="!isEditMode"/>
+					<MudDivider Class="my-2"/>
 					<MudDatePicker Label="Driving License Date"
 					               @bind-Date="_user.DrivingLicenseDate"
 					               For="@(() => _user.DrivingLicenseDate)"
@@ -66,7 +71,7 @@
 						               Class="ml-2"/>
 					</MudStack>
 
-					<MudDivider Class="my-4"/>
+					<MudDivider Class="my-2"/>
 
 					<MudStack Direction="Direction.Row" Spacing="2" JustifyContent="JustifyContent.SpaceBetween">
 						<MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ToggleEditMode" FullWidth>
@@ -137,7 +142,7 @@
 	protected override async Task OnInitializedAsync()
 	{
 		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-		var email = authState.User?.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+		var email = authState.User.GetEmail();
 		if (email != null)
 		{
 			var fetchedUser = await UserService.GetUserByEmailAsync(email);

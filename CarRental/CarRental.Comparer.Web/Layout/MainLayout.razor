@@ -1,4 +1,6 @@
-﻿@using CarRental.Comparer.Web.Services
+﻿@using CarRental.Comparer.Web.RoleModels
+@using CarRental.Comparer.Web.Services
+@using CarRental.Comparer.Web.Extensions;
 @inherits LayoutComponentBase
 @inject NavigationManager NavigationManager
 @inject ThemeService ThemeService
@@ -13,17 +15,23 @@
         <MudText Typo="Typo.h5" Class="ml-3">Car Rental</MudText>
         <MudSpacer />
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
-
+        <AuthorizeView Roles=@AuthorizationRoles.Employee>
+            <Authorized>
+                <MudText Typo="Typo.body1" Class="mr-2">
+                    <text>Go back to work</text>
+                </MudText>
+            </Authorized>
+        </AuthorizeView>
         <AuthorizeView>
             <Authorized>
                 <MudText Typo="Typo.body1" Class="mr-2">
                     @{
-                        var userName = context.User.Identity?.Name;
-                        var userEmail = context.User.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+                        UserName = context.User.GetName();
+                        UserEmail = context.User.GetEmail();
                     }
-                    @if(string.IsNullOrEmpty(userName) == false && string.IsNullOrEmpty(userEmail) == false)
+                    @if (!string.IsNullOrEmpty(UserName) && !string.IsNullOrEmpty(UserEmail))
                     {
-                        <text>Hello, @userName (@userEmail)</text>
+                        <text>Hello, @UserName (@UserEmail)</text>
                     }
                 </MudText>
                 <MudButton StartIcon="@Icons.Material.Filled.Logout" Color="Color.Secondary" OnClick="SignOut">Log out</MudButton>
@@ -53,10 +61,9 @@
     private bool _drawerOpen = true;
     private bool _isDarkMode = true;
 
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-    }
+    private string? UserName { get; set; } = string.Empty;
+    private string? UserEmail { get; set; } = string.Empty;
+    private string? UserRole { get; set; } = string.Empty;
 
     private void LogIn()
     {

@@ -1,14 +1,23 @@
-﻿@inject NavigationManager NavigationManager
+﻿@using CarRental.Comparer.Web.RoleModels
+@inject NavigationManager NavigationManager
 
 <MudNavMenu>
     <MudNavLink Href="" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">Home</MudNavLink>
-    <AuthorizeView>
+    <AuthorizeView Roles=@AuthorizationRoles.User>
         <Authorized>
 	        <MudNavLink Href="profile" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Profile</MudNavLink>
 	        <MudNavLink Href="rentals" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.DirectionsCar">Your rentals</MudNavLink>
         </Authorized>
         <NotAuthorized>
 	        <MudNavLink Href="loginpage" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Person">Login</MudNavLink>
+        </NotAuthorized>
+    </AuthorizeView>
+    <AuthorizeView Roles=@AuthorizationRoles.Employee>
+        <Authorized>
+
+        </Authorized>
+        <NotAuthorized>
+
         </NotAuthorized>
     </AuthorizeView>
 </MudNavMenu>

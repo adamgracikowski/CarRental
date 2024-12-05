@@ -44,7 +44,7 @@ app.UseHangfireDashboard(/* configure dashboard authorization */);
 
 app.UseHttpsRedirection();
 app.UseCors(CorsConfiguration.TrustedComparerPolicy);
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

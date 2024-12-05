@@ -27,7 +27,7 @@ VALUES
 INSERT INTO Employees (Email, ProviderId, FirstName, LastName)
 VALUES
     ('adam@example.com', 1, 'Ad', 'Am'),
-    ('marcin@example.com', 1, 'Mar', 'Cin'),
+    ('marcin.gronicki@gmail.com', 1, 'Mar', 'Cin'),
     ('tosia@example.com', 1, 'To', 'Sia')
 
 INSERT INTO CarDetails (OuterId, Make, Model, Segment, FuelType, TransmissionType, YearOfProduction, NumberOfDoors, NumberOfSeats)

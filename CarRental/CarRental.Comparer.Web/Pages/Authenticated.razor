@@ -1,0 +1,32 @@
+﻿@page "/authenticated"
+@using CarRental.Comparer.Web.RoleModels
+@attribute [Authorize]
+
+@inject NavigationManager Navigation
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<PageTitle>Authenticated</PageTitle>
+
+@code {
+	protected override async Task OnInitializedAsync()
+	{
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            if (user.IsInRole(AuthorizationRoles.User))
+            {
+                Navigation.NavigateTo("/additional-info");
+            }
+            else
+            {
+                Navigation.NavigateTo("/");
+            }
+        }
+        else
+        {
+            Navigation.NavigateTo("/loginpage");
+        }
+	}
+}

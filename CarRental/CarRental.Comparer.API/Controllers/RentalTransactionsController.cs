@@ -1,16 +1,19 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
+using CarRental.Common.Core.Roles;
 using CarRental.Comparer.API.DTOs.RentalTransactions;
 using CarRental.Comparer.API.DTOs.Reports;
 using CarRental.Comparer.API.Requests.RentalTransactions.Commands;
 using CarRental.Comparer.API.Requests.RentalTransactions.Queries;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace CarRental.Comparer.API.Controllers;
 
+[Authorize]
 [Route("[controller]")]
 [ApiController]
 public sealed class RentalTransactionsController : ControllerBase
@@ -45,6 +48,7 @@ public sealed class RentalTransactionsController : ControllerBase
 		return response;
 	}
 
+	[Authorize(Policy = AuthorizationRoles.Employee)]
 	[TranslateResultToActionResult]
 	[HttpPost("/Reports")]
 	public async Task<IActionResult> GenerateReport(GenerateReportDto generateReportDto, CancellationToken cancellationToken)
@@ -65,8 +69,8 @@ public sealed class RentalTransactionsController : ControllerBase
 		}
 
 		return File(
-			response.Value.ReportContents, 
-			response.Value.ContentType, 
+			response.Value.ReportContents,
+			response.Value.ContentType,
 			fileDownloadName: response.Value.ReportName
 		);
 	}

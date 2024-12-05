@@ -4,10 +4,12 @@ using CarRental.Comparer.Web.Requests.OfferServices;
 using CarRental.Comparer.Web.Requests.ProvidersServices;
 using CarRental.Comparer.Web.Requests.RentalTransactionService;
 using CarRental.Comparer.Web.Requests.UserServices;
+using CarRental.Comparer.Web.RoleModels;
 using CarRental.Comparer.Web.Services;
 using CarRental.Comparer.Web.Services.StateContainer;
 using Darnton.Blazor.DeviceInterop.Geolocation;
 using GoogleMapsComponents;
+using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using MudBlazor.Services;
 
 namespace CarRental.Comparer.Web;
@@ -16,7 +18,7 @@ public static class DependencyInjection
 {
 	public static IServiceCollection RegisterInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
 	{
-		services.AddOidcAuthentication(configuration);
+		services.AddMsal(configuration);
 		services.ConfigureHttpClients(configuration);
 
 		services.AddMudServices();
@@ -37,13 +39,19 @@ public static class DependencyInjection
 		return services;
 	}
 
-	public static IServiceCollection AddOidcAuthentication(this IServiceCollection services, IConfiguration configuration)
+	public static IServiceCollection AddMsal(this IServiceCollection services, IConfiguration configuration)
 	{
-		services.AddOidcAuthentication(options =>
+		var scope = configuration.GetSection("AzureAd:ApiScope").Get<string>();
+
+		ArgumentNullException.ThrowIfNull(scope, "Scope cannot be null");
+
+		services.AddMsalAuthentication<RemoteAuthenticationState, CustomUserAccount>(options =>
 		{
-			configuration.Bind("Auth", options.ProviderOptions);
-			options.ProviderOptions.DefaultScopes.Add("email");
-		});
+			configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
+			options.ProviderOptions.DefaultAccessTokenScopes.Add(scope);
+			options.ProviderOptions.DefaultAccessTokenScopes.Add("email");
+			options.UserOptions.RoleClaim = "appRole";
+		}).AddAccountClaimsPrincipalFactory<RemoteAuthenticationState, CustomUserAccount, CustomAccountFactory>();
 
 		return services;
 	}
@@ -54,14 +62,35 @@ public static class DependencyInjection
 
 		ArgumentException.ThrowIfNullOrEmpty(baseUrl, "BaseUrl can not be null.");
 
+		var apiScope = configuration.GetSection("AzureAd:ApiScope").Get<string>();
+
+		ArgumentNullException.ThrowIfNull(apiScope, "Scope can not be null");
+
 		services.AddHttpClient<ICarService, CarService>(client => client.BaseAddress = new Uri(baseUrl));
-		services.AddHttpClient<IUserService, UserService>(client => client.BaseAddress = new Uri(baseUrl));
+
+		services.AddHttpClient<IUserService, UserService>(client => client.BaseAddress = new Uri(baseUrl))
+			.AddHttpMessageHandler(sp => ConfigureAuthorizationHandler(sp, baseUrl, apiScope));
+
 		services.AddHttpClient<IProviderService, ProviderService>(client => client.BaseAddress = new Uri(baseUrl));
-		services.AddHttpClient<IOfferService, OfferService>(client => client.BaseAddress = new Uri(baseUrl));
-		services.AddHttpClient<IRentalTransactionService, RentalTransactionService>(client => client.BaseAddress = new Uri(baseUrl));
+
+		services.AddHttpClient<IOfferService, OfferService>(client => client.BaseAddress = new Uri(baseUrl))
+			.AddHttpMessageHandler(sp => ConfigureAuthorizationHandler(sp, baseUrl, apiScope));
+
+		services.AddHttpClient<IRentalTransactionService, RentalTransactionService>(client => client.BaseAddress = new Uri(baseUrl))
+			.AddHttpMessageHandler(sp => ConfigureAuthorizationHandler(sp, baseUrl, apiScope));
 
 		return services;
 	}
+
+	private static AuthorizationMessageHandler ConfigureAuthorizationHandler(IServiceProvider serviceProvider, string baseUrl, string apiScope)
+	{
+		var handler = serviceProvider.GetRequiredService<AuthorizationMessageHandler>()
+			.ConfigureHandler(
+				authorizedUrls: [baseUrl],
+				scopes: [apiScope]);
+		return handler;
+	}
+
 
 	public static IServiceCollection ConfigureGoogleMaps(this IServiceCollection services, IConfiguration configuration)
 	{

@@ -29,14 +29,19 @@
             new InteractiveRequestOptions
                 {
                     Interaction = InteractionType.SignIn,
-                    ReturnUrl = "additional-info",
+                    ReturnUrl = "authenticated",
                 };
-        Navigation.NavigateToLogin("authentication/login",requestOptions);
+        Navigation.NavigateToLogin("authentication/login", requestOptions);
     }
 
     private void LoginWithMicrosoft()
     {
-        // to do in future
-        Navigation.NavigateTo("authentication/login");
+        var requestOptions =
+            new InteractiveRequestOptions
+                {
+                    Interaction = InteractionType.SignIn,
+                    ReturnUrl = "additional-info",
+                };
+        Navigation.NavigateToLogin("authentication/login", requestOptions);
     }
 }

@@ -10,6 +10,7 @@
 @using CarRental.Comparer.Web.Requests.OfferServices
 @using CarRental.Comparer.Web.Requests.ProvidersServices
 @using CarRental.Comparer.Web.Requests.UserServices
+@using CarRental.Comparer.Web.RoleModels
 @using Darnton.Blazor.DeviceInterop.Geolocation
 @using GoogleMapsComponents.Maps
 
@@ -218,7 +219,8 @@ else
 	protected override async Task OnInitializedAsync()
 	{
 		AuthenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-		UserEmailAddress = AuthenticationState?.User.Claims.FirstOrDefault(c => c.Type == "email")?.Value;
+		UserEmailAddress = AuthenticationState?.User.GetEmail();
+
 		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
 
 		if (!string.IsNullOrEmpty(MakeName) && !string.IsNullOrEmpty(ModelName))
@@ -381,10 +383,25 @@ else
 	private async Task ChooseOfferAsync(OfferButton offerButton)
 	{
 		offerButton.RequestInProgress = true;
+		var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+		var user = authState.User;
 
-		if (UserEmailAddress is null)
+		if (user.Identity?.IsAuthenticated == false || UserEmailAddress is null)
 		{
 			Snackbar.Add("This feature is only available to logged-in users.", Severity.Info, config =>
+			{
+				config.Icon = Icons.Material.Filled.Info;
+				config.IconSize = MudBlazor.Size.Large;
+			});
+
+			offerButton.RequestInProgress = false;
+			StateHasChanged();
+			return;
+		}
+
+		if(!user.IsInRole(AuthorizationRoles.User))
+		{
+			Snackbar.Add("This feature is only available to users with role user", Severity.Info, config =>
 			{
 				config.Icon = Icons.Material.Filled.Info;
 				config.IconSize = MudBlazor.Size.Large;
