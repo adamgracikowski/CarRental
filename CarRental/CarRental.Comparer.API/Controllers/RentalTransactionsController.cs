@@ -6,6 +6,7 @@ using CarRental.Comparer.API.DTOs.Reports;
 using CarRental.Comparer.API.Requests.RentalTransactions.Commands;
 using CarRental.Comparer.API.Requests.RentalTransactions.Queries;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -53,7 +54,7 @@ public sealed class RentalTransactionsController : ControllerBase
 	[HttpPost("/Reports")]
 	public async Task<IActionResult> GenerateReport(GenerateReportDto generateReportDto, CancellationToken cancellationToken)
 	{
-		var email = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Email)?.Value;
+		var email = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.PreferredUsername)?.Value;
 
 		var command = new GenerateReportCommand(email, generateReportDto);
 
@@ -73,5 +74,34 @@ public sealed class RentalTransactionsController : ControllerBase
 			response.Value.ContentType,
 			fileDownloadName: response.Value.ReportName
 		);
+	}
+
+	[Authorize(Policy = AuthorizationRoles.Employee)]
+	[TranslateResultToActionResult]
+	[HttpGet("/{status}")]
+	public async Task<Result<RentalTransactionsForEmployeePaginatedDto>> GetRentalTransactionsForEmployee(string status, [FromQuery] int page,
+	[FromQuery] int size, CancellationToken cancellationToken)
+	{
+		var email = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.PreferredUsername)?.Value;
+
+		var query = new GetRentalTransactionsForEmployeeQuery(email, status, page, size);
+
+		var response = await mediator.Send(query, cancellationToken);
+
+		return response;
+	}
+
+	[Authorize(Policy = AuthorizationRoles.Employee)]
+	[TranslateResultToActionResult]
+	[HttpPatch("accept-rental-return/{id}")]
+	public async Task<Result> AcceptRentalReturn(int id, [FromForm] AcceptRentalReturnDto acceptRentalReturnDto, CancellationToken cancellationToken)
+	{
+		var email = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.PreferredUsername)?.Value;
+
+		var command = new AcceptRentalReturnCommand(id, email, acceptRentalReturnDto);
+
+		var response = await mediator.Send(command, cancellationToken);
+
+		return response;
 	}
 }

@@ -17,44 +17,44 @@ namespace CarRental.Comparer.API.Controllers;
 [ApiController]
 public sealed class ProvidersController : ControllerBase
 {
-    private readonly IMediator mediator;
+	private readonly IMediator mediator;
 
-    public ProvidersController(IMediator mediator)
-    {
-        this.mediator = mediator;
-    }
+	public ProvidersController(IMediator mediator)
+	{
+		this.mediator = mediator;
+	}
 
-    [TranslateResultToActionResult]
-    [HttpPost("{id}/Cars/{carId}/Offers")]
-    public async Task<Result<OfferDto>> CreateOffer(int id, int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken)
-    {
-        var command = new CreateOfferCommand(id, carId, createOfferDto);
+	[TranslateResultToActionResult]
+	[HttpPost("{id}/Cars/{carId}/Offers")]
+	public async Task<Result<OfferDto>> CreateOffer(int id, int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken)
+	{
+		var command = new CreateOfferCommand(id, carId, createOfferDto);
 
-        var response = await mediator.Send(command, cancellationToken);
+		var response = await mediator.Send(command, cancellationToken);
 
-        return response;
-    }
+		return response;
+	}
 
-    [Authorize(Policy = AuthorizationRoles.User)]
-    [TranslateResultToActionResult]
-    [HttpPost("{id}/Offers/{offerId}")]
-    public async Task<Result<RentalTransactionIdWithDateTimesDto>> ChooseOffer(int id, int offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken)
-    {
-        var command = new ChooseOfferCommand(id, offerId, chooseOfferDto);
+	[Authorize(Policy = AuthorizationRoles.User)]
+	[TranslateResultToActionResult]
+	[HttpPost("{id}/Offers/{offerId}")]
+	public async Task<Result<RentalTransactionIdWithDateTimesDto>> ChooseOffer(int id, int offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken)
+	{
+		var command = new ChooseOfferCommand(id, offerId, chooseOfferDto);
 
-        var response = await mediator.Send(command, cancellationToken);
+		var response = await mediator.Send(command, cancellationToken);
 
-        return response;
-    }
+		return response;
+	}
 
-    [TranslateResultToActionResult]
-    [HttpGet]
-    public async Task<Result<ProvidersDto>> GetProviders(CancellationToken cancellationToken)
-    {
-        var query = new GetProvidersQuery();
+	[TranslateResultToActionResult]
+	[HttpGet]
+	public async Task<Result<ProvidersDto>> GetProviders(CancellationToken cancellationToken)
+	{
+		var query = new GetProvidersQuery();
 
-        var response = await mediator.Send(query, cancellationToken);
+		var response = await mediator.Send(query, cancellationToken);
 
-        return response;
-    }
+		return response;
+	}
 }
