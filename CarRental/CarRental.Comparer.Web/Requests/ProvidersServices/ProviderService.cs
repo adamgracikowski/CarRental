@@ -12,11 +12,11 @@ public class ProviderService : IProviderService
 		this.httpClient = httpClient;
 	}
 
-	public async Task<ProviderListDto> GetProvidersAsync()
+	public async Task<ProviderListDto> GetProvidersAsync(CancellationToken cancellationToken = default)
 	{
 		try
 		{
-			return await httpClient.GetFromJsonAsync<ProviderListDto>("Providers")
+			return await httpClient.GetFromJsonAsync<ProviderListDto>("Providers", cancellationToken)
 				?? new ProviderListDto([]);
 		}
 		catch (Exception)

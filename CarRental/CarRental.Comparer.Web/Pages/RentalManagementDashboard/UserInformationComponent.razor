@@ -1,0 +1,20 @@
+﻿<MudText Color="Color.Primary" Typo="Typo.subtitle1" Class="mb-2"><b>User Information</b></MudText>
+<MudStack Row>
+	<MudText Typo="Typo.body2" Style="width: 40px;" Class="text-muted">Name:</MudText>
+	<MudText Typo="Typo.body2"><b>@FirstName @LastName</b></MudText>
+</MudStack>
+<MudStack Row Class="mb-2">
+	<MudText Typo="Typo.body2" Style="width: 40px;" Class="text-muted">Email:</MudText>
+	<MudText Typo="Typo.body2"><b>@Email</b></MudText>
+</MudStack>
+
+@code {
+	[Parameter, EditorRequired]
+	public string FirstName { get; set; } = string.Empty;
+
+	[Parameter, EditorRequired]
+	public string LastName { get; set; } = string.Empty;
+
+	[Parameter, EditorRequired]
+	public string Email { get; set; } = string.Empty;
+}

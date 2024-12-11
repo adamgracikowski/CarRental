@@ -1,7 +1,10 @@
 ﻿using CarRental.Comparer.Web.Requests.DTOs.RentalTransactions;
-namespace CarRental.Comparer.Web.Requests.RentalTransactionService;
+
+namespace CarRental.Comparer.Web.Requests.RentalTransactionServices;
 
 public interface IRentalTransactionService
 {
-	Task<RentalTransactionListDto?> GetUsersRentalsByStatusPaginated(string email, string status, int pageNumber);
+	Task<RentalTransactionsForEmployeeDto?> GetRentalTransactionsByStatusAsync(string status, int page, int size, CancellationToken cancellationToken = default);
+
+	Task<bool> AcceptReturnAsync(int id, AcceptRentalReturnDto acceptReturnDto, CancellationToken cancellationToken = default);
 }

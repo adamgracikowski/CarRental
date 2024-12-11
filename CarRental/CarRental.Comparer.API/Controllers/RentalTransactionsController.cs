@@ -1,16 +1,16 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
 using CarRental.Common.Core.Roles;
+using CarRental.Comparer.API.Authorization;
 using CarRental.Comparer.API.DTOs.RentalTransactions;
 using CarRental.Comparer.API.DTOs.Reports;
 using CarRental.Comparer.API.Requests.RentalTransactions.Commands;
 using CarRental.Comparer.API.Requests.RentalTransactions.Queries;
-using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
+using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.RentalTransactions;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace CarRental.Comparer.API.Controllers;
 
@@ -37,24 +37,12 @@ public sealed class RentalTransactionsController : ControllerBase
 		return response;
 	}
 
-	[TranslateResultToActionResult]
-	[HttpGet("{userEmail}/{status}")]
-	public async Task<Result<RentalTransactionPaginatedListDto>> GetRentalTransactionsPaged(string userEmail, string status, [FromQuery] int page,
-		[FromQuery] int size, CancellationToken cancellationToken)
-	{
-		var query = new GetRentalTransactionsPagedQuery(userEmail, status, page, size);
-
-		var response = await mediator.Send(query, cancellationToken);
-
-		return response;
-	}
-
 	[Authorize(Policy = AuthorizationRoles.Employee)]
 	[TranslateResultToActionResult]
-	[HttpPost("/Reports")]
+	[HttpPost("Reports")]
 	public async Task<IActionResult> GenerateReport(GenerateReportDto generateReportDto, CancellationToken cancellationToken)
 	{
-		var email = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.PreferredUsername)?.Value;
+		var email = User.GetEmailClaim();
 
 		var command = new GenerateReportCommand(email, generateReportDto);
 
@@ -78,11 +66,11 @@ public sealed class RentalTransactionsController : ControllerBase
 
 	[Authorize(Policy = AuthorizationRoles.Employee)]
 	[TranslateResultToActionResult]
-	[HttpGet("/{status}")]
+	[HttpGet("{status}")]
 	public async Task<Result<RentalTransactionsForEmployeePaginatedDto>> GetRentalTransactionsForEmployee(string status, [FromQuery] int page,
 	[FromQuery] int size, CancellationToken cancellationToken)
 	{
-		var email = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.PreferredUsername)?.Value;
+		var email = User.GetEmailClaim();
 
 		var query = new GetRentalTransactionsForEmployeeQuery(email, status, page, size);
 
@@ -93,10 +81,10 @@ public sealed class RentalTransactionsController : ControllerBase
 
 	[Authorize(Policy = AuthorizationRoles.Employee)]
 	[TranslateResultToActionResult]
-	[HttpPatch("accept-rental-return/{id}")]
-	public async Task<Result> AcceptRentalReturn(int id, [FromForm] AcceptRentalReturnDto acceptRentalReturnDto, CancellationToken cancellationToken)
+	[HttpPatch("{id}/accept-return")]
+	public async Task<Result> AcceptReturn(int id, [FromForm] AcceptRentalReturnDto acceptRentalReturnDto, CancellationToken cancellationToken)
 	{
-		var email = User.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.PreferredUsername)?.Value;
+		var email = User.GetEmailClaim();
 
 		var command = new AcceptRentalReturnCommand(id, email, acceptRentalReturnDto);
 

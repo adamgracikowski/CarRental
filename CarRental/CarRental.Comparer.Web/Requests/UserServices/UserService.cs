@@ -1,66 +1,87 @@
-﻿using CarRental.Comparer.Web.Requests.DTOs.Users;
+﻿using CarRental.Comparer.Web.Requests.DTOs.RentalTransactions;
+using CarRental.Comparer.Web.Requests.DTOs.Users;
+using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace CarRental.Comparer.Web.Requests.UserServices;
 
 public class UserService : IUserService
 {
-    private const string Users = "Users";
+	private const string Users = "Users";
+	private const string RentalTransactions = "RentalTransactions";
 
-    private readonly HttpClient _httpClient;
+	private const int PageSize = 5;
 
-    public UserService(HttpClient httpClient)
-    {
-        _httpClient = httpClient;
-    }
+	private readonly HttpClient httpClient;
 
-    public async Task<bool> CreateUserAsync(UserDto user)
-    {
-        try
-        {
-            var response = await _httpClient.PostAsJsonAsync(Users, user);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-    }
+	public UserService(HttpClient httpClient)
+	{
+		this.httpClient = httpClient;
+	}
 
-    public async Task<UserDto?> GetUserByEmailAsync(string email)
-    {
-        try
-        {
-            return await _httpClient.GetFromJsonAsync<UserDto>($"{Users}/{email}");
-        }
-        catch (Exception)
-        {
-            return null;
-        }
-    }
-    public async Task<bool> DeleteUserByEmailAsync(string email)
-    {
-        try
-        {
-            var response = await _httpClient.DeleteAsync($"{Users}/{email}");
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-    }
+	public async Task<bool> CreateUserAsync(UserDto user, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var response = await httpClient.PostAsJsonAsync(Users, user, cancellationToken);
+			return response.IsSuccessStatusCode;
+		}
+		catch (Exception)
+		{
+			return false;
+		}
+	}
 
-    public async Task<bool> EditUserByEmailAsync(string email, UserDto user)
-    {
-        try
-        {
-            var response = await _httpClient.PutAsJsonAsync<UserDto>($"{Users}/{email}",user);
-            return response.IsSuccessStatusCode;
-        }
-        catch (Exception)
-        {
-            return false;
-        }
-    }
+	public async Task<UserDto?> GetUserByEmailAsync(string email, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var response = await httpClient.GetFromJsonAsync<UserDto>($"{Users}/{email}", cancellationToken);
+			return response;
+		}
+		catch (Exception)
+		{
+			return null;
+		}
+	}
+	public async Task<bool> DeleteUserByEmailAsync(string email, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var response = await httpClient.DeleteAsync($"{Users}/{email}", cancellationToken);
+			return response.IsSuccessStatusCode;
+		}
+		catch (Exception)
+		{
+			return false;
+		}
+	}
+
+	public async Task<bool> EditUserByEmailAsync(string email, UserDto user, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var response = await httpClient.PutAsJsonAsync<UserDto>($"{Users}/{email}", user, cancellationToken);
+			return response.IsSuccessStatusCode;
+		}
+		catch (Exception)
+		{
+			return false;
+		}
+	}
+
+
+	public async Task<RentalTransactionListDto?> GetRentalTransactionsByStatusAsync(string email, string status, int page, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var url = $"{Users}/{email}/{RentalTransactions}/{status}?page={page}&size={PageSize}";
+			var response = await httpClient.GetFromJsonAsync<RentalTransactionListDto>(url, cancellationToken);
+			return response;
+		}
+		catch (Exception)
+		{
+			return null;
+		}
+	}
 }

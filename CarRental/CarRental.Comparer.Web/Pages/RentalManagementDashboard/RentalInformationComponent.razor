@@ -1,0 +1,22 @@
+﻿<MudText Color="Color.Primary" Typo="Typo.subtitle1" Class="mb-2"><b>Rental Information</b></MudText>
+<MudStack Row>
+	<MudText Typo="Typo.body2" Style="width: 160px;" Class="text-muted">Rental price per day:</MudText>
+	<MudText Color="Color.Success" Typo="Typo.body2"><b>@RentalPricePerDay.ToString("C")</b></MudText>
+</MudStack>
+<MudStack Row Class="mb-2">
+	<MudText Typo="Typo.body2" Style="width: 160px;" Class="text-muted">Insurance price per day:</MudText>
+	<MudText Color="Color.Success" Typo="Typo.body2" ><b>@InsurancePricePerDay.ToString("C")</b></MudText>
+</MudStack>
+
+@LowerContent
+
+@code {
+	[Parameter, EditorRequired]
+	public decimal RentalPricePerDay { get; set; }
+
+	[Parameter, EditorRequired]
+	public decimal InsurancePricePerDay { get; set; }
+
+	[Parameter]
+	public RenderFragment? LowerContent { get; set; }
+}

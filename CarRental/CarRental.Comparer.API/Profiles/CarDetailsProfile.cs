@@ -4,9 +4,9 @@ using CarRental.Comparer.API.DTOs.CarDetails;
 
 namespace CarRental.Comparer.API.Profiles;
 
-public sealed class CarDetailsForEmployeeProfile : Profile
+public sealed class CarDetailsProfile : Profile
 {
-	public CarDetailsForEmployeeProfile()
+	public CarDetailsProfile()
 	{
 		CreateMap<CarDetails, CarDetailsForEmployeeDto>();
 	}

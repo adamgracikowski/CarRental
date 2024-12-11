@@ -1,5 +1,4 @@
 ﻿using CarRental.Common.Core.ComparerEntities;
-using Microsoft.AspNetCore.Mvc;
 
 namespace CarRental.Comparer.Infrastructure.Reports;
 

@@ -1,0 +1,93 @@
+﻿@using CarRental.Comparer.Web.Requests.DTOs.RentalTransactions
+@using CarRental.Comparer.Web.Requests.RentalTransactionServices
+
+@inject IRentalTransactionService RentalTransactionService
+
+<MudDataGrid T="RentalTransactionForEmployeeDto" ServerData="ServerReloadAsync">
+	<Columns>
+		<HierarchyColumn T="RentalTransactionForEmployeeDto" />
+		<TemplateColumn Title="Rented At" Sortable="false">
+			<CellTemplate>
+				<MudText> @(context.Item.RentedAt.ToString("d"))</MudText>
+			</CellTemplate>
+		</TemplateColumn>
+		<PropertyColumn Sortable="false" Property="x => x.Id" Title="Id" />
+		<PropertyColumn Sortable="false" Property="x => x.Car.Make" Title="Make" />
+		<PropertyColumn Sortable="false" Property="x => x.Car.Model" Title="Model" />
+		<PropertyColumn Sortable="false" Property="x => x.Car.YearOfProduction" Title="Production Year" />
+	</Columns>
+	<ChildRowContent>
+		<MudCard>
+			<MudCardContent>
+				<MudGrid>
+					<MudItem xs="12" md="4">
+						<UserInformationComponent Email="@context.Item.User.Email"
+												  FirstName="@context.Item.User.FirstName"
+												  LastName="@context.Item.User.LastName">
+						</UserInformationComponent>
+					</MudItem>
+					<MudItem xs="12" md="8">
+						<RentalInformationComponent InsurancePricePerDay="@context.Item.InsurancePricePerDay"
+													RentalPricePerDay="@context.Item.RentalPricePerDay">
+							<LowerContent>
+								<MudStack Row>
+									<MudText Typo="Typo.body2" Style="width: 160px;" Class="text-muted">Rented at:</MudText>
+									<MudText Typo="Typo.body2"><b>@context.Item.RentedAt.ToString("d")</b></MudText>
+								</MudStack>
+								<MudStack Row>
+									<MudText Typo="Typo.body2" Style="width: 160px;" Class="text-muted">Returned at:</MudText>
+									<MudText Typo="Typo.body2"><b>@(context.Item.ReturnedAt?.ToString("d") ?? "--")</b></MudText>
+								</MudStack>
+							</LowerContent>
+						</RentalInformationComponent>
+					</MudItem>
+				</MudGrid>
+			</MudCardContent>
+			<MudCardActions>
+				<MudButton OnClick="@(() => ConfirmRental(context.Item))"
+						   StartIcon="@Icons.Material.Filled.Check"
+						   Color="Color.Success"
+						   Variant="Variant.Filled">
+					Confirm
+				</MudButton>
+			</MudCardActions>
+		</MudCard>
+	</ChildRowContent>
+	<PagerContent>
+		<MudDataGridPager T="RentalTransactionForEmployeeDto" />
+	</PagerContent>
+</MudDataGrid>
+
+@code {
+	public const string ReadyForReturn = "ReadyForReturn";
+	private List<RentalTransactionForEmployeeDto> RentalTransactions { get; set; } = [];
+
+	[Parameter]
+	public EventCallback<RentalTransactionForEmployeeDto> OnConfirmClicked { get; set; }
+
+	private async Task ConfirmRental(RentalTransactionForEmployeeDto rental)
+	{
+		await OnConfirmClicked.InvokeAsync(rental);
+	}
+
+	private async Task<GridData<RentalTransactionForEmployeeDto>> ServerReloadAsync(GridState<RentalTransactionForEmployeeDto> gridState)
+	{
+		var gridData = new GridData<RentalTransactionForEmployeeDto>();
+
+		var data = await RentalTransactionService
+			.GetRentalTransactionsByStatusAsync(ReadyForReturn, gridState.Page + 1, gridState.PageSize);
+
+		if (data is null)
+		{
+			return gridData;
+		}
+
+		RentalTransactions = data.RentalTransactions
+			.ToList();
+
+		gridData.Items = data.RentalTransactions;
+		gridData.TotalItems = data.RentalTransactions.Count;
+
+		return gridData;
+	}
+}

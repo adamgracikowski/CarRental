@@ -22,8 +22,8 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
 	private readonly ILogger<AcceptRentalReturnCommandHandler> logger;
 	private readonly IDateTimeProvider dateTimeProvider;
 
-	public AcceptRentalReturnCommandHandler
-		(IValidator<AcceptRentalReturnCommand> validator,
+	public AcceptRentalReturnCommandHandler(
+		IValidator<AcceptRentalReturnCommand> validator,
 		ICarComparisonService carComparisonService,
 		IRepositoryBase<RentalTransaction> rentalTransactionsRepository,
 		ILogger<AcceptRentalReturnCommandHandler> logger,

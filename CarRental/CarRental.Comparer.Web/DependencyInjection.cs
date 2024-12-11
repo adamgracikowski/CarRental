@@ -2,7 +2,9 @@
 using CarRental.Comparer.Web.Requests.CarServices;
 using CarRental.Comparer.Web.Requests.OfferServices;
 using CarRental.Comparer.Web.Requests.ProvidersServices;
-using CarRental.Comparer.Web.Requests.RentalTransactionService;
+using CarRental.Comparer.Web.Requests.RentalStatusServices;
+using CarRental.Comparer.Web.Requests.RentalTransactionServices;
+using CarRental.Comparer.Web.Requests.ReportServices;
 using CarRental.Comparer.Web.Requests.UserServices;
 using CarRental.Comparer.Web.RoleModels;
 using CarRental.Comparer.Web.Services;
@@ -28,6 +30,8 @@ public static class DependencyInjection
 		services.AddScoped<StateContainer>();
 
 		services.RegisterDateTimeServices();
+
+		services.AddScoped<IRentalStatusService, RentalStatusService>();
 
 		return services;
 	}
@@ -77,6 +81,8 @@ public static class DependencyInjection
 			.AddHttpMessageHandler(sp => ConfigureAuthorizationHandler(sp, baseUrl, apiScope));
 
 		services.AddHttpClient<IRentalTransactionService, RentalTransactionService>(client => client.BaseAddress = new Uri(baseUrl))
+			.AddHttpMessageHandler(sp => ConfigureAuthorizationHandler(sp, baseUrl, apiScope));
+		services.AddHttpClient<IReportService, ReportService>(client => client.BaseAddress = new Uri(baseUrl))
 			.AddHttpMessageHandler(sp => ConfigureAuthorizationHandler(sp, baseUrl, apiScope));
 
 		return services;

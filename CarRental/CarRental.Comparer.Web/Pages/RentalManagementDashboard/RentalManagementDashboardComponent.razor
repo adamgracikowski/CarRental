@@ -1,0 +1,176 @@
+﻿@page "/employee-dashboard"
+
+@attribute [Authorize(Roles = AuthorizationRoles.Employee)]
+
+@using CarRental.Comparer.Web.DateExtensions
+@using CarRental.Comparer.Web.Requests.DTOs.RentalTransactions
+@using CarRental.Comparer.Web.Requests.ReportServices
+@using CarRental.Comparer.Web.RoleModels
+
+@inject IDateTimeProvider DateTimeProvider;
+@inject IReportService ReportService;
+@inject ISnackbar Snackbar
+
+<MudContainer>
+	<MudCard Class="mb-4">
+		<MudCardHeader>
+			<MudText Typo="Typo.h4" Color="Color.Primary"><b>Rental Management Dashboard</b></MudText>
+		</MudCardHeader>
+		<MudCardContent>
+			<MudGrid>
+				<MudItem xs="12" md="8">
+					<MudStack Row>
+						<MudDateRangePicker @bind-DateRange="@DateRange"
+											Margin="Margin.Dense"
+											PlaceholderStart="Start Date"
+											PlaceholderEnd="End Date"
+											MaxDate="@DateTimeProvider.UtcNow" />
+						<MudButton style="width: 180px" OnClick="GenerateReportAsync" Variant="Variant.Filled" Color="Color.Primary" Disabled="@(DateRange == null)">
+							@if (IsReportBeingGenerated)
+							{
+								<MudProgressCircular Color="Color.Primary" Size="MudBlazor.Size.Small" Indeterminate="true" />
+							}
+							else
+							{
+								<MudItem>Generate Report</MudItem>
+							}
+						</MudButton>
+					</MudStack>
+				</MudItem>
+			</MudGrid>
+		</MudCardContent>
+		<MudCardActions>
+			<MudTooltip Arrow="true" Placement="Placement.Right">
+				<ChildContent>
+					<MudFab DropShadow="false" Size="Size.Small" Color="Color.Surface" StartIcon="@Icons.Material.Outlined.Info" />
+				</ChildContent>
+				<TooltipContent>
+					<MudText Align="Align.Left" Typo="Typo.body2" Class="mb-1">To generate a report based on the selected date range and download it to .xlsx file click generate report button.</MudText>
+					<MudText Align="Align.Left" Typo="Typo.body2" Class="mb-1">You can view all rentals which are active or ready for return in the ACTIVE RENTALS tab.</MudText>
+					<MudText Align="Align.Left" Typo="Typo.body2" Class="mb-1">To confirm the return click the confirm button associated with the rental transaction.</MudText>
+					<MudText Align="Align.Left" Typo="Typo.body2">You can view the history of rental transaciotns in the RENTAL HISTORY tab.</MudText>
+				</TooltipContent>
+			</MudTooltip>
+		</MudCardActions>
+	</MudCard>
+	<MudTabs Elevation="4" Rounded="true" Outlined="true">
+		<MudTabPanel Text="Active Rentals" Icon="@Icons.Material.Filled.AssistantPhoto" IconColor="Color.Secondary">
+			<ActiveRentalsGridComponent></ActiveRentalsGridComponent>
+		</MudTabPanel>
+		<MudTabPanel Text="Confirm Rentals" Icon="@Icons.Material.Filled.CheckCircle" IconColor="Color.Success">
+			<ReadyRentalsGridComponent OnConfirmClicked="HandleRentalConfirmed"></ReadyRentalsGridComponent>
+		</MudTabPanel>
+		<MudTabPanel Text="Rental History" Icon="@Icons.Material.Filled.Assessment" IconColor="Color.Tertiary">
+			<ReturnedRentalsGridComponent></ReturnedRentalsGridComponent>
+		</MudTabPanel>
+	</MudTabs>
+
+</MudContainer>
+
+<MudDrawer @bind-Open="@Open"
+Anchor="Anchor.End"
+Elevation="1"
+Variant="@DrawerVariant.Temporary"
+OverlayAutoClose="true"
+Width="500px"
+Height="100%">
+	<MudDrawerHeader>
+		<MudText Typo="Typo.h4" Color="Color.Primary"><b>Confirm Return</b></MudText>
+	</MudDrawerHeader>
+	<MudStack Class="m-sm-4">
+		<UserInformationComponent Email="@SelectedRentalTransaction?.User.Email"
+		FirstName="@SelectedRentalTransaction?.User.FirstName"
+		LastName="@SelectedRentalTransaction?.User.LastName">
+		</UserInformationComponent>
+		<CarInformationComponent Make="@SelectedRentalTransaction?.Car.Make"
+		Model="@SelectedRentalTransaction?.Car.Model"
+		ProductionYear="@(SelectedRentalTransaction?.Car.YearOfProduction ?? 0)">
+		</CarInformationComponent>
+		<ConfirmRentalFormComponent OnConfirmClicked="ResponseToConfirmRentalForm" RentalId="@SelectedRentalTransaction?.Id"></ConfirmRentalFormComponent>
+	</MudStack>
+</MudDrawer>
+
+@code {
+	private DateRange? DateRange { get; set; }
+	public bool IsReportBeingGenerated { get; set; }
+
+	public bool Open { get; set; }
+	private RentalTransactionForEmployeeDto? SelectedRentalTransaction { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		Snackbar.Configuration.PositionClass = Defaults.Classes.Position.BottomCenter;
+
+		await base.OnInitializedAsync();
+		return;
+	}
+
+	void HandleRentalConfirmed(RentalTransactionForEmployeeDto rentalTransaction)
+	{
+		SelectedRentalTransaction = rentalTransaction;
+		Open = true;
+	}
+
+	private async Task GenerateReportAsync()
+	{
+		if (DateRange is null || DateRange.Start is null || DateRange.End is null)
+			return;
+
+		IsReportBeingGenerated = true;
+
+		var fileName = $"CarRental_Report_{DateRange.Start.Value:d}_{DateRange.End.Value:d}.xlsx";
+
+		var response = await ReportService.GenerateReportAsync(fileName, DateRange.Start.Value, DateRange.End.Value);
+
+		if (response)
+		{
+			Snackbar.Add($"The report has been saved to {fileName}", Severity.Success, config =>
+			{
+				config.Icon = Icons.Material.Filled.FileDownloadDone;
+				config.IconSize = MudBlazor.Size.Large;
+			});
+		}
+		else
+		{
+			Snackbar.Add($"An unexpected error has occurred while generating the report", Severity.Error, config =>
+			{
+				config.Icon = Icons.Material.Filled.Error;
+				config.IconSize = MudBlazor.Size.Large;
+			});
+		}
+
+		IsReportBeingGenerated = false;
+	}
+
+	private void ResponseToConfirmRentalForm(bool? response)
+	{
+		if (response is null)
+		{
+			Snackbar.Add($"Rental confirmation has been cancelled.", Severity.Info, config =>
+			{
+				config.Icon = Icons.Material.Filled.Info;
+				config.IconSize = MudBlazor.Size.Large;
+			});
+		}
+		else if (response.Value)
+		{
+			Snackbar.Add($"The return of the rental transaction has been confirmed.", Severity.Success, config =>
+			{
+				config.Icon = Icons.Material.Filled.Check;
+				config.IconSize = MudBlazor.Size.Large;
+			});
+		}
+		else
+		{
+			Snackbar.Add($"An unexpected error has occurred while confirming the return.", Severity.Error, config =>
+			{
+				config.Icon = Icons.Material.Filled.Error;
+				config.IconSize = MudBlazor.Size.Large;
+			});
+
+			return;
+		}
+
+		Open = false;
+	}
+}

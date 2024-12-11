@@ -16,23 +16,23 @@ using CarRental.Comparer.Infrastructure.CarProviders.RentalStatusConversions;
 namespace CarRental.Comparer.API.Requests.RentalTransactions.Handlers;
 
 public class
-	GetRentalTransactionsPagedQueryHandler : IRequestHandler<GetRentalTransactionsPagedQuery,
+	GetRentalTransactionsByStatusQueryHandler : IRequestHandler<GetRentalTransactionsByStatusQuery,
 	Result<RentalTransactionPaginatedListDto>>
 {
 	private readonly IRepositoryBase<User> usersRepository;
 	private readonly IMapper mapper;
-	private readonly IValidator<GetRentalTransactionsPagedQuery> validator;
+	private readonly IValidator<GetRentalTransactionsByStatusQuery> validator;
 	private readonly ICarComparisonService carComparisonService;
 	private readonly IRentalStatusConverter rentalStatusConverter;
-	private readonly ILogger<GetRentalTransactionsPagedQueryHandler> logger;
+	private readonly ILogger<GetRentalTransactionsByStatusQueryHandler> logger;
 
-	public GetRentalTransactionsPagedQueryHandler(
+	public GetRentalTransactionsByStatusQueryHandler(
 		IRepositoryBase<User> userRepository,
 		IMapper mapper,
-		IValidator<GetRentalTransactionsPagedQuery> validator,
+		IValidator<GetRentalTransactionsByStatusQuery> validator,
 		ICarComparisonService carComparisonService,
 		IRentalStatusConverter rentalStatusConverter,
-		ILogger<GetRentalTransactionsPagedQueryHandler> logger)
+		ILogger<GetRentalTransactionsByStatusQueryHandler> logger)
 	{
 		this.usersRepository = userRepository;
 		this.mapper = mapper;
@@ -42,7 +42,7 @@ public class
 		this.logger = logger;
 	}
 
-	public async Task<Result<RentalTransactionPaginatedListDto>> Handle(GetRentalTransactionsPagedQuery request,
+	public async Task<Result<RentalTransactionPaginatedListDto>> Handle(GetRentalTransactionsByStatusQuery request,
 		CancellationToken cancellationToken)
 	{
 		var validation = await validator.ValidateAsync(request, cancellationToken);
@@ -56,7 +56,7 @@ public class
 
 		var specification = new UserByEmailWithRentalsByStatusWithCarProviderSpecification(request.Email, rentalStatus);
 
-		var user = await usersRepository.FirstOrDefaultAsync(specification);
+		var user = await usersRepository.FirstOrDefaultAsync(specification, cancellationToken);
 
 		if (user == null)
 		{
@@ -76,7 +76,7 @@ public class
 		{
 			var readyForReturnSpecification = new UserByEmailWithRentalsByStatusWithCarProviderSpecification(request.Email, RentalStatus.ReadyForReturn);
 
-			user = await usersRepository.FirstOrDefaultAsync(readyForReturnSpecification);
+			user = await usersRepository.FirstOrDefaultAsync(readyForReturnSpecification, cancellationToken);
 
 			if (user == null)
 			{

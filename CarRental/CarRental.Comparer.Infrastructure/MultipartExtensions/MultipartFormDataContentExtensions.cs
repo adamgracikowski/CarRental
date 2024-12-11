@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 
 namespace CarRental.Comparer.Infrastructure.MultipartExtensions;
@@ -19,7 +20,7 @@ public static class MultipartFormDataContentExtensions
 			if (value is IFormFile file)
 			{
 				var streamContent = new StreamContent(file.OpenReadStream());
-				streamContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType);
+				streamContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
 				multipartContent.Add(streamContent, property.Name, file.FileName);
 			}
 			else if (value is Stream stream)

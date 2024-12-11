@@ -1,0 +1,153 @@
+﻿@using CarRental.Comparer.Web.Requests.DTOs.RentalTransactions
+@using CarRental.Comparer.Web.Requests.RentalTransactionServices
+@using CarRental.Comparer.Web.Validators
+@using Darnton.Blazor.DeviceInterop.Geolocation
+
+@inject IGeolocationService GeolocationService
+@inject IRentalTransactionService RentalTransactionService
+
+<MudForm Model="@Model" @ref="@Form" Validation="@(ValidationRules.ValidateValue)" ValidationDelay="0">
+	<MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="mb-5">
+		<MudTextField Label="Longitude"
+					  @bind-Value="Model.Longitude"
+					  For="@(() => Model.Longitude)"
+					  Immediate="true"
+					  Class="flex-grow-1"
+					  Format="F4" />
+
+		<MudTextField Label="Latitude"
+					  @bind-Value="Model.Latitude"
+					  For="@(() => Model.Latitude)"
+					  Immediate="true"
+					  Class="flex-grow-1"
+					  Format="F4" />
+
+		<MudIconButton Icon="@Icons.Material.Filled.MyLocation"
+					   Color="Color.Primary"
+					   OnClick="GetCurrentLocationAsync"
+					   Class="ml-2" />
+	</MudStack>
+	<MudStack Row="true" Spacing="2" Class="mb-4">
+		<MudFileUpload T="IBrowserFile"
+					   @ref="@FileUpload"
+					   FilesChanged="UploadFiles"
+					   Accept=".png, .jpg"
+					   For="@(() => Model.Image)"
+					   AppendMultipleFiles="false"
+					   @bind-File="Model.Image">
+			<ActivatorContent>
+				<MudButton Variant="Variant.Filled"
+						   Color="Color.Primary"
+						   StartIcon="@Icons.Material.Filled.AttachFile">
+					Upload Image
+				</MudButton>
+			</ActivatorContent>
+		</MudFileUpload>
+		@if (Model.Image != null)
+		{
+
+			<MudChip T="string"
+					 Color="Color.Primary"
+					 Text="@Model?.Image?.Name"
+					 OnClose="ClearAsync"
+					 tabindex="-1" />
+		}
+	</MudStack>
+	<MudTextField T="string"
+				  Label="Description"
+				  Variant="Variant.Outlined"
+				  Counter="300"
+				  MaxLength="300"
+				  @bind-Value="@Model.Description"
+				  For="@(() => Model.Description)"
+				  Immediate="true"
+				  AutoGrow
+				  HelperText="Describe the condition of the car..."
+				  Clearable="true"
+				  MaxLines="15">
+	</MudTextField>
+	<MudToolBar Gutters="false"
+				Class="relative d-flex justify-end gap-4">
+		<MudButton Color="Color.Error"
+				   OnClick="@CancelAsync"
+				   StartIcon="@Icons.Material.Filled.Close"
+				   Variant="Variant.Filled">
+			Cancel
+		</MudButton>
+		<MudButton Color="Color.Success"
+				   OnClick="@ConfirmAsync"
+				   Variant="Variant.Filled"
+				   StartIcon="@Icons.Material.Filled.Check"
+				   Disabled="@(!Form?.IsValid ?? true)">
+			Confirm
+		</MudButton>
+	</MudToolBar>
+</MudForm>
+
+@code {
+	[Parameter, EditorRequired]
+	public int? RentalId { get; set; }
+
+	[Parameter]
+	public EventCallback<bool?> OnConfirmClicked { get; set; }
+
+	public AcceptRentalReturnDto Model = new();
+	private AcceptRentalReturnDtoValidator ValidationRules = new();
+
+	private MudForm Form;
+	private MudFileUpload<IBrowserFile> FileUpload;
+
+	private async Task ConfirmAsync()
+	{
+		await Form.Validate();
+
+		if (!Form.IsValid || RentalId == null) return;
+
+		var response = await RentalTransactionService.AcceptReturnAsync(RentalId.Value, Model);
+
+		if (response)
+		{
+			Model = new();
+		}
+
+		await OnConfirmClicked.InvokeAsync(response);
+	}
+
+	private async Task CancelAsync()
+	{
+		await ClearAsync();
+
+		Model = new();
+
+		await OnConfirmClicked.InvokeAsync(null);
+	}
+
+	private void Closed(MudChip<string> chip)
+	{
+		Model.Image = null;
+	}
+
+	private async Task GetCurrentLocationAsync()
+	{
+		GeolocationResult currentPositionResult = await GeolocationService.GetCurrentPosition();
+		if (currentPositionResult.IsSuccess)
+		{
+			Model.Longitude = currentPositionResult.Position.Coords.Longitude;
+			Model.Latitude = currentPositionResult.Position.Coords.Latitude;
+		}
+	}
+
+	private void UploadFiles(IBrowserFile image)
+	{
+		Model.Image = image;
+	}
+
+	private async Task ClearAsync()
+	{
+		if (FileUpload is null) return;
+
+		await FileUpload?.ClearAsync()!;
+
+		Model.Image = null;
+	}
+}

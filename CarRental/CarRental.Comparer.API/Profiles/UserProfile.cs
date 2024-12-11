@@ -10,6 +10,10 @@ public sealed class UserProfile : Profile
     {
         CreateMap<UserDto, User>()
             .ReverseMap();
+
         CreateMap<User, UserIdDto>();
-    }
+
+		CreateMap<User, UserForEmployeeDto>()
+	        .ForMember(dest => dest.FirstName, opt => opt.MapFrom(src => src.Name));
+	}
 }

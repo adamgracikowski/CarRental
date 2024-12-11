@@ -3,7 +3,7 @@ using CarRental.Comparer.API.Requests.RentalTransactions.Queries;
 using FluentValidation;
 namespace CarRental.Comparer.API.Validators.RentalTransactions;
 
-public sealed class GetRentalTransactionsPagedCommandValidator : AbstractValidator<GetRentalTransactionsPagedQuery>
+public sealed class GetRentalTransactionsPagedCommandValidator : AbstractValidator<GetRentalTransactionsByStatusQuery>
 {
 	public GetRentalTransactionsPagedCommandValidator()
 	{

@@ -1,0 +1,94 @@
+﻿@using CarRental.Comparer.Web.Requests.DTOs.Cars
+@using CarRental.Comparer.Web.Requests.DTOs.Pagination
+@using CarRental.Comparer.Web.Requests.DTOs.RentalTransactions
+@using CarRental.Comparer.Web.Requests.DTOs.Users
+@using CarRental.Comparer.Web.Requests.RentalTransactionServices
+
+@inject IRentalTransactionService RentalTransactionService
+
+<MudDataGrid T="RentalTransactionForEmployeeDto" ServerData="ServerReloadAsync">
+	<Columns>
+		<HierarchyColumn T="RentalTransactionForEmployeeDto" />
+		<TemplateColumn Sortable="false" Title="Rented At">
+			<CellTemplate>
+				<MudText> @(context.Item.RentedAt.ToString("d"))</MudText>
+			</CellTemplate>
+		</TemplateColumn>
+		<TemplateColumn Sortable="false" Title="Returned At">
+			<CellTemplate>
+				<MudText> @(context.Item.ReturnedAt?.ToString("d"))</MudText>
+			</CellTemplate>
+		</TemplateColumn>
+		<PropertyColumn Sortable="false" Property="x => x.Id" Title="Id" />
+		<PropertyColumn Sortable="false" Property="x => x.Car.Make" Title="Make" />
+		<PropertyColumn Sortable="false" Property="x => x.Car.Model" Title="Model" />
+		<PropertyColumn Sortable="false" Property="x => x.Car.YearOfProduction" Title="Production Year" />
+	</Columns>
+	<ChildRowContent>
+		<MudCard>
+			<MudCardContent>
+				<MudGrid>
+					<MudItem xs="12" md="@(context.Item.Image != null ? 4 : 12)">
+						<UserInformationComponent Email="@context.Item.User.Email"
+												  FirstName="@context.Item.User.FirstName"
+												  LastName="@context.Item.User.LastName">
+						</UserInformationComponent>
+						<RentalInformationComponent InsurancePricePerDay="@context.Item.InsurancePricePerDay"
+													RentalPricePerDay="@context.Item.RentalPricePerDay">
+						</RentalInformationComponent>
+						@if (@context.Item.Description != null)
+						{
+							<MudText Color="Color.Primary" Typo="Typo.subtitle1" Class="mb-2"><b>Description</b></MudText>
+							<MudTextField T="string"
+										  Variant="Variant.Outlined"
+										  ReadOnly="true"
+										  AutoGrow
+										  Text="@context.Item.Description">
+							</MudTextField>
+						}
+					</MudItem>
+					<MudItem xs="12" md="8">
+						@if (@context.Item.Image != null)
+						{
+							<MudImage Src="@context.Item.Image"
+									  Alt="Rental Return Image"
+									  Class="rounded-lg h-100"
+									  Fluid="true"
+									  Elevation="25">
+							</MudImage>
+						}
+					</MudItem>
+				</MudGrid>
+			</MudCardContent>
+		</MudCard>
+	</ChildRowContent>
+	<PagerContent>
+		<MudDataGridPager T="RentalTransactionForEmployeeDto" />
+	</PagerContent>
+</MudDataGrid>
+
+@code {
+	private const string Returned = "returned";
+	private List<RentalTransactionForEmployeeDto> RentalTransactions { get; set; } = [];
+
+	private async Task<GridData<RentalTransactionForEmployeeDto>> ServerReloadAsync(GridState<RentalTransactionForEmployeeDto> gridState)
+	{
+		var gridData = new GridData<RentalTransactionForEmployeeDto>();
+
+		var data = await RentalTransactionService
+			.GetRentalTransactionsByStatusAsync(Returned, gridState.Page + 1, gridState.PageSize);
+
+		if (data is null)
+		{
+			return gridData;
+		}
+
+		RentalTransactions = data.RentalTransactions
+			.ToList();
+
+		gridData.Items = data.RentalTransactions;
+		gridData.TotalItems = data.RentalTransactions.Count;
+
+		return gridData;
+	}
+}

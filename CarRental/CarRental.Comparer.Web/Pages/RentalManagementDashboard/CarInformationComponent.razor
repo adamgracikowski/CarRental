@@ -1,0 +1,24 @@
+﻿<MudText Color="Color.Primary" Typo="Typo.subtitle1" Class="mb-2"><b>Car Information</b></MudText>
+<MudStack Row>
+	<MudText Typo="Typo.body2" Style="width: 110px;" Class="text-muted">Make:</MudText>
+	<MudText Typo="Typo.body2"><b>@Make</b></MudText>
+</MudStack>
+<MudStack Row>
+	<MudText Typo="Typo.body2" Style="width: 110px;" Class="text-muted">Model:</MudText>
+	<MudText Typo="Typo.body2"><b>@Model</b></MudText>
+</MudStack>
+<MudStack Row Class="mb-2">
+	<MudText Typo="Typo.body2" Style="width: 110px;" Class="text-muted">Production year:</MudText>
+	<MudText Typo="Typo.body2"><b>@ProductionYear</b></MudText>
+</MudStack>
+
+@code {
+	[Parameter, EditorRequired]
+	public string? Make { get; set; }
+
+	[Parameter, EditorRequired]
+	public string? Model { get; set; }
+
+	[Parameter, EditorRequired]
+	public int ProductionYear { get; set; }
+}
