@@ -56,12 +56,33 @@ public sealed class RentalTransactionService : IRentalTransactionService
 		}
 	}
 
+	public async Task<bool> ReturnRentalAsync(int id, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var url = $"{RentalTransactions}/{id}/return";
+
+			var response = await httpClient.PatchAsync(url, null);
+
+			if (response.IsSuccessStatusCode)
+			{
+				return true;
+			}
+
+			return false;
+		}
+		catch
+		{
+			return false;
+		}
+	}
+
 	public async Task<RentalTransactionsForEmployeeDto?> GetRentalTransactionsByStatusAsync(string status, int page, int size, CancellationToken cancellationToken = default)
 	{
 		try
 		{
 			var url = $"{RentalTransactions}/{status}?page={page}&size={size}";
-			
+
 			var response = await this.httpClient.GetFromJsonAsync<RentalTransactionsForEmployeeDto>(url, cancellationToken);
 
 			return response;

@@ -56,7 +56,7 @@
 					<MudPaper Class="flex-1 justify-content-end d-flex py-8" Elevation="0">
 						@if (rental.Status == "Active")
 						{
-							<MudButton Variant="Variant.Filled" Color="Color.Secondary">Return</MudButton>
+							<MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="@(e => InvokeReturnParentFunctionAsync(rental.Id))">Return</MudButton>
 						}
 					</MudPaper>
 				</div>
@@ -69,4 +69,14 @@
 @code {
 
 	[Parameter] public RentalTransactionListDto Data { get; set; }
+
+	[Parameter] public EventCallback<int> OnReturnButtonClicked { get; set; }
+
+	private async Task InvokeReturnParentFunctionAsync(int id)
+	{
+		if (OnReturnButtonClicked.HasDelegate)
+		{
+			await OnReturnButtonClicked.InvokeAsync(id);
+		}
+	}
 }

@@ -10,7 +10,10 @@
 @using CarRental.Comparer.Web.Requests.DTOs.Pagination
 @using CarRental.Comparer.Web.RoleModels;
 
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 @inject IUserService UserService
+@inject IRentalTransactionService RentalTransactionService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject NavigationManager NavigationManager
 
@@ -26,7 +29,7 @@
 			}
 			<MudTabPanel Text="@status0">
 				<MudPaper Class="pa-4">
-					<RentalList Data="@rentals0"></RentalList>
+					<RentalList OnReturnButtonClicked="OnReturnButtonClicked" Data="@rentals0"></RentalList>
 					<MudPaper Class="d-flex justify-center p-4">
 						@if (rentals0.Pagination.NumberOfPages > 1)
 						{
@@ -215,6 +218,35 @@
 	private async Task OnPageChangedAsync4(int newPage)
 	{
 		rentalListsDto[rentalStatuses[4]] = await GetPaginatedRentalsByStatusAsync(rentalStatuses[4], newPage);
+	}
+
+	private async Task OnReturnButtonClicked(int id)
+{
+		var options = new DialogOptions { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium };
+
+		var dialog = await DialogService.ShowAsync<ReturnRentalDialog>("Return rental", options);
+		var dialogResult = await dialog.Result;
+
+		if (dialogResult is null || dialogResult.Canceled) return;
+
+		var returnResult = await RentalTransactionService.ReturnRentalAsync(id);
+
+		if (returnResult)
+		{
+			Snackbar.Add("Your rental is ready for return!", Severity.Success, config =>
+			{
+				config.Icon = Icons.Material.Filled.Info;
+				config.IconSize = MudBlazor.Size.Large;
+			});
+		}
+		else
+		{
+			Snackbar.Add("Something went wrong, please try again later.", Severity.Error, config =>
+			{
+				config.Icon = Icons.Material.Filled.Error;
+				config.IconSize = MudBlazor.Size.Large;
+			});
+		}
 	}
 
 }

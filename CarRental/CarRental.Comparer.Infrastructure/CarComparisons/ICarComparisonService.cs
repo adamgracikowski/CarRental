@@ -16,4 +16,6 @@ public interface ICarComparisonService
 	Task<RentalStatusDto?> GetRentalStatusByIdAsync(string providerName, string rentalId, CancellationToken cancellationToken);
 
 	Task<RentalReturnDto?> AcceptRentalReturnAsync(string providerName, string rentalId, AcceptRentalReturnDto acceptRentalReturnDto, CancellationToken cancellationToken);
+
+	Task<RentalStatusDto?> ReturnRentalAsync(string providerName, string rentalId, CancellationToken cancellationToken);
 }

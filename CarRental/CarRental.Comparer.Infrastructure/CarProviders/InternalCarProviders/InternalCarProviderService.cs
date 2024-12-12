@@ -110,12 +110,7 @@ public sealed class InternalCarProviderService : ICarProviderService
 	{
 		try
 		{
-			if (int.TryParse(rentalId, out var internalRentalId))
-			{
-				this.logger.LogWarning("rentalId is not a number, parse failed");
-			}
-
-			var response = await this.httpClient.GetAsync($"/Rentals/{internalRentalId}/status", cancellationToken);
+			var response = await this.httpClient.GetAsync($"/Rentals/{rentalId}/status", cancellationToken);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -127,6 +122,38 @@ public sealed class InternalCarProviderService : ICarProviderService
 					return null;
 				}
 
+				var rentalStatusDto = new RentalStatusDto(internalRentalStatusDto.id.ToString(), internalRentalStatusDto.status);
+				return rentalStatusDto;
+			}
+			else
+			{
+				var errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
+				this.logger.LogInformation($"Error: {errorMessage}");
+				return null;
+			}
+		}
+		catch (Exception ex)
+		{
+			this.logger.LogInformation(ex.Message);
+			return null;
+		}
+	}
+
+	public async Task<RentalStatusDto?> ReturnRentalAsync(string rentalId, CancellationToken cancellationToken)
+	{
+		try
+		{
+			var response = await this.httpClient.PatchAsync($"/Rentals/{rentalId}/ready-for-return", null, cancellationToken);
+
+			if (response.IsSuccessStatusCode)
+			{
+				var internalRentalStatusDto = await response.Content.ReadFromJsonAsync<InternalRentalStatusDto>(cancellationToken);
+
+				if (internalRentalStatusDto is null)
+				{
+					this.logger.LogWarning("internalRentalStatusDto is null");
+					return null;
+				}
 				var rentalStatusDto = new RentalStatusDto(internalRentalStatusDto.id.ToString(), internalRentalStatusDto.status);
 				return rentalStatusDto;
 			}

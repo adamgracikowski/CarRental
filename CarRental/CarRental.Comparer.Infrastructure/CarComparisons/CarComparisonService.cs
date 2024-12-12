@@ -109,6 +109,17 @@ public sealed class CarComparisonService : ICarComparisonService
 		return rentalReturnDto;
 	}
 
+	public async Task<RentalStatusDto?> ReturnRentalAsync(string providerName, string rentalId, CancellationToken cancellationToken)
+	{
+		var carProviderService = this.GetCarProviderServiceByName(providerName);
+
+		if (carProviderService is null) return null;
+
+		var rentalStatusDto = await carProviderService.ReturnRentalAsync(rentalId, cancellationToken);
+
+		return rentalStatusDto;
+	}
+
 	private ICarProviderService? GetCarProviderServiceByName(string name)
 	{
 		var carProviderService = this.carProviderServices.FirstOrDefault(providerService => providerService.ProviderName == name);

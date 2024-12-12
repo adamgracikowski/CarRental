@@ -134,4 +134,18 @@ public sealed class RentalTransactionsController : ControllerBase
 
 		return response;
 	}
+
+	[Authorize(Policy = AuthorizationRoles.User)]
+	[TranslateResultToActionResult]
+	[HttpPatch("{id}/return")]
+	public async Task<Result> ReturnRentalTransaction(int id, CancellationToken cancellationToken)
+	{
+		var email = User.GetEmailClaim();
+
+		var command = new ReturnRentalTransactionCommand(id, email);
+
+		var response = await mediator.Send(command, cancellationToken);
+
+		return response;
+	}
 }
