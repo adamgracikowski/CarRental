@@ -17,6 +17,13 @@ public sealed class CarsController : ControllerBase
 		this.carComparisonService = carComparisonService;
 	}
 
+	/// <summary>
+	/// Retrieves a list of all available cars from the comparison service.
+	/// </summary>
+	/// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+	/// <returns>A result containing a unified list of available cars.</returns>
+	/// <response code="200">The list of available cars was retrieved successfully.</response>
+	/// <response code="500">An internal server error occurred while retrieving the cars.</response>
 	[TranslateResultToActionResult]
 	[HttpGet("Available")]
 	public async Task<Result<UnifiedCarListDto>> GetAvailableCars(CancellationToken cancellationToken)

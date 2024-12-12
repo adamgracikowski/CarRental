@@ -24,7 +24,15 @@ public sealed class AuthController : ControllerBase
         this.jwtTokenService = jwtTokenService;
     }
 
-    [AllowAnonymous]
+	/// <summary>
+	/// Generates a JWT token for a trusted client.
+	/// </summary>
+	/// <param name="authRequestDto">The authentication request containing the client ID and secret.</param>
+	/// <returns>A result containing the generated JWT token.</returns>
+	/// <response code="200">The token was generated successfully.</response>
+	/// <response code="401">The provided client ID or secret is invalid.</response>
+	/// <response code="500">An internal server error occurred while generating the token.</response>
+	[AllowAnonymous]
     [TranslateResultToActionResult]
     [HttpPost("token")]
     public Result<AuthResponseDto> GenerateToken(AuthRequestDto authRequestDto)
