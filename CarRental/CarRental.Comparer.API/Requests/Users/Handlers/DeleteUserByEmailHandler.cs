@@ -1,6 +1,5 @@
 ﻿using Ardalis.Result;
 using Ardalis.Specification;
-using AutoMapper;
 using CarRental.Common.Core.ComparerEntities;
 using CarRental.Comparer.API.Requests.Users.Commands;
 using CarRental.Comparer.Persistence.Specifications.Users;
@@ -11,14 +10,10 @@ namespace CarRental.Comparer.API.Requests.Users.Handlers;
 public class DeleteUserByEmailQueryHandler : IRequestHandler<DeleteUserByEmailCommand, Result>
 {
     private readonly IRepositoryBase<User> usersRepository;
-    private readonly IMapper mapper;
 
-    public DeleteUserByEmailQueryHandler(
-        IRepositoryBase<User> rentalsRepository,
-        IMapper mapper)
+    public DeleteUserByEmailQueryHandler(IRepositoryBase<User> usersRepository)
     {
-        this.usersRepository = rentalsRepository;
-        this.mapper = mapper;
+        this.usersRepository = usersRepository;
     }
 
     public async Task<Result> Handle(DeleteUserByEmailCommand request, CancellationToken cancellationToken)

@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CarRental.Provider.API.Controllers;
 
 [Authorize]
-[Route("[controller]")]
+[Route("cars")]
 [ApiController]
 public sealed class CarsController : ControllerBase
 {
@@ -32,7 +32,7 @@ public sealed class CarsController : ControllerBase
 	/// <response code="200">The list of available cars was retrieved successfully.</response>
 	/// <response code="500">An internal server error occurred while retrieving the cars.</response>
 	[TranslateResultToActionResult]
-    [HttpGet("Available")]
+    [HttpGet("available")]
     public async Task<Result<CarListDto>> GetAvailableCars(CancellationToken cancellationToken)
     {
         var query = new GetCarsByStatusQuery(CarStatus.Available);
@@ -55,7 +55,7 @@ public sealed class CarsController : ControllerBase
 	/// <response code="404">The specified car was not found.</response>
 	/// <response code="500">An internal server error occurred while creating the offer.</response>
 	[TranslateResultToActionResult]
-    [HttpPost("{id}/Offers")]
+    [HttpPost("{id}/offers")]
     public async Task <Result<OfferDto>> CreateOffer(int id, CreateOfferDto createOfferDto, CancellationToken cancellationToken)
     {
         var audience = User.GetAudience();

@@ -8,7 +8,7 @@ using MediatR;
 
 namespace CarRental.Comparer.API.Requests.Providers.Handlers;
 
-public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Result<OfferDto>>
+public sealed class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Result<OfferDto>>
 {
 	private readonly IRepositoryBase<Provider> providersRepository;
 	private readonly ILogger<CreateOfferCommandHandler> logger;
@@ -25,15 +25,15 @@ public class CreateOfferCommandHandler : IRequestHandler<CreateOfferCommand, Res
 
 	public async Task<Result<OfferDto>> Handle(CreateOfferCommand request, CancellationToken cancellationToken)
 	{
-		var provider = await providersRepository.GetByIdAsync(request.id, cancellationToken);
+		var provider = await this.providersRepository.GetByIdAsync(request.Id, cancellationToken);
 
 		if (provider?.Name is null)
 		{
-			logger.LogWarning($"Provider with ID {request.id} not found.");
+			this.logger.LogWarning($"Provider with ID {request.Id} not found.");
 			return Result<OfferDto>.NotFound();
 		}
 
-		var offerDto = await carComparisonService.CreateOfferAsync(provider.Name, request.carId, request.createOfferDto, cancellationToken);
+		var offerDto = await this.carComparisonService.CreateOfferAsync(provider.Name, request.CarId, request.CreateOfferDto, cancellationToken);
 
 		if (offerDto is null)
 		{

@@ -1,6 +1,6 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
-using CarRental.Common.Core.Roles;
+using CarRental.Comparer.API.Authorization.Roles;
 using CarRental.Comparer.API.Requests.Providers.Commands;
 using CarRental.Comparer.API.Requests.Providers.Queries;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CarRental.Comparer.API.Controllers;
 
-[Route("[controller]")]
+[Route("providers")]
 [ApiController]
 public sealed class ProvidersController : ControllerBase
 {
@@ -36,12 +36,12 @@ public sealed class ProvidersController : ControllerBase
 	/// <response code="404">The specified rental provider or car was not found.</response>
 	/// <response code="500">An internal server error occurred while creating the offer.</response>
 	[TranslateResultToActionResult]
-	[HttpPost("{id}/Cars/{carId}/Offers")]
+	[HttpPost("{id}/cars/{carId}/offers")]
 	public async Task<Result<OfferDto>> CreateOffer(int id, int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken)
 	{
 		var command = new CreateOfferCommand(id, carId, createOfferDto);
 
-		var response = await mediator.Send(command, cancellationToken);
+		var response = await this.mediator.Send(command, cancellationToken);
 
 		return response;
 	}
@@ -60,12 +60,12 @@ public sealed class ProvidersController : ControllerBase
 	/// <response code="500">An internal server error occurred while choosing the offer.</response>
 	[Authorize(Policy = AuthorizationRoles.User)]
 	[TranslateResultToActionResult]
-	[HttpPost("{id}/Offers/{offerId}")]
+	[HttpPost("{id}/offers/{offerId}")]
 	public async Task<Result<RentalTransactionIdWithDateTimesDto>> ChooseOffer(int id, int offerId, ChooseOfferDto chooseOfferDto, CancellationToken cancellationToken)
 	{
 		var command = new ChooseOfferCommand(id, offerId, chooseOfferDto);
 
-		var response = await mediator.Send(command, cancellationToken);
+		var response = await this.mediator.Send(command, cancellationToken);
 
 		return response;
 	}
@@ -83,7 +83,7 @@ public sealed class ProvidersController : ControllerBase
 	{
 		var query = new GetProvidersQuery();
 
-		var response = await mediator.Send(query, cancellationToken);
+		var response = await this.mediator.Send(query, cancellationToken);
 
 		return response;
 	}

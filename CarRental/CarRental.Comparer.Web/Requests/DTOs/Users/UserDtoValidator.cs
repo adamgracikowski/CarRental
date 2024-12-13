@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CarRental.Comparer.Web.DateExtensions;
+using CarRental.Comparer.Web.Extensions.DateExtensions;
 
 namespace CarRental.Comparer.Web.Requests.DTOs.Users;
 

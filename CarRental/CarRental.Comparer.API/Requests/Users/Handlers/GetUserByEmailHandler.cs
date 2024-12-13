@@ -24,7 +24,7 @@ public class GetUserByEmailQueryHandler : IRequestHandler<GetUserByEmailQuery, R
 
     public async Task<Result<UserDto>> Handle(GetUserByEmailQuery request, CancellationToken cancellationToken)
     {
-        var specification = new UserByEmailSpecification(request.email);
+        var specification = new UserByEmailSpecification(request.Email);
 
         var user = await this.usersRepository.FirstOrDefaultAsync(specification, cancellationToken);
 

@@ -1,4 +1,4 @@
-﻿using CarRental.Comparer.Web.DateExtensions;
+﻿using CarRental.Comparer.Web.Extensions.DateExtensions;
 using CarRental.Comparer.Web.Requests.CarServices;
 using CarRental.Comparer.Web.Requests.OfferServices;
 using CarRental.Comparer.Web.Requests.ProvidersServices;
@@ -70,6 +70,8 @@ public static class DependencyInjection
 
 		ArgumentNullException.ThrowIfNull(apiScope, "Scope can not be null");
 
+		services.AddHttpClient();
+
 		services.AddHttpClient<ICarService, CarService>(client => client.BaseAddress = new Uri(baseUrl));
 
 		services.AddHttpClient<IUserService, UserService>(client => client.BaseAddress = new Uri(baseUrl))
@@ -77,13 +79,18 @@ public static class DependencyInjection
 
 		services.AddHttpClient<IProviderService, ProviderService>(client => client.BaseAddress = new Uri(baseUrl));
 
-		services.AddHttpClient<IOfferService, OfferService>(client => client.BaseAddress = new Uri(baseUrl))
-			.AddHttpMessageHandler(sp => ConfigureAuthorizationHandler(sp, baseUrl, apiScope));
-
 		services.AddHttpClient<IRentalTransactionService, RentalTransactionService>(client => client.BaseAddress = new Uri(baseUrl))
 			.AddHttpMessageHandler(sp => ConfigureAuthorizationHandler(sp, baseUrl, apiScope));
+		
 		services.AddHttpClient<IReportService, ReportService>(client => client.BaseAddress = new Uri(baseUrl))
 			.AddHttpMessageHandler(sp => ConfigureAuthorizationHandler(sp, baseUrl, apiScope));
+
+		services.AddHttpClient(OfferService.ClientWithoutAuthorization, client => client.BaseAddress = new Uri(baseUrl));
+		
+		services.AddHttpClient(OfferService.ClientWithAuthorization, client => client.BaseAddress = new Uri(baseUrl))
+			.AddHttpMessageHandler(sp => ConfigureAuthorizationHandler(sp, baseUrl, apiScope));
+
+		services.AddScoped<IOfferService, OfferService>();
 
 		return services;
 	}

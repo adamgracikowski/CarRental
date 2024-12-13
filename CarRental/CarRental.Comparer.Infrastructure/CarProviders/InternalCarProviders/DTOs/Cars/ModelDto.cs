@@ -1,6 +1,4 @@
-﻿using CarRental.Common.Core.Enums;
-
-namespace CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Cars;
+﻿namespace CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Cars;
 
 public sealed record ModelDto(
     string Name,

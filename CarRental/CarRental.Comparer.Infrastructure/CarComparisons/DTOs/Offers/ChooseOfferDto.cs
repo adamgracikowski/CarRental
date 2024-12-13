@@ -12,4 +12,5 @@ public sealed record ChooseOfferDto(
     string? TransmissionType,
     int YearOfProduction,
     int? NumberOfDoors,
-    int? NumberOfSeats);
+    int? NumberOfSeats
+);

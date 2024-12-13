@@ -3,5 +3,4 @@
 public interface IRandomStringProvider
 {
     public string GenerateRandomString();
-
 }

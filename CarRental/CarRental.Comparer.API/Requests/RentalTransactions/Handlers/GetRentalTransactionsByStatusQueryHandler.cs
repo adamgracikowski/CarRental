@@ -1,17 +1,17 @@
 ﻿using Ardalis.Result;
+using Ardalis.Result.FluentValidation;
 using Ardalis.Specification;
 using AutoMapper;
 using CarRental.Common.Core.ComparerEntities;
 using CarRental.Common.Core.Enums;
-using FluentValidation;
 using CarRental.Comparer.API.DTOs.RentalTransactions;
-using CarRental.Comparer.API.Requests.RentalTransactions.Queries;
-using CarRental.Comparer.Persistence.Specifications.Users;
 using CarRental.Comparer.API.Pagination;
-using MediatR;
-using Ardalis.Result.FluentValidation;
+using CarRental.Comparer.API.Requests.RentalTransactions.Queries;
 using CarRental.Comparer.Infrastructure.CarComparisons;
 using CarRental.Comparer.Infrastructure.CarProviders.RentalStatusConversions;
+using CarRental.Comparer.Persistence.Specifications.Users;
+using FluentValidation;
+using MediatR;
 
 namespace CarRental.Comparer.API.Requests.RentalTransactions.Handlers;
 
@@ -21,7 +21,6 @@ public class
 {
 	private readonly IRepositoryBase<User> usersRepository;
 	private readonly IMapper mapper;
-	private readonly IValidator<GetRentalTransactionsByStatusQuery> validator;
 	private readonly ICarComparisonService carComparisonService;
 	private readonly IRentalStatusConverter rentalStatusConverter;
 	private readonly ILogger<GetRentalTransactionsByStatusQueryHandler> logger;
@@ -29,14 +28,12 @@ public class
 	public GetRentalTransactionsByStatusQueryHandler(
 		IRepositoryBase<User> userRepository,
 		IMapper mapper,
-		IValidator<GetRentalTransactionsByStatusQuery> validator,
 		ICarComparisonService carComparisonService,
 		IRentalStatusConverter rentalStatusConverter,
 		ILogger<GetRentalTransactionsByStatusQueryHandler> logger)
 	{
 		this.usersRepository = userRepository;
 		this.mapper = mapper;
-		this.validator = validator;
 		this.carComparisonService = carComparisonService;
 		this.rentalStatusConverter = rentalStatusConverter;
 		this.logger = logger;
@@ -45,18 +42,11 @@ public class
 	public async Task<Result<RentalTransactionPaginatedListDto>> Handle(GetRentalTransactionsByStatusQuery request,
 		CancellationToken cancellationToken)
 	{
-		var validation = await validator.ValidateAsync(request, cancellationToken);
-
-		if (!validation.IsValid)
-		{
-			return Result<RentalTransactionPaginatedListDto>.Invalid(validation.AsErrors());
-		}
-
 		var rentalStatus = Enum.Parse<RentalStatus>(request.Status, true);
 
 		var specification = new UserByEmailWithRentalsByStatusWithCarProviderSpecification(request.Email, rentalStatus);
 
-		var user = await usersRepository.FirstOrDefaultAsync(specification, cancellationToken);
+		var user = await this.usersRepository.FirstOrDefaultAsync(specification, cancellationToken);
 
 		if (user == null)
 		{
@@ -76,7 +66,7 @@ public class
 		{
 			var readyForReturnSpecification = new UserByEmailWithRentalsByStatusWithCarProviderSpecification(request.Email, RentalStatus.ReadyForReturn);
 
-			user = await usersRepository.FirstOrDefaultAsync(readyForReturnSpecification, cancellationToken);
+			user = await this.usersRepository.FirstOrDefaultAsync(readyForReturnSpecification, cancellationToken);
 
 			if (user == null)
 			{
@@ -92,7 +82,7 @@ public class
 
 		rentalList.Sort((r1, r2) => r2.RentedAt.CompareTo(r1.RentedAt));
 
-		var rentalDtos = mapper.Map<List<RentalTransactionDto>>(rentalList);
+		var rentalDtos = this.mapper.Map<List<RentalTransactionDto>>(rentalList);
 
 		var numberOfPages = rentalDtos.NumberOfPages(request.PageSize);
 
@@ -112,7 +102,7 @@ public class
 			if (transaction.Status == RentalStatus.Returned)
 				continue;
 
-			var rentalStatusDto = await carComparisonService
+			var rentalStatusDto = await this.carComparisonService
 				.GetRentalStatusByIdAsync(transaction.Provider.Name, transaction.RentalOuterId, cancellationToken);
 
 			if (rentalStatusDto == null)
@@ -127,6 +117,6 @@ public class
 			transaction.Status = updatedStatus;
 		}
 
-		await usersRepository.SaveChangesAsync(cancellationToken);
+		await this.usersRepository.SaveChangesAsync(cancellationToken);
 	}
 }

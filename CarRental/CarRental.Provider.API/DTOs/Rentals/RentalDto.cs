@@ -1,6 +1,7 @@
-﻿namespace CarRental.Provider.API.Requests.Rentals.DTOs;
+﻿namespace CarRental.Provider.API.DTOs.Rentals;
 
 public sealed record RentalDto(
-    int Id, 
-    DateTime GeneratedAt,
-    DateTime ExpiresAt);
+	int Id,
+	DateTime GeneratedAt,
+	DateTime ExpiresAt
+);

@@ -31,7 +31,9 @@ public static class AutoRunMigrationConfiguration
 
     private static int GetMigrationsTimeout(IServiceScope serviceScope)
     {
-        var migrationsTimeoutConfig = serviceScope.ServiceProvider.GetService<IConfiguration>()?.GetValue<int?>("Migrations:TimeoutInMinutes");
+        var migrationsTimeoutConfig = serviceScope.ServiceProvider
+            .GetService<IConfiguration>()?.GetValue<int?>("Migrations:TimeoutInMinutes");
+
         return migrationsTimeoutConfig ?? InfrastructureConfigurationConstants.DefaultMigrationsTimeoutInMinutes;
     }
 

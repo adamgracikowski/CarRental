@@ -8,21 +8,20 @@ using CarRental.Provider.API.Requests.Rentals.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.IdentityModel.Tokens.Jwt;
 
 namespace CarRental.Provider.API.Controllers;
 
 [Authorize]
-[Route("[controller]")]
+[Route("rentals")]
 [ApiController]
 public sealed class RentalsController : ControllerBase
 {
-    private readonly IMediator mediator;
+	private readonly IMediator mediator;
 
-    public RentalsController(IMediator mediator)
-    {
-        this.mediator = mediator;
-    }
+	public RentalsController(IMediator mediator)
+	{
+		this.mediator = mediator;
+	}
 
 	/// <summary>
 	/// Retrieves the status of a specific rental.
@@ -40,12 +39,12 @@ public sealed class RentalsController : ControllerBase
     {
         var audience = User.GetAudience();
 
-        var query = new GetRentalByIdQuery(id, audience);
+		var query = new GetRentalByIdQuery(id, audience);
 
-        var response = await this.mediator.Send(query, cancellationToken);
+		var response = await this.mediator.Send(query, cancellationToken);
 
-        return response;
-    }
+		return response;
+	}
 
 	/// <summary>
 	/// Marks a rental as ready for return.
@@ -63,12 +62,12 @@ public sealed class RentalsController : ControllerBase
     {
         var audience = User.GetAudience();
 
-        var command = new ReturnRentalCommand(id, audience);
+		var command = new ReturnRentalCommand(id, audience);
 
-        var response = await this.mediator.Send(command, cancellationToken);
+		var response = await this.mediator.Send(command, cancellationToken);
 
-        return response;
-    }
+		return response;
+	}
 
 	/// <summary>
 	/// Accepts the return of a specific rental.
@@ -91,12 +90,12 @@ public sealed class RentalsController : ControllerBase
     {
         var audience = User.GetAudience();
 
-        var command = new AcceptRentalReturnCommand(id, acceptRentalReturnDto, audience);
+		var command = new AcceptRentalReturnCommand(id, acceptRentalReturnDto, audience);
 
-        var response = await this.mediator.Send(command, cancellationToken);
+		var response = await this.mediator.Send(command, cancellationToken);
 
-        return response;
-    }
+		return response;
+	}
 
 	/// <summary>
 	/// Confirms a rental based on an ID and confirmation key.
@@ -119,7 +118,7 @@ public sealed class RentalsController : ControllerBase
     {
         var command = new ConfirmRentalCommand(id, key);
 
-        var response = await this.mediator.Send(command, cancellationToken);
+		var response = await this.mediator.Send(command, cancellationToken);
 
         return response;
     }

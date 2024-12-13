@@ -33,7 +33,7 @@ public sealed class InternalCarProviderService : ICarProviderService
 	{
 		try
 		{
-			var response = await this.httpClient.GetAsync("/Cars/Available");
+			var response = await this.httpClient.GetAsync("/cars/available");
 			var providerCarListDto = await this.MapResponseAsync(response, cancellationToken);
 			return providerCarListDto;
 		}
@@ -48,7 +48,7 @@ public sealed class InternalCarProviderService : ICarProviderService
 	{
 		try
 		{
-			var response = await this.httpClient.PostAsJsonAsync($"/Cars/{carId}/Offers", createOfferDto, cancellationToken);
+			var response = await this.httpClient.PostAsJsonAsync($"/cars/{carId}/offers", createOfferDto, cancellationToken);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -73,7 +73,7 @@ public sealed class InternalCarProviderService : ICarProviderService
 	{
 		try
 		{
-			var response = await this.httpClient.PostAsJsonAsync($"/Offers/{offerId}", providerChooseOfferDto, cancellationToken);
+			var response = await this.httpClient.PostAsJsonAsync($"/offers/{offerId}", providerChooseOfferDto, cancellationToken);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -86,7 +86,7 @@ public sealed class InternalCarProviderService : ICarProviderService
 				}
 
 				var rentalIdWithDateTimesDto = new RentalIdWithDateTimesDto(
-					internalRentalIdWithDateTimesDto.id.ToString(),
+					internalRentalIdWithDateTimesDto.Id.ToString(),
 					internalRentalIdWithDateTimesDto.GeneratedAt,
 					internalRentalIdWithDateTimesDto.ExpiresAt);
 
@@ -110,7 +110,7 @@ public sealed class InternalCarProviderService : ICarProviderService
 	{
 		try
 		{
-			var response = await this.httpClient.GetAsync($"/Rentals/{rentalId}/status", cancellationToken);
+			var response = await this.httpClient.GetAsync($"/rentals/{rentalId}/status", cancellationToken);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -122,7 +122,7 @@ public sealed class InternalCarProviderService : ICarProviderService
 					return null;
 				}
 
-				var rentalStatusDto = new RentalStatusDto(internalRentalStatusDto.id.ToString(), internalRentalStatusDto.status);
+				var rentalStatusDto = new RentalStatusDto(internalRentalStatusDto.Id.ToString(), internalRentalStatusDto.Status);
 				return rentalStatusDto;
 			}
 			else
@@ -143,7 +143,7 @@ public sealed class InternalCarProviderService : ICarProviderService
 	{
 		try
 		{
-			var response = await this.httpClient.PatchAsync($"/Rentals/{rentalId}/ready-for-return", null, cancellationToken);
+			var response = await this.httpClient.PatchAsync($"/rentals/{rentalId}/ready-for-return", null, cancellationToken);
 
 			if (response.IsSuccessStatusCode)
 			{
@@ -154,7 +154,8 @@ public sealed class InternalCarProviderService : ICarProviderService
 					this.logger.LogWarning("internalRentalStatusDto is null");
 					return null;
 				}
-				var rentalStatusDto = new RentalStatusDto(internalRentalStatusDto.id.ToString(), internalRentalStatusDto.status);
+
+				var rentalStatusDto = new RentalStatusDto(internalRentalStatusDto.Id.ToString(), internalRentalStatusDto.Status);
 				return rentalStatusDto;
 			}
 			else
@@ -175,7 +176,7 @@ public sealed class InternalCarProviderService : ICarProviderService
 	{
 		try
 		{
-			var response = await this.httpClient.PostAsync($"/Rentals/{rentalId}/accept-return", acceptRentalReturnDto.ToMultipartFormDataContent(), cancellationToken);
+			var response = await this.httpClient.PostAsync($"/rentals/{rentalId}/accept-return", acceptRentalReturnDto.ToMultipartFormDataContent(), cancellationToken);
 			if (response.IsSuccessStatusCode)
 			{
 				var internalRentalStatusDto = await response.Content.ReadFromJsonAsync<RentalReturnDto>(cancellationToken);

@@ -8,7 +8,7 @@ namespace CarRental.Comparer.Persistence;
 
 public static class PersistenceDependencyInjection
 {
-    public static IServiceCollection RegisterPersistenceServices(this IServiceCollection services, IConfiguration configuration)
+    public static IServiceCollection RegisterPersistenceServices(this IServiceCollection services)
     {
         services.AddDbContext<CarRentalComparerDbContext>();
 

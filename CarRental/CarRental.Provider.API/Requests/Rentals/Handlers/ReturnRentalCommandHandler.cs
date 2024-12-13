@@ -16,8 +16,9 @@ public class ReturnRentalCommandHandler : IRequestHandler<ReturnRentalCommand, R
     private readonly IRepositoryBase<Rental> rentalsRepository;
     private readonly IMapper mapper;
     private readonly IEmailInputMaker emailInputMaker;
+	private readonly IEmailService emailService;
 
-    public ReturnRentalCommandHandler(
+	public ReturnRentalCommandHandler(
         IRepositoryBase<Rental> rentalsRepository,
         IMapper mapper,
         IEmailInputMaker emailInputMaker,
@@ -26,7 +27,8 @@ public class ReturnRentalCommandHandler : IRequestHandler<ReturnRentalCommand, R
         this.rentalsRepository = rentalsRepository;
         this.mapper = mapper;
         this.emailInputMaker = emailInputMaker;
-    }
+		this.emailService = emailService;
+	}
 
     public async Task<Result<RentalStatusDto>> Handle(ReturnRentalCommand request, CancellationToken cancellationToken)
     {
@@ -61,13 +63,16 @@ public class ReturnRentalCommandHandler : IRequestHandler<ReturnRentalCommand, R
         await this.rentalsRepository.UpdateAsync(rental, cancellationToken);
         await this.rentalsRepository.SaveChangesAsync(cancellationToken);
 
-        var input = emailInputMaker.GenerateRentalReturnStartedTemplate(
+        var emailInput = emailInputMaker.GenerateRentalReturnStartedTemplate(
             rental.Customer.EmailAddress,
             $"{rental.Customer.FirstName} {rental.Customer.LastName}",
             rental.Offer.Car.Model.Make.Name,
-            rental.Offer.Car.Model.Name);
+            rental.Offer.Car.Model.Name
+        );
 
-        var rentalStatusDto = this.mapper.Map<RentalStatusDto>(rental);
+		await this.emailService.SendEmailAsync(emailInput);
+
+		var rentalStatusDto = this.mapper.Map<RentalStatusDto>(rental);
 
         return Result<RentalStatusDto>.Success(rentalStatusDto);
     }

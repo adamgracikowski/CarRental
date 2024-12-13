@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CarRental.Provider.API.Controllers;
 
 [Authorize]
-[Route("[controller]")]
+[Route("auth")]
 [ApiController]
 public sealed class AuthController : ControllerBase
 {

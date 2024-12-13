@@ -7,6 +7,7 @@ namespace CarRental.Comparer.API.Validators.RentalTransactions;
 public sealed class AcceptRentalReturnCommandValidator : AbstractValidator<AcceptRentalReturnCommand>
 {
 	private readonly IValidator<AcceptRentalReturnDto> acceptRentalReturnDtoValidator;
+
 	public AcceptRentalReturnCommandValidator(IValidator<AcceptRentalReturnDto> acceptRentalReturnDtoValidator)
 	{
 		this.acceptRentalReturnDtoValidator = acceptRentalReturnDtoValidator;

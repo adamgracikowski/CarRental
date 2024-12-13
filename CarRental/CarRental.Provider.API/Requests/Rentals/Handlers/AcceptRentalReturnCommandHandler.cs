@@ -1,5 +1,4 @@
 ﻿using Ardalis.Result;
-using Ardalis.Result.FluentValidation;
 using Ardalis.Specification;
 using AutoMapper;
 using CarRental.Common.Core.Enums;
@@ -9,11 +8,10 @@ using CarRental.Common.Infrastructure.Storages.BlobStorage;
 using CarRental.Provider.API.DTOs.RentalReturns;
 using CarRental.Provider.API.Requests.Rentals.Commands;
 using CarRental.Provider.Infrastructure.Calculators.RentalBillCalculator;
+using CarRental.Provider.Infrastructure.EmailServices;
 using CarRental.Provider.Persistence.Specifications.Rentals;
-using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.Options;
-using CarRental.Provider.Infrastructure.EmailServices;
 
 namespace CarRental.Provider.API.Requests.Rentals.Handlers;
 
@@ -25,7 +23,6 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
 	private readonly ILogger<AcceptRentalReturnCommandHandler> logger;
 	private readonly IMapper mapper;
 	private readonly IDateTimeProvider dateTimeProvider;
-	private readonly IRentalBillCalculatorService rentalBillCalculatorService;
 	private readonly BlobContainersOptions options;
 	private readonly IEmailService emailService;
 	private readonly IEmailInputMaker emailInputMaker;
@@ -37,7 +34,6 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
 		ILogger<AcceptRentalReturnCommandHandler> logger,
 		IMapper mapper,
 		IDateTimeProvider dateTimeProvider,
-		IRentalBillCalculatorService rentalBillCalculatorService,
 		IOptions<BlobContainersOptions> options,
 		IEmailInputMaker emailInputMaker,
 		IEmailService emailService)
@@ -48,7 +44,6 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
 		this.logger = logger;
 		this.mapper = mapper;
 		this.dateTimeProvider = dateTimeProvider;
-		this.rentalBillCalculatorService = rentalBillCalculatorService;
 		this.options = options.Value;
 		this.emailService = emailService;
 		this.emailInputMaker = emailInputMaker;
@@ -127,7 +122,7 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
 		await this.rentalsRepository.UpdateAsync(rental, cancellationToken);
 		await this.rentalsRepository.SaveChangesAsync(cancellationToken);
 
-		var emailInput = emailInputMaker.GenerateRentalReturnedTemplate(
+		var emailInput = this.emailInputMaker.GenerateRentalReturnedTemplate(
 			rental.Customer.EmailAddress,
 			$"{rental.Customer.FirstName} {rental.Customer.LastName}",
 			rental.Offer.Car.Model.Make.Name,
@@ -136,7 +131,7 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
 			rentalReturn.ReturnedAt,
 			rental.Offer.InsurancePricePerDay,
 			rental.Offer.RentalPricePerDay
-			);
+		);
 
 		await emailService.SendEmailAsync(emailInput);
 
@@ -152,7 +147,7 @@ public sealed class AcceptRentalReturnCommandHandler : IRequestHandler<AcceptRen
 		var fileName = $"{rentalId}{extension}";
 
 		var result = await this.blobStorageService.UploadFileAsync(
-			options.RentalReturnsContainer,
+			this.options.RentalReturnsContainer,
 			fileName,
 			image,
 			cancellationToken

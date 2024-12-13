@@ -4,4 +4,8 @@ using MediatR;
 
 namespace CarRental.Comparer.API.Requests.Providers.Commands;
 
-public sealed record class CreateOfferCommand(int id, int carId, CreateOfferDto createOfferDto) : IRequest<Result<OfferDto>>;
+public sealed record class CreateOfferCommand(
+	int Id, 
+	int CarId, 
+	CreateOfferDto CreateOfferDto
+) : IRequest<Result<OfferDto>>;

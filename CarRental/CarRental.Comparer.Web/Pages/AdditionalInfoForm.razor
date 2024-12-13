@@ -1,11 +1,12 @@
 ﻿@page "/additional-info"
-@attribute [Authorize(Roles = AuthorizationRoles.User)]
+@using CarRental.Comparer.Web.Extensions
+@using CarRental.Comparer.Web.Extensions.DateExtensions
 @using CarRental.Comparer.Web.Requests.DTOs.Users
 @using CarRental.Comparer.Web.Requests.UserServices
 @using CarRental.Comparer.Web.RoleModels
 @using Darnton.Blazor.DeviceInterop.Geolocation
-@using CarRental.Comparer.Web.DateExtensions
-@using CarRental.Comparer.Web.Extensions
+
+@attribute [Authorize(Roles = AuthorizationRoles.User)]
 
 @inject IUserService UserService
 @inject NavigationManager Navigation
@@ -110,7 +111,7 @@
             }
         }
 
-		var nameAndLastName = userClaims?.Claims.FirstOrDefault(c => c.Type == "name")?.Value.Split();
+		var nameAndLastName = userClaims.GetName()?.Split();
 		if (nameAndLastName != null && nameAndLastName.Count() != 0)
 		{
 			user.Lastname = nameAndLastName[0];

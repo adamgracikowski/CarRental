@@ -1,8 +1,9 @@
 ﻿using Azure.Storage.Blobs;
-using CarRental.Common.Core.Roles;
 using CarRental.Common.Infrastructure.Middlewares;
+using CarRental.Common.Infrastructure.PipelineBehaviours;
 using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Common.Infrastructure.Storages.BlobStorage;
+using CarRental.Comparer.API.Authorization.Roles;
 using CarRental.Comparer.API.BackgroundJobs.RentalServices;
 using CarRental.Comparer.Infrastructure.Cache;
 using CarRental.Comparer.Infrastructure.CarComparisons;
@@ -16,6 +17,7 @@ using CarRental.Comparer.Infrastructure.Reports.ExcelReports;
 using CarRental.Comparer.Persistence.Options;
 using FluentValidation;
 using Hangfire;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.Identity.Web;
@@ -110,8 +112,9 @@ public static class DependencyInjection
         });
 
         services.AddValidatorsFromAssemblyContaining(typeof(Program));
+		services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
-        return services;
+		return services;
     }
 
     public static IServiceCollection ConfigureBlobStorage(this IServiceCollection services, IConfiguration configuration)

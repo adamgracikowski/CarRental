@@ -3,4 +3,4 @@
 public sealed record RentalStatusDto(
     string RentalId,
     string Status
- );
+);

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Rentals;
+﻿namespace CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Rentals;
 
 public sealed record InternalRentalIdWithDateTimesDto(
-    int id, 
+    int Id, 
     DateTime GeneratedAt,
-    DateTime ExpiresAt);
+    DateTime ExpiresAt
+);

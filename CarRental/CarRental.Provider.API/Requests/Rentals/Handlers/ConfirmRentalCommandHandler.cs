@@ -69,14 +69,14 @@ public sealed class ConfirmRentalCommandHandler : IRequestHandler<ConfirmRentalC
         await this.rentalsRepository.UpdateAsync(rental, cancellationToken);
         await this.rentalsRepository.SaveChangesAsync(cancellationToken);
 
-        var emailInput = emailInputMaker.GenerateRentalConfirmedInput(
+        var emailInput = this.emailInputMaker.GenerateRentalConfirmedInput(
             rental.Customer.EmailAddress,
             $"{rental.Customer.FirstName} {rental.Customer.LastName}",
             rental.Offer.Car.Model.Make.Name,
             rental.Offer.Car.Model.Name
-            );
+        );
 
-        await emailService.SendEmailAsync(emailInput);
+        await this.emailService.SendEmailAsync(emailInput);
 
         return Result.Success();
     }

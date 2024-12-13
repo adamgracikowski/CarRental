@@ -4,4 +4,6 @@ using MediatR;
 
 namespace CarRental.Comparer.API.Requests.RentalTransactions.Queries;
 
-public sealed record GetRentalTransactionStatusByIdQuery(int rentalTransactionId) : IRequest<Result<RentalTransactionStatusDto>>;
+public sealed record GetRentalTransactionStatusByIdQuery(
+	int RentalTransactionId
+) : IRequest<Result<RentalTransactionStatusDto>>;

@@ -3,4 +3,5 @@
 public sealed record class RentalTransactionIdWithDateTimesDto(
     int Id, 
     DateTime RentedAt,
-    DateTime ExpiresAt);
+    DateTime ExpiresAt
+);

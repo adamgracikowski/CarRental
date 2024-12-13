@@ -15,7 +15,7 @@ builder.Configuration.AddUserSecrets<Program>();
 builder.Services.RegisterConfigurationOptions(builder.Configuration);
 builder.Services.ConfigureCors(builder.Configuration);
 
-builder.Services.RegisterPersistenceServices(builder.Configuration);
+builder.Services.RegisterPersistenceServices();
 builder.Services.ConfigureHttpClients(builder.Configuration);
 builder.Services.ConfigureHangfire(builder.Configuration);
 builder.Services.RegisterInfrastructureServices(builder.Configuration);

@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CarRental.Comparer.API.Controllers;
 
-[Route("[controller]")]
+[Route("cars")]
 [ApiController]
 public sealed class CarsController : ControllerBase
 {
@@ -25,7 +25,7 @@ public sealed class CarsController : ControllerBase
 	/// <response code="200">The list of available cars was retrieved successfully.</response>
 	/// <response code="500">An internal server error occurred while retrieving the cars.</response>
 	[TranslateResultToActionResult]
-	[HttpGet("Available")]
+	[HttpGet("available")]
 	public async Task<Result<UnifiedCarListDto>> GetAvailableCars(CancellationToken cancellationToken)
 	{
 		var unifiedCarListDto = await this.carComparisonService.GetAllAvailableCarsAsync(cancellationToken);

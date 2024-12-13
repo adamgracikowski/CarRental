@@ -7,6 +7,7 @@ public sealed class JwtSettingsOptions
     public const string SectionName = "JwtSettings";
 
     public string Issuer { get; set; } = string.Empty;
+
     public string IssuerSigningKey { get; set; } = string.Empty;
 
     public int TokenExpirationInMinutes { get; set; }

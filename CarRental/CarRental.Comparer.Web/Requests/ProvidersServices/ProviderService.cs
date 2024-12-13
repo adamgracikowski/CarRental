@@ -16,7 +16,7 @@ public class ProviderService : IProviderService
 	{
 		try
 		{
-			return await httpClient.GetFromJsonAsync<ProviderListDto>("Providers", cancellationToken)
+			return await httpClient.GetFromJsonAsync<ProviderListDto>("providers", cancellationToken)
 				?? new ProviderListDto([]);
 		}
 		catch (Exception)

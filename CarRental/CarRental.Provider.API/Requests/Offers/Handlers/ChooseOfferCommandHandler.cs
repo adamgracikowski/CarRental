@@ -1,17 +1,15 @@
 ﻿using Ardalis.Result;
-using Ardalis.Result.FluentValidation;
 using Ardalis.Specification;
 using AutoMapper;
 using CarRental.Common.Core.Enums;
 using CarRental.Common.Core.ProviderEntities;
 using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
+using CarRental.Provider.API.DTOs.Rentals;
 using CarRental.Provider.API.Requests.Offers.Commands;
-using CarRental.Provider.API.Requests.Rentals.DTOs;
 using CarRental.Provider.Infrastructure.BackgroundJobs.RentalServices;
 using CarRental.Provider.Infrastructure.EmailServices;
 using CarRental.Provider.Persistence.Specifications.Customers;
 using CarRental.Provider.Persistence.Specifications.Offers;
-using FluentValidation;
 using Hangfire;
 using MediatR;
 

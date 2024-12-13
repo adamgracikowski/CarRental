@@ -30,7 +30,7 @@ public sealed class ReportService : IReportService
 				"application/json"
 			);
 
-			var response = await this.httpClient.PostAsync("RentalTransactions/Reports", requestContent, cancellationToken);
+			var response = await this.httpClient.PostAsync("rental-transactions/reports", requestContent, cancellationToken);
 
 			if (!response.IsSuccessStatusCode)
 			{

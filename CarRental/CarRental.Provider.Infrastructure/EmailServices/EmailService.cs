@@ -6,6 +6,7 @@ namespace CarRental.Provider.Infrastructure.EmailServices;
 public sealed class EmailService : IEmailService
 {
 	private readonly SendGridClient client;
+
 	public EmailService(SendGridClient client)
 	{
 		this.client = client;
@@ -24,15 +25,15 @@ public sealed class EmailService : IEmailService
 			sendEmailInput.IsHtml ? sendEmailInput.Content : null
 		);
 
-		var result = await client.SendEmailAsync(message);
+		var result = await this.client.SendEmailAsync(message);
 
 		if (result.IsSuccessStatusCode)
 		{
-			return new SendEmailResult(true, string.Empty);
+			return new SendEmailResult(Success: true, ErrorMessages: string.Empty);
 		}
 
-		var errorMessage = await result.Body.ReadAsStringAsync();
+		var errorMessages = await result.Body.ReadAsStringAsync();
 
-		return new SendEmailResult(false, errorMessage);
+		return new SendEmailResult(Success: false, ErrorMessages: errorMessages);
 	}
 }

@@ -13,13 +13,13 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
 {
     private readonly IRepositoryBase<User> usersRepository;
     private readonly IMapper mapper;
-    private readonly ILogger<CreateUserCommandHandler> logger;
 
-    public CreateUserCommandHandler(IRepositoryBase<User> usersRepository, IMapper mapper, ILogger<CreateUserCommandHandler> logger)
+    public CreateUserCommandHandler(
+        IRepositoryBase<User> usersRepository,
+        IMapper mapper)
     {
         this.usersRepository = usersRepository;
         this.mapper = mapper;
-        this.logger = logger;
     }
 
     public async Task<Result<UserIdDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)

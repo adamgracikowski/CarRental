@@ -17,7 +17,7 @@ public class CarService : ICarService
 	{
 		try
 		{
-			return await this.httpClient.GetFromJsonAsync<MakeListDto>("Cars/Available")
+			return await this.httpClient.GetFromJsonAsync<MakeListDto>("cars/available")
 				?? new MakeListDto([]);
 		}
 		catch (Exception)

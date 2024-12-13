@@ -1,8 +1,8 @@
-﻿@using CarRental.Comparer.Web.Requests.DTOs.Users
+﻿@using CarRental.Comparer.Web.Extensions.DateExtensions
 @using CarRental.Comparer.Web.Requests.DTOs.Offers
-@using Darnton.Blazor.DeviceInterop.Geolocation
+@using CarRental.Comparer.Web.Requests.DTOs.Users
 @using CarRental.Comparer.Web.Requests.UserServices
-@using CarRental.Comparer.Web.DateExtensions
+@using Darnton.Blazor.DeviceInterop.Geolocation
 
 @inject IGeolocationService GeolocationService
 @inject IUserService userService
@@ -99,5 +99,4 @@
 	{
 		MudDialog?.Cancel();
 	}
-
 }

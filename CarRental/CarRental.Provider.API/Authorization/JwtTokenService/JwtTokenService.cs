@@ -33,10 +33,10 @@ public sealed class JwtTokenService : IJwtTokenService
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
-            issuer: options.Issuer,
+            issuer: this.options.Issuer,
             audience: trustedClient.Audience,
             claims: claims,
-            expires: dateTimeProvider.UtcNow.AddMinutes(options.TokenExpirationInMinutes),
+            expires: this.dateTimeProvider.UtcNow.AddMinutes(options.TokenExpirationInMinutes),
             signingCredentials: creds
         );
 

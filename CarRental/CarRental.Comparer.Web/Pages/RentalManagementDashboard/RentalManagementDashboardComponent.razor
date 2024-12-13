@@ -1,11 +1,11 @@
 ﻿@page "/employee-dashboard"
 
-@attribute [Authorize(Roles = AuthorizationRoles.Employee)]
-
-@using CarRental.Comparer.Web.DateExtensions
+@using CarRental.Comparer.Web.Extensions.DateExtensions
 @using CarRental.Comparer.Web.Requests.DTOs.RentalTransactions
 @using CarRental.Comparer.Web.Requests.ReportServices
 @using CarRental.Comparer.Web.RoleModels
+
+@attribute [Authorize(Roles = AuthorizationRoles.Employee)]
 
 @inject IDateTimeProvider DateTimeProvider;
 @inject IReportService ReportService;

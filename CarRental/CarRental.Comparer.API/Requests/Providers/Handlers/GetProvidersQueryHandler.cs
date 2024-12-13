@@ -7,7 +7,7 @@ using MediatR;
 
 namespace CarRental.Comparer.API.Requests.Providers.Handlers;
 
-public class GetProvidersQueryHandler : IRequestHandler<GetProvidersQuery, Result<ProvidersDto>>
+public sealed class GetProvidersQueryHandler : IRequestHandler<GetProvidersQuery, Result<ProvidersDto>>
 {
     private readonly IRepositoryBase<Provider> providersRepository;
     private readonly ILogger<GetProvidersQueryHandler> logger;
@@ -21,11 +21,11 @@ public class GetProvidersQueryHandler : IRequestHandler<GetProvidersQuery, Resul
 
     public async Task<Result<ProvidersDto>> Handle(GetProvidersQuery request, CancellationToken cancellationToken)
     {
-        var providers = await providersRepository.ListAsync(cancellationToken);
+        var providers = await this.providersRepository.ListAsync(cancellationToken);
 
         if (providers == null || providers.Count == 0)
         {
-            logger.LogWarning("No providers found.");
+			this.logger.LogWarning("No providers found.");
             return Result<ProvidersDto>.NotFound();
         }
 

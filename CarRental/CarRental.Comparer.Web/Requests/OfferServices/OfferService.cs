@@ -6,11 +6,16 @@ namespace CarRental.Comparer.Web.Requests.OfferServices;
 
 public sealed class OfferService : IOfferService
 {
-	private readonly HttpClient httpClient;
+	public static readonly string ClientWithoutAuthorization = "ClientWithoutAuthorization";
+	public static readonly string ClientWithAuthorization = "ClientWithAuthorization";
 
-	public OfferService(HttpClient httpClient)
+	private readonly HttpClient httpClientWithoutAuthorization;
+	private readonly HttpClient httpClientWithAuthorization;
+
+	public OfferService(IHttpClientFactory httpClientFactory)
 	{
-		this.httpClient = httpClient;
+		this.httpClientWithAuthorization = httpClientFactory.CreateClient(ClientWithAuthorization);
+		this.httpClientWithoutAuthorization = httpClientFactory.CreateClient(ClientWithoutAuthorization);
 	}
 
 	public async Task<OfferDto?> CreateOfferAsync(
@@ -21,8 +26,8 @@ public sealed class OfferService : IOfferService
 	{
 		try
 		{
-			var url = $"Providers/{providerId}/Cars/{carId}/Offers";
-			var response = await httpClient.PostAsJsonAsync(url, createOfferDto, cancellationToken);
+			var url = $"providers/{providerId}/cars/{carId}/offers";
+			var response = await httpClientWithoutAuthorization.PostAsJsonAsync(url, createOfferDto, cancellationToken);
 
 			if (!response.IsSuccessStatusCode)
 			{
@@ -33,7 +38,7 @@ public sealed class OfferService : IOfferService
 
 			return offerDto;
 		}
-		catch (Exception)
+		catch (Exception ex)
 		{
 			return null;
 		}
@@ -47,8 +52,8 @@ public sealed class OfferService : IOfferService
 	{
 		try
 		{
-			var url = $"/Providers/{providerId}/Offers/{offerId}";
-			var response = await httpClient.PostAsJsonAsync(url, chooseOfferDto, cancellationToken);
+			var url = $"/providers/{providerId}/offers/{offerId}";
+			var response = await httpClientWithAuthorization.PostAsJsonAsync(url, chooseOfferDto, cancellationToken);
 
 			if (!response.IsSuccessStatusCode)
 			{

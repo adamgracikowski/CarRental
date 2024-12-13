@@ -2,7 +2,6 @@
 using Ardalis.Specification;
 using AutoMapper;
 using CarRental.Common.Core.ComparerEntities;
-using CarRental.Comparer.API.DTOs.Users;
 using CarRental.Comparer.API.Requests.Users.Commands;
 using CarRental.Comparer.Persistence.Specifications.Users;
 using MediatR;
@@ -34,7 +33,7 @@ public class EditUserByEmailCommandHandler : IRequestHandler<EditUserByEmailComm
             return Result.NotFound();
         }
 
-        mapper.Map(request.EditUserDto, userInDatabase);
+        this.mapper.Map(request.EditUserDto, userInDatabase);
 
         await this.usersRepository.UpdateAsync(userInDatabase, cancellationToken);
         await this.usersRepository.SaveChangesAsync(cancellationToken);

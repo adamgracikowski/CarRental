@@ -5,4 +5,7 @@ using MediatR;
 
 namespace CarRental.Comparer.API.Requests.RentalTransactions.Commands;
 
-public sealed record GenerateReportCommand(string? Email, GenerateReportDto GenerateReportDto) : IRequest<Result<ReportResult>>;
+public sealed record GenerateReportCommand(
+	string? Email, 
+	GenerateReportDto GenerateReportDto
+) : IRequest<Result<ReportResult>>;

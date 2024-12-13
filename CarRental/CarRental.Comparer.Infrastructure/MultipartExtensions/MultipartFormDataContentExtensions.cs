@@ -9,8 +9,9 @@ public static class MultipartFormDataContentExtensions
 	public static MultipartFormDataContent ToMultipartFormDataContent<T>(this T obj)
 	{
 		var multipartContent = new MultipartFormDataContent();
+		var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
 
-		foreach (var property in typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance))
+		foreach (var property in properties)
 		{
 			var value = property.GetValue(obj);
 

@@ -2,8 +2,8 @@
 using Ardalis.Result.AspNetCore;
 using CarRental.Provider.API.Authorization;
 using CarRental.Provider.API.DTOs.Customers;
+using CarRental.Provider.API.DTOs.Rentals;
 using CarRental.Provider.API.Requests.Offers.Commands;
-using CarRental.Provider.API.Requests.Rentals.DTOs;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CarRental.Provider.API.Controllers;
 
 [Authorize]
-[Route("[controller]")]
+[Route("offers")]
 [ApiController]
 public sealed class OffersController : ControllerBase
 {

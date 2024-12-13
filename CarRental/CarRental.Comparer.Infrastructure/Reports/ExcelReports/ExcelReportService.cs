@@ -21,80 +21,21 @@ public sealed class ExcelReportService : IPeriodicReportService
 
 	public ExcelReportService(
 		ILogger<ExcelReportService> logger,
-		FileExtensionContentTypeProvider fileExtensionContentTypeProvider
-		)
+		FileExtensionContentTypeProvider fileExtensionContentTypeProvider)
 	{
 		this.logger = logger;
 		this.fileExtensionContentTypeProvider = fileExtensionContentTypeProvider;
 	}
 
-	public Task<ReportResult?> GenerateReportAsync(IEnumerable<RentalTransaction> rentalTransactions, string reportName, CancellationToken cancellation)
+	public Task<ReportResult?> GenerateReportAsync(IEnumerable<RentalTransaction> rentalTransactions, string reportName, CancellationToken cancellation = default)
 	{
-		var groupedData = rentalTransactions
-			.GroupBy(r => r.RentedAt.Year)
-			.SelectMany(yearGroup => yearGroup
-				.GroupBy(r => r.RentedAt.ToString(MonthFormat, CultureInfo.InvariantCulture))
-				.SelectMany(monthGroup => monthGroup
-					.GroupBy(r => r.CarDetails.Make)
-					.SelectMany(makeGroup => makeGroup
-						.GroupBy(r => r.CarDetails.Model)
-						.Select(modelGroup => new
-						{
-							Year = yearGroup.Key,
-							Month = monthGroup.Key,
-							Make = makeGroup.Key,
-							Model = modelGroup.Key,
-							NumberOfRentals = modelGroup.Count(),
-							Revenue = modelGroup.Sum(r => CalculateRevenue(r))
-						})
-					)
-				)
-			)
-			.ToList();
+		var groupedData = GroupReportData(rentalTransactions);
 
 		using var workbook = new XLWorkbook();
 
-		var worksheet = workbook.AddWorksheet("Report");
+		var dataRange = ConfigureReportTable(workbook, groupedData);
 
-		worksheet.Cell("A1").Value = Year;
-		worksheet.Cell("B1").Value = Month;
-		worksheet.Cell("C1").Value = Make;
-		worksheet.Cell("D1").Value = Model;
-		worksheet.Cell("E1").Value = NumberOfRentals;
-		worksheet.Cell("F1").Value = Revenue;
-
-		worksheet.Cell("A2").InsertData(groupedData);
-
-		var dataRange = worksheet.RangeUsed();
-
-		if (dataRange != null)
-		{
-			var table = dataRange.CreateTable();
-
-			table.Theme = XLTableTheme.TableStyleMedium9;
-			table.ShowAutoFilter = true;
-			table.ShowTotalsRow = true;
-			table.Field(NumberOfRentals).TotalsRowFunction = XLTotalsRowFunction.Sum;
-			table.Field(Revenue).TotalsRowFunction = XLTotalsRowFunction.Sum;
-
-			worksheet.Columns().AdjustToContents();
-		}
-
-		var pivotSheet = workbook.Worksheets.Add("PivotTable");
-		var pivotTable = pivotSheet.PivotTables.Add("PivotTable", pivotSheet.Cell("A1"), dataRange);
-
-		pivotTable.RowLabels.Add(Year);
-		pivotTable.RowLabels.Add(Month);
-		pivotTable.RowLabels.Add(Make);
-		pivotTable.RowLabels.Add(Model);
-
-		pivotTable.Values.Add(NumberOfRentals).SetSummaryFormula(XLPivotSummary.Sum);
-		pivotTable.Values.Add(Revenue).SetSummaryFormula(XLPivotSummary.Sum);
-
-		pivotTable.ShowGrandTotalsColumns = true;
-		pivotTable.ShowGrandTotalsRows = true;
-
-		pivotSheet.Columns().AdjustToContents();
+		ConfigurePivotTable(workbook, dataRange);
 
 		using var memoryStream = new MemoryStream();
 
@@ -122,6 +63,83 @@ public sealed class ExcelReportService : IPeriodicReportService
 		);
 
 		return Task.FromResult<ReportResult?>(reportResult);
+	}
+
+	private IEnumerable<object> GroupReportData(IEnumerable<RentalTransaction> rentalTransactions)
+	{
+		var groupedData = rentalTransactions
+			.GroupBy(r => r.RentedAt.Year)
+			.SelectMany(yearGroup => yearGroup
+				.GroupBy(r => r.RentedAt.ToString(MonthFormat, CultureInfo.InvariantCulture))
+				.SelectMany(monthGroup => monthGroup
+					.GroupBy(r => r.CarDetails.Make)
+					.SelectMany(makeGroup => makeGroup
+						.GroupBy(r => r.CarDetails.Model)
+						.Select(modelGroup => new
+						{
+							Year = yearGroup.Key,
+							Month = monthGroup.Key,
+							Make = makeGroup.Key,
+							Model = modelGroup.Key,
+							NumberOfRentals = modelGroup.Count(),
+							Revenue = modelGroup.Sum(r => CalculateRevenue(r))
+						})
+					)
+				)
+			)
+			.ToList();
+
+		return groupedData;
+	}
+
+	private IXLRange? ConfigureReportTable(XLWorkbook workbook, IEnumerable<object> groupedData)
+	{
+		var worksheet = workbook.AddWorksheet("Report");
+
+		worksheet.Cell("A1").Value = Year;
+		worksheet.Cell("B1").Value = Month;
+		worksheet.Cell("C1").Value = Make;
+		worksheet.Cell("D1").Value = Model;
+		worksheet.Cell("E1").Value = NumberOfRentals;
+		worksheet.Cell("F1").Value = Revenue;
+
+		worksheet.Cell("A2").InsertData(groupedData);
+
+		var dataRange = worksheet.RangeUsed();
+
+		if (dataRange != null)
+		{
+			var table = dataRange.CreateTable();
+
+			table.Theme = XLTableTheme.TableStyleMedium9;
+			table.ShowAutoFilter = true;
+			table.ShowTotalsRow = true;
+			table.Field(NumberOfRentals).TotalsRowFunction = XLTotalsRowFunction.Sum;
+			table.Field(Revenue).TotalsRowFunction = XLTotalsRowFunction.Sum;
+
+			worksheet.Columns().AdjustToContents();
+		}
+
+		return dataRange;
+	}
+
+	private void ConfigurePivotTable(XLWorkbook workbook, IXLRange? dataRange)
+	{
+		var pivotSheet = workbook.Worksheets.Add("PivotTable");
+		var pivotTable = pivotSheet.PivotTables.Add("PivotTable", pivotSheet.Cell("A1"), dataRange);
+
+		pivotTable.RowLabels.Add(Year);
+		pivotTable.RowLabels.Add(Month);
+		pivotTable.RowLabels.Add(Make);
+		pivotTable.RowLabels.Add(Model);
+
+		pivotTable.Values.Add(NumberOfRentals).SetSummaryFormula(XLPivotSummary.Sum);
+		pivotTable.Values.Add(Revenue).SetSummaryFormula(XLPivotSummary.Sum);
+
+		pivotTable.ShowGrandTotalsColumns = true;
+		pivotTable.ShowGrandTotalsRows = true;
+
+		pivotSheet.Columns().AdjustToContents();
 	}
 
 	private decimal CalculateRevenue(RentalTransaction rentalTransaction)

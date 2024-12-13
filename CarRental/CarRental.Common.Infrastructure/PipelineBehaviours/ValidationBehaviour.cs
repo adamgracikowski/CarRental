@@ -3,7 +3,7 @@ using Ardalis.Result.FluentValidation;
 using FluentValidation;
 using MediatR;
 
-namespace CarRental.Provider.API.Validators;
+namespace CarRental.Common.Infrastructure.PipelineBehaviours;
 
 public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
 	where TRequest : IRequest<TResponse>
@@ -20,14 +20,14 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
 		RequestHandlerDelegate<TResponse> next,
 		CancellationToken cancellationToken)
 	{
-		if (this.validators.Any())
+		if (validators.Any())
 		{
 			var validationContext = new ValidationContext<TRequest>(request);
 
 			var validationResults = await Task.WhenAll(
-				this.validators.Select(v => v.ValidateAsync(validationContext, cancellationToken)
+				validators.Select(v => v.ValidateAsync(validationContext, cancellationToken)
 			));
-			
+
 			var validationErrors = validationResults
 				.SelectMany(r => r.AsErrors())
 				.ToList();
@@ -43,7 +43,7 @@ public sealed class ValidationBehavior<TRequest, TResponse> : IPipelineBehavior<
 				if (responseType.IsGenericType && responseType.GetGenericTypeDefinition() == typeof(Result<>))
 				{
 					var resultType = responseType.GetGenericArguments()[0];
-					
+
 					var invalidMethod = typeof(Result<>)
 						.MakeGenericType(resultType)
 						.GetMethod(nameof(Result<int>.Invalid), [typeof(List<ValidationError>)]);

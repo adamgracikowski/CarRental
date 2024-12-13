@@ -3,7 +3,6 @@ using Ardalis.Specification;
 using AutoMapper;
 using CarRental.Common.Core.ProviderEntities;
 using CarRental.Provider.API.DTOs.Rentals;
-using CarRental.Provider.API.Requests.Rentals.DTOs;
 using CarRental.Provider.API.Requests.Rentals.Queries;
 using CarRental.Provider.Persistence.Specifications.Rentals;
 using MediatR;

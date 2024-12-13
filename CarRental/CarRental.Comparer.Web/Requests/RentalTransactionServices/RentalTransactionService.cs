@@ -6,7 +6,7 @@ namespace CarRental.Comparer.Web.Requests.RentalTransactionServices;
 
 public sealed class RentalTransactionService : IRentalTransactionService
 {
-	private const string RentalTransactions = "RentalTransactions";
+	private const string RentalTransactions = "rental-transactions";
 
 	private readonly HttpClient httpClient;
 

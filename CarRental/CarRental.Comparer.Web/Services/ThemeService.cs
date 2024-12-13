@@ -6,8 +6,6 @@ public class ThemeService
 {
     public readonly Align align = Align.Left;
 
-    private static string[] _fontFamily = ["Inter", "sans-serif" ];
-
     public MudTheme CustomTheme = new MudTheme()
     {
         PaletteLight = new PaletteLight()

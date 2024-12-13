@@ -2,7 +2,7 @@
 
 public sealed class SendEmailOptions
 {
-	public static string SectionName = "SendGrid";
+	public const string SectionName = "SendGrid";
 
 	public string APIKey { get; set; } = string.Empty;
 
@@ -12,5 +12,5 @@ public sealed class SendEmailOptions
 
 	public string LinkTemplate { get; set; } = string.Empty;
 
-	public TemplatesLocation TemplatesLocation { get; set; } = new TemplatesLocation();
+	public TemplatesLocation TemplatesLocation { get; set; } = new();
 }

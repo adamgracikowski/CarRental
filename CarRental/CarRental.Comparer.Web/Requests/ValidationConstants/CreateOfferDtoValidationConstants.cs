@@ -14,5 +14,4 @@ public static class CreateOfferDtoValidationConstants
 		public const int UpperYears = 100;
 		public const string DrivingLicenseYearsRange = "Driving License Years must be between 0 and 100.";
 	}
-
 }

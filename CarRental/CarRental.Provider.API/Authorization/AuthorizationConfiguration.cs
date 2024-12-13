@@ -1,51 +1,44 @@
 ﻿using CarRental.Provider.API.Authorization.JwtTokenService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
 
 namespace CarRental.Provider.API.Authorization;
 
 public static class AuthorizationConfiguration
 {
-    public static IServiceCollection ConfigureAuthorization(this IServiceCollection services, IConfiguration configuration)
-    {
-        var jwtSettings = configuration.GetSection(JwtSettingsOptions.SectionName).Get<JwtSettingsOptions>();
+	public static IServiceCollection ConfigureAuthorization(this IServiceCollection services, IConfiguration configuration)
+	{
+		var jwtSettings = configuration.GetSection(JwtSettingsOptions.SectionName).Get<JwtSettingsOptions>();
 
-        ArgumentNullException.ThrowIfNull(jwtSettings, $"{JwtSettingsOptions.SectionName} cannot be null.");
+		ArgumentNullException.ThrowIfNull(jwtSettings, $"{JwtSettingsOptions.SectionName} cannot be null.");
 
-        if (jwtSettings.TrustedClients == null || jwtSettings.TrustedClients.Count == 0)
-        {
-            throw new ArgumentNullException($"{nameof(JwtSettingsOptions.TrustedClients)} cannot be null or empty.");
-        }
+		if (jwtSettings.TrustedClients == null || jwtSettings.TrustedClients.Count == 0)
+		{
+			throw new ArgumentNullException($"{nameof(JwtSettingsOptions.TrustedClients)} cannot be null or empty.");
+		}
 
-        services.AddAuthentication(options =>
-        {
-            options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-        }).AddJwtBearer(options =>
-        {
-            options.TokenValidationParameters = new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-                ValidIssuer = jwtSettings.Issuer,
-                ValidAudiences = jwtSettings.TrustedClients.Select(t => t.Audience).ToList(),
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.IssuerSigningKey))
-            };
-        });
+		services.AddAuthentication(options =>
+		{
+			options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+			options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+		}).AddJwtBearer(options =>
+		{
+			options.TokenValidationParameters = new TokenValidationParameters
+			{
+				ValidateIssuer = true,
+				ValidateAudience = true,
+				ValidateLifetime = true,
+				ValidateIssuerSigningKey = true,
+				ValidIssuer = jwtSettings.Issuer,
+				ValidAudiences = jwtSettings.TrustedClients.Select(t => t.Audience).ToList(),
+				IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.IssuerSigningKey))
+			};
+		});
 
-        services.AddAuthorization();
+		services.AddAuthorization();
 
-        return services;
-    }
-
-    public static string? GetAudience(this ClaimsPrincipal claimsPrincipal)
-    {
-        return claimsPrincipal.Claims.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.Aud)?.Value;
-    }
+		return services;
+	}
 }

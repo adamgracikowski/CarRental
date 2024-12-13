@@ -1,7 +1,7 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
-using CarRental.Common.Core.Roles;
 using CarRental.Comparer.API.Authorization;
+using CarRental.Comparer.API.Authorization.Roles;
 using CarRental.Comparer.API.DTOs.RentalTransactions;
 using CarRental.Comparer.API.DTOs.Users;
 using CarRental.Comparer.API.Requests.RentalTransactions.Queries;
@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CarRental.Comparer.API.Controllers;
 
 [Authorize(Policy = AuthorizationRoles.User)]
-[Route("[controller]")]
+[Route("users")]
 [ApiController]
 public sealed class UsersController : ControllerBase
 {
@@ -139,7 +139,7 @@ public sealed class UsersController : ControllerBase
 	/// <response code="404">The user with the specified email does not exist.</response>
 	/// <response code="500">An internal server error occurred while retrieving the rental transactions.</response>
 	[TranslateResultToActionResult]
-	[HttpGet("{email}/RentalTransactions/{status}")]
+	[HttpGet("{email}/rental-transactions/{status}")]
 	public async Task<Result<RentalTransactionPaginatedListDto>> GetRentalTransactionsByStatus(
 		string email,
 		string status,
@@ -156,7 +156,7 @@ public sealed class UsersController : ControllerBase
 
 		var query = new GetRentalTransactionsByStatusQuery(email, status, page, size);
 
-		var response = await mediator.Send(query, cancellationToken);
+		var response = await this.mediator.Send(query, cancellationToken);
 
 		return response;
 	}

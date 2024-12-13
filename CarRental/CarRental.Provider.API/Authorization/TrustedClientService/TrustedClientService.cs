@@ -14,6 +14,7 @@ public sealed class TrustedClientService : ITrustedClientService
 
     public TrustedClient? ValidateTrustedClient(string clientId, string clientSecretKey)
     {
-        return trustedClients.FirstOrDefault(t => t.ClientId == clientId && t.ClientSecretKey == clientSecretKey);
+        return this.trustedClients
+            .FirstOrDefault(t => t.ClientId == clientId && t.ClientSecretKey == clientSecretKey);
     }
 }

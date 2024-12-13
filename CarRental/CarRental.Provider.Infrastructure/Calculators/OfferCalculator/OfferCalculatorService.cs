@@ -21,20 +21,20 @@ public sealed class OfferCalculatorService : IOfferCalculatorService
         var rentalPricePerDay = input.BaseRentalPricePerDay;
         var insurancePricePerDay = input.BaseInsurancePricePerDay;
 
-        if(input.Age < options.YoungDriverAgeLimit)
+        if(input.Age < this.options.YoungDriverAgeLimit)
         {
-            rentalPricePerDay += options.YoungDriverSurcharge * input.BaseRentalPricePerDay;
-            insurancePricePerDay += options.YoungDriverSurcharge * input.BaseInsurancePricePerDay;
+            rentalPricePerDay += this.options.YoungDriverSurcharge * input.BaseRentalPricePerDay;
+            insurancePricePerDay += this.options.YoungDriverSurcharge * input.BaseInsurancePricePerDay;
         }
 
-        if(input.DrivingLicenseYears < options.InexperiencedDriverYearsLimit)
+        if(input.DrivingLicenseYears < this.options.InexperiencedDriverYearsLimit)
         {
-            rentalPricePerDay += options.InexperiencedDriverSurcharge * input.BaseRentalPricePerDay;
-            insurancePricePerDay += options.InexperiencedDriverSurcharge * input.BaseInsurancePricePerDay;
+            rentalPricePerDay += this.options.InexperiencedDriverSurcharge * input.BaseRentalPricePerDay;
+            insurancePricePerDay += this.options.InexperiencedDriverSurcharge * input.BaseInsurancePricePerDay;
         }
 
         var generatedAt = this.dateTimeProvider.UtcNow;
-        var expiresAt = generatedAt.AddMinutes(options.OfferExpirationInMinutes);
+        var expiresAt = generatedAt.AddMinutes(this.options.OfferExpirationInMinutes);
 
         return new OfferCalculatorResult(
             rentalPricePerDay, 

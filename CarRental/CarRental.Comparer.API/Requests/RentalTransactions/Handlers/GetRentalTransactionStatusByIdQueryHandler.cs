@@ -30,17 +30,17 @@ public class GetRentalTransactionStatusByIdQueryHandler : IRequestHandler<GetRen
 
 	public async Task<Result<RentalTransactionStatusDto>> Handle(GetRentalTransactionStatusByIdQuery request, CancellationToken cancellationToken)
 	{
-		var specification = new RentalByIdWithProviderSpecification(request.rentalTransactionId);
+		var specification = new RentalByIdWithProviderSpecification(request.RentalTransactionId);
 
-		var rentalTransaction = await rentalTransactionsRepository.FirstOrDefaultAsync(specification, cancellationToken);
+		var rentalTransaction = await this.rentalTransactionsRepository.FirstOrDefaultAsync(specification, cancellationToken);
 
 		if (rentalTransaction?.Provider?.Name is null)
 		{
-			logger.LogWarning($"RentalTransaction with id: {request.rentalTransactionId} does not match with valid provider");
+			this.logger.LogWarning($"RentalTransaction with id: {request.RentalTransactionId} does not match with valid provider");
 			return Result<RentalTransactionStatusDto>.NotFound();
 		}
 
-		var rentalStatusDto = await carComparisonService.GetRentalStatusByIdAsync(rentalTransaction.Provider.Name, rentalTransaction.RentalOuterId, cancellationToken);
+		var rentalStatusDto = await this.carComparisonService.GetRentalStatusByIdAsync(rentalTransaction.Provider.Name, rentalTransaction.RentalOuterId, cancellationToken);
 
 		if (rentalStatusDto is null)
 		{
@@ -50,8 +50,8 @@ public class GetRentalTransactionStatusByIdQueryHandler : IRequestHandler<GetRen
 		if (this.rentalStatusConverter.TryConvertFromProviderRentalStatus(rentalStatusDto.Status, rentalTransaction.Provider.Name, out var updatedStatus))
 		{
 			rentalTransaction.Status = updatedStatus;
-			await rentalTransactionsRepository.UpdateAsync(rentalTransaction, cancellationToken);
-			await rentalTransactionsRepository.SaveChangesAsync(cancellationToken);
+			await this.rentalTransactionsRepository.UpdateAsync(rentalTransaction, cancellationToken);
+			await this.rentalTransactionsRepository.SaveChangesAsync(cancellationToken);
 		}
 
 		var rentalTransactionStatusDto = new RentalTransactionStatusDto(rentalTransaction.Id, rentalTransaction.Status.ToString());

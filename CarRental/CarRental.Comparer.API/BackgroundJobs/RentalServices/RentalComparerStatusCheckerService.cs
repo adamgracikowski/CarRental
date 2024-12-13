@@ -36,7 +36,7 @@ public class RentalComparerStatusCheckerService : IRentalComparerStatusCheckerSe
 		string outerRentalId,
 		string jobId,
 		DateTime jobExpirationTime,
-		CancellationToken cancellationToken)
+		CancellationToken cancellationToken = default)
 	{
 		if (this.dateTimeProvider.UtcNow >= jobExpirationTime)
 		{
@@ -83,6 +83,6 @@ public class RentalComparerStatusCheckerService : IRentalComparerStatusCheckerSe
 			return;
 		}
 
-		logger.LogInformation($"Rental status different from Active or Rejected... Trying again.");
+		this.logger.LogInformation($"Rental status different from Active or Rejected... Trying again.");
 	}
 }

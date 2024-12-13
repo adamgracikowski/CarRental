@@ -25,6 +25,5 @@ public sealed class ProviderConfiguration : IEntityTypeConfiguration<Provider>
             .HasForeignKey(e => e.ProviderId)
             .OnDelete(DeleteBehavior.Cascade)
             .IsRequired();
-
     }
 }

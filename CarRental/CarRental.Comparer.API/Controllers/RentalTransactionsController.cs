@@ -1,7 +1,7 @@
 ﻿using Ardalis.Result;
 using Ardalis.Result.AspNetCore;
-using CarRental.Common.Core.Roles;
 using CarRental.Comparer.API.Authorization;
+using CarRental.Comparer.API.Authorization.Roles;
 using CarRental.Comparer.API.DTOs.RentalTransactions;
 using CarRental.Comparer.API.DTOs.Reports;
 using CarRental.Comparer.API.Requests.RentalTransactions.Commands;
@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace CarRental.Comparer.API.Controllers;
 
 [Authorize]
-[Route("[controller]")]
+[Route("rental-transactions")]
 [ApiController]
 public sealed class RentalTransactionsController : ControllerBase
 {
@@ -41,7 +41,7 @@ public sealed class RentalTransactionsController : ControllerBase
 	{
 		var query = new GetRentalTransactionStatusByIdQuery(id);
 
-		var response = await mediator.Send(query, cancellationToken);
+		var response = await this.mediator.Send(query, cancellationToken);
 
 		return response;
 	}
@@ -57,14 +57,14 @@ public sealed class RentalTransactionsController : ControllerBase
 	/// <response code="500">An internal server error occurred while generating the report.</response>
 	[Authorize(Policy = AuthorizationRoles.Employee)]
 	[TranslateResultToActionResult]
-	[HttpPost("Reports")]
+	[HttpPost("reports")]
 	public async Task<IActionResult> GenerateReport(GenerateReportDto generateReportDto, CancellationToken cancellationToken)
 	{
 		var email = User.GetEmailClaim();
 
 		var command = new GenerateReportCommand(email, generateReportDto);
 
-		var response = await mediator.Send(command, cancellationToken);
+		var response = await this.mediator.Send(command, cancellationToken);
 
 		if (!response.IsSuccess)
 		{
@@ -104,7 +104,7 @@ public sealed class RentalTransactionsController : ControllerBase
 
 		var query = new GetRentalTransactionsForEmployeeQuery(email, status, page, size);
 
-		var response = await mediator.Send(query, cancellationToken);
+		var response = await this.mediator.Send(query, cancellationToken);
 
 		return response;
 	}
@@ -130,7 +130,7 @@ public sealed class RentalTransactionsController : ControllerBase
 
 		var command = new AcceptRentalReturnCommand(id, email, acceptRentalReturnDto);
 
-		var response = await mediator.Send(command, cancellationToken);
+		var response = await this.mediator.Send(command, cancellationToken);
 
 		return response;
 	}

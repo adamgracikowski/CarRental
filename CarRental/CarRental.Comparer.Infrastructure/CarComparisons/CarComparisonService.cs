@@ -42,7 +42,7 @@ public sealed class CarComparisonService : ICarComparisonService
 		this.cacheService = cacheService;
 	}
 
-	public async Task<UnifiedCarListDto> GetAllAvailableCarsAsync(CancellationToken cancellationToken)
+	public async Task<UnifiedCarListDto> GetAllAvailableCarsAsync(CancellationToken cancellationToken = default)
 	{
 		var carsKey = this.keyGenerator.GenerateCarsKey();
 
@@ -64,7 +64,7 @@ public sealed class CarComparisonService : ICarComparisonService
 		return aggregatedResponse;
 	}
 
-	public async Task<OfferDto?> CreateOfferAsync(string providerName, int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken)
+	public async Task<OfferDto?> CreateOfferAsync(string providerName, int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken = default)
 	{
 		var carProviderService = GetCarProviderServiceByName(providerName);
 
@@ -76,7 +76,7 @@ public sealed class CarComparisonService : ICarComparisonService
 	}
 
 
-	public async Task<RentalIdWithDateTimesDto?> ChooseOfferAsync(string providerName, int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken)
+	public async Task<RentalIdWithDateTimesDto?> ChooseOfferAsync(string providerName, int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken = default)
 	{
 		var carProviderService = this.GetCarProviderServiceByName(providerName);
 
@@ -87,7 +87,7 @@ public sealed class CarComparisonService : ICarComparisonService
 		return rentalIdWithDateTimesDto;
 	}
 
-	public async Task<RentalStatusDto?> GetRentalStatusByIdAsync(string providerName, string rentalId, CancellationToken cancellationToken)
+	public async Task<RentalStatusDto?> GetRentalStatusByIdAsync(string providerName, string rentalId, CancellationToken cancellationToken = default)
 	{
 		var carProviderService = this.GetCarProviderServiceByName(providerName);
 
@@ -98,7 +98,7 @@ public sealed class CarComparisonService : ICarComparisonService
 		return rentalStatusDto;
 	}
 
-	public async Task<RentalReturnDto?> AcceptRentalReturnAsync(string providerName, string rentalId, AcceptRentalReturnDto acceptRentalReturnDto, CancellationToken cancellationToken)
+	public async Task<RentalReturnDto?> AcceptRentalReturnAsync(string providerName, string rentalId, AcceptRentalReturnDto acceptRentalReturnDto, CancellationToken cancellationToken = default)
 	{
 		var carProviderService = this.GetCarProviderServiceByName(providerName);
 
@@ -133,7 +133,7 @@ public sealed class CarComparisonService : ICarComparisonService
 		return carProviderService;
 	}
 
-	private async Task<UnifiedCarListDto> AggregateResponsesAsync(IEnumerable<UnifiedCarListDto?> responses, CancellationToken cancellationToken)
+	private async Task<UnifiedCarListDto> AggregateResponsesAsync(IEnumerable<UnifiedCarListDto?> responses, CancellationToken cancellationToken = default)
 	{
 		var files = await this.blobStorageService.GetFilesAsync(options.MakeLogosContainer, cancellationToken);
 

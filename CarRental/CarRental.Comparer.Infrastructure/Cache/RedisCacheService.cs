@@ -18,7 +18,7 @@ public sealed class RedisCacheService : ICacheService
 		this.redisOptions = redisOptions.Value;
 	}
 
-	public async Task AddDataAsync<T>(string key, T data) where T : class
+	public async Task AddDataAsync<T>(string key, T data, CancellationToken cancellationToken = default) where T : class
 	{
 		if (!this.redisOptions.UseRedis) return;
 
@@ -29,10 +29,10 @@ public sealed class RedisCacheService : ICacheService
 			AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(redisOptions.ExpirationTimeInMinutes)
 		};
 
-		await this.cache.SetStringAsync(key, serializedObject, options);
+		await this.cache.SetStringAsync(key, serializedObject, options, token: cancellationToken);
 	}
 
-	public async Task AddDataAsync<T>(string key, T data, int minutes) where T : class
+	public async Task AddDataAsync<T>(string key, T data, int minutes, CancellationToken cancellationToken = default) where T : class
 	{
 		if (!this.redisOptions.UseRedis) return;
 
@@ -43,10 +43,10 @@ public sealed class RedisCacheService : ICacheService
 			AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(minutes)
 		};
 
-		await this.cache.SetStringAsync(key, serializedObject, options);
+		await this.cache.SetStringAsync(key, serializedObject, options, token: cancellationToken);
 	}
 
-	public async Task AddDataAsync<T>(string key, T data, DateTime expirationTime) where T : class
+	public async Task AddDataAsync<T>(string key, T data, DateTime expirationTime, CancellationToken cancellationToken = default) where T : class
 	{
 		if (!this.redisOptions.UseRedis) return;
 
@@ -59,14 +59,14 @@ public sealed class RedisCacheService : ICacheService
 			AbsoluteExpirationRelativeToNow = expirationTime - dateTimeNow
 		};
 
-		await this.cache.SetStringAsync(key, serializedObject, redisOptions);
+		await this.cache.SetStringAsync(key, serializedObject, redisOptions, token: cancellationToken);
 	}
 
-	public async Task<T?> GetDataByKeyAsync<T>(string key) where T : class
+	public async Task<T?> GetDataByKeyAsync<T>(string key, CancellationToken cancellationToken = default) where T : class
 	{
 		if (!this.redisOptions.UseRedis) return null;
 
-		var serializedObject = await this.cache.GetStringAsync(key);
+		var serializedObject = await this.cache.GetStringAsync(key, token: cancellationToken);
 
 		if (serializedObject == null)
 		{

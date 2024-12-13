@@ -4,4 +4,7 @@ using MediatR;
 
 namespace CarRental.Comparer.API.Requests.Users.Commands;
 
-public sealed record EditUserByEmailCommand(string Email, UserDto EditUserDto) : IRequest<Result>;
+public sealed record EditUserByEmailCommand(
+	string Email, 
+	UserDto EditUserDto
+) : IRequest<Result>;

@@ -2,5 +2,5 @@
 
 public interface ITokenService
 {
-    Task<string> GetTokenAsync(CancellationToken cancellationToken);
+    Task<string> GetTokenAsync(CancellationToken cancellationToken = default);
 }

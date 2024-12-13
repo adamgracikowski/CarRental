@@ -1,4 +1,4 @@
-﻿namespace CarRental.Comparer.Web.DateExtensions;
+﻿namespace CarRental.Comparer.Web.Extensions.DateExtensions;
 
 public sealed class DateTimeProvider : IDateTimeProvider
 {

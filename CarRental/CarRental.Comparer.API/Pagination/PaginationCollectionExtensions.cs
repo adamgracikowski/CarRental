@@ -1,6 +1,4 @@
-﻿using Math = System.Math;
-
-namespace CarRental.Comparer.API.Pagination;
+﻿namespace CarRental.Comparer.API.Pagination;
 
 public static class PaginationCollectionExtensions
 {
@@ -11,7 +9,7 @@ public static class PaginationCollectionExtensions
 
 	public static ICollection<T> GetPage<T>(this ICollection<T> collection, int pageSize, int pageNumber)
 	{
-		int skip = (pageNumber - 1) * pageSize;
+		var skip = (pageNumber - 1) * pageSize;
 		return collection
 			.Skip(skip)
 			.Take(pageSize)

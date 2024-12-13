@@ -32,13 +32,13 @@ public sealed class InternalProviderTokenService : ITokenService
         this.cacheKeyGenerator = cacheKeyGenerator;
     }
 
-    public async Task<string> GetTokenAsync(CancellationToken cancellationToken)
+    public async Task<string> GetTokenAsync(CancellationToken cancellationToken = default)
     {
         var precision = TimeSpan.FromMinutes(options.TokenNearExpirationMinutes);
 
-        var tokenKey = cacheKeyGenerator.GenerateTokenKey(options.Name);
+        var tokenKey = this.cacheKeyGenerator.GenerateTokenKey(options.Name);
 
-        var token = await cache.GetDataByKeyAsync<string>(tokenKey);
+        var token = await this.cache.GetDataByKeyAsync<string>(tokenKey);
 
         if (token is not null &&
             !IsTokenNearExpiration(token, precision))
@@ -52,7 +52,7 @@ public sealed class InternalProviderTokenService : ITokenService
         if (expirationTime != null && expirationTime.HasValue)
         {
             var expirationDate = ((DateTimeOffset)expirationTime).UtcDateTime;
-            await cache.AddDataAsync(tokenKey, newToken, expirationDate);
+            await this.cache.AddDataAsync(tokenKey, newToken, expirationDate);
         }
 
         return newToken;
@@ -60,12 +60,12 @@ public sealed class InternalProviderTokenService : ITokenService
 
     private async Task<string> RequestNewTokenAsync(CancellationToken cancellationToken)
     {
-        using var httpClient = httpClientFactory.CreateClient();
-        httpClient.BaseAddress = new Uri(options.BaseUrl);
+        using var httpClient = this.httpClientFactory.CreateClient();
+        httpClient.BaseAddress = new Uri(this.options.BaseUrl);
 
-        var request = new AuthRequestDto(options.ClientId, options.ClientSecret);
+        var request = new AuthRequestDto(this.options.ClientId, this.options.ClientSecret);
 
-        var response = await httpClient.PostAsJsonAsync("Auth/token", request, cancellationToken);
+        var response = await httpClient.PostAsJsonAsync("auth/token", request, cancellationToken);
         
         var responseDto = await response.Content.ReadFromJsonAsync<AuthResponseDto>(cancellationToken);
 

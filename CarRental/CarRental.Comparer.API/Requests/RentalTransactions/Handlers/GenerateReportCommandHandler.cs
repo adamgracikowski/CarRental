@@ -1,5 +1,4 @@
 ﻿using Ardalis.Result;
-using Ardalis.Result.FluentValidation;
 using Ardalis.Specification;
 using CarRental.Common.Core.ComparerEntities;
 using CarRental.Common.Core.Enums;
@@ -7,7 +6,6 @@ using CarRental.Comparer.API.Requests.RentalTransactions.Commands;
 using CarRental.Comparer.Infrastructure.Reports;
 using CarRental.Comparer.Persistence.Specifications.Employees;
 using CarRental.Comparer.Persistence.Specifications.RentalTransactions;
-using FluentValidation;
 using MediatR;
 
 namespace CarRental.Comparer.API.Requests.RentalTransactions.Handlers;
@@ -17,29 +15,19 @@ public class GenerateReportCommandHandler : IRequestHandler<GenerateReportComman
 	private readonly IPeriodicReportService reportService;
 	private readonly IRepositoryBase<Employee> employeesRepository;
 	private readonly IRepositoryBase<RentalTransaction> rentalTransactionsRepository;
-	private readonly IValidator<GenerateReportCommand> validator;
 
 	public GenerateReportCommandHandler(
 		IPeriodicReportService reportService,
 		IRepositoryBase<Employee> employeesRepository,
-		IRepositoryBase<RentalTransaction> rentalTransactionsRepository,
-		IValidator<GenerateReportCommand> validator)
+		IRepositoryBase<RentalTransaction> rentalTransactionsRepository)
 	{
 		this.reportService = reportService;
 		this.employeesRepository = employeesRepository;
 		this.rentalTransactionsRepository = rentalTransactionsRepository;
-		this.validator = validator;
 	}
 
 	public async Task<Result<ReportResult>> Handle(GenerateReportCommand request, CancellationToken cancellationToken)
 	{
-		var validation = await this.validator.ValidateAsync(request, cancellationToken);
-
-		if (!validation.IsValid)
-		{
-			return Result<ReportResult>.Invalid(validation.AsErrors());
-		}
-
 		var employeeSpecification = new EmployeeByEmailWithProviderSpecification(request.Email!);
 
 		var employee = await this.employeesRepository.FirstOrDefaultAsync(employeeSpecification, cancellationToken);

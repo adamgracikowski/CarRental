@@ -1,3 +1,3 @@
 ﻿namespace CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Rentals;
 
-public sealed record InternalRentalIdDto(int id);
+public sealed record InternalRentalIdDto(int Id);

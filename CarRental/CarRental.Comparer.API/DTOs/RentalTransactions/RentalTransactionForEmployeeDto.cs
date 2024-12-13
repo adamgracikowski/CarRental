@@ -1,5 +1,4 @@
-﻿using CarRental.Common.Core.ComparerEntities;
-using CarRental.Comparer.API.DTOs.CarDetails;
+﻿using CarRental.Comparer.API.DTOs.CarDetails;
 using CarRental.Comparer.API.DTOs.Users;
 
 namespace CarRental.Comparer.API.DTOs.RentalTransactions;

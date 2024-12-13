@@ -8,5 +8,5 @@ public interface IRentalComparerStatusCheckerService
         string outerRentalId, 
         string jobId, 
         DateTime jobExpirationTime, 
-        CancellationToken cancellationToken);
+        CancellationToken cancellationToken = default);
 }

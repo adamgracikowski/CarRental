@@ -31,11 +31,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Ardalis.Result.AspNetCore" Version="10.1.0" />
-		<PackageReference Include="Ardalis.Result.FluentValidation" Version="10.1.0" />
 		<PackageReference Include="AutoMapper" Version="13.0.1" />
-		<PackageReference Include="FluentValidation" Version="11.10.0" />
-		<PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
 		<PackageReference Include="Hangfire.AspNetCore" Version="1.8.15" />
 		<PackageReference Include="Hangfire.Core" Version="1.8.15" />
 		<PackageReference Include="Hangfire.SqlServer" Version="1.8.15" />

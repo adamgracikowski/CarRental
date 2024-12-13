@@ -1,12 +1,14 @@
 ﻿@page "/profile"
-@attribute [Authorize(Roles = AuthorizationRoles.User)]
+
 @using CarRental.Comparer.Web.Dialogs
+@using CarRental.Comparer.Web.Extensions
+@using CarRental.Comparer.Web.Extensions.DateExtensions
 @using CarRental.Comparer.Web.Requests.DTOs.Users
 @using CarRental.Comparer.Web.Requests.UserServices
 @using CarRental.Comparer.Web.RoleModels
 @using Darnton.Blazor.DeviceInterop.Geolocation
-@using CarRental.Comparer.Web.DateExtensions
-@using CarRental.Comparer.Web.Extensions
+
+@attribute [Authorize(Roles = AuthorizationRoles.User)]
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IUserService UserService

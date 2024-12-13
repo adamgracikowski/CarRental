@@ -1,6 +1,4 @@
-﻿using Microsoft.JSInterop;
-
-namespace CarRental.Comparer.Web.Requests.ReportServices;
+﻿namespace CarRental.Comparer.Web.Requests.ReportServices;
 
 public interface IReportService
 {

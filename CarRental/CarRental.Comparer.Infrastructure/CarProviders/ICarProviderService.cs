@@ -9,15 +9,15 @@ public interface ICarProviderService
 {
 	string ProviderName { get; }
 
-	Task<UnifiedCarListDto?> GetAvailableCarsAsync(CancellationToken cancellationToken);
+	Task<UnifiedCarListDto?> GetAvailableCarsAsync(CancellationToken cancellationToken = default);
 
-	Task<OfferDto?> CreateOfferAsync(int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken);
+	Task<OfferDto?> CreateOfferAsync(int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken = default);
 
-	Task<RentalIdWithDateTimesDto?> ChooseOfferAsync(int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken);
+	Task<RentalIdWithDateTimesDto?> ChooseOfferAsync(int offerId, ProviderChooseOfferDto providerChooseOfferDto, CancellationToken cancellationToken = default);
 
-	Task<RentalStatusDto?> GetRentalStatusByIdAsync(string rentalId, CancellationToken cancellationToken);
+	Task<RentalStatusDto?> GetRentalStatusByIdAsync(string rentalId, CancellationToken cancellationToken = default);
 
-	Task<RentalReturnDto?> AcceptRentalReturnAsync(string rentalId, AcceptRentalReturnDto acceptRentalReturnDto, CancellationToken cancellationToken);
+	Task<RentalReturnDto?> AcceptRentalReturnAsync(string rentalId, AcceptRentalReturnDto acceptRentalReturnDto, CancellationToken cancellationToken = default);
 
-	Task<RentalStatusDto?> ReturnRentalAsync(string rentalId, CancellationToken cancellationToken);
+	Task<RentalStatusDto?> ReturnRentalAsync(string rentalId, CancellationToken cancellationToken = default);
 }

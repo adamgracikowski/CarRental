@@ -4,4 +4,6 @@ using MediatR;
 
 namespace CarRental.Comparer.API.Requests.Users.Commands;
 
-public sealed record class CreateUserCommand(UserDto CreateUserDto) : IRequest<Result<UserIdDto>>;
+public sealed record class CreateUserCommand(
+	UserDto CreateUserDto
+) : IRequest<Result<UserIdDto>>;

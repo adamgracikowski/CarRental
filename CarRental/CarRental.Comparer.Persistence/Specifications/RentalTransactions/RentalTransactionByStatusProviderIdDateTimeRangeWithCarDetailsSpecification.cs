@@ -3,6 +3,7 @@ using CarRental.Common.Core.ComparerEntities;
 using CarRental.Common.Core.Enums;
 
 namespace CarRental.Comparer.Persistence.Specifications.RentalTransactions;
+
 public sealed class RentalTransactionByStatusProviderIdDateTimeRangeWithCarDetailsSpecification : Specification<RentalTransaction>
 {
 	public RentalTransactionByStatusProviderIdDateTimeRangeWithCarDetailsSpecification(

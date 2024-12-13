@@ -19,7 +19,7 @@ builder.Services.RegisterConfigurationOptions(builder.Configuration);
 builder.Services.ConfigureCors(builder.Configuration);
 builder.Services.ConfigureAuthorization(builder.Configuration);
 
-builder.Services.RegisterPersistenceServices(builder.Configuration);
+builder.Services.RegisterPersistenceServices();
 builder.Services.ConfigureHangFire(builder.Configuration);
 builder.Services.RegisterInfrastructureServices(builder.Configuration);
 
@@ -29,7 +29,6 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwaggerDocumentation();
 
