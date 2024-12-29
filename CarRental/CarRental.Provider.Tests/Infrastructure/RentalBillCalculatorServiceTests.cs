@@ -1,7 +1,7 @@
 ﻿using CarRental.Provider.Infrastructure.Calculators.RentalBillCalculator;
 using FluentAssertions;
 
-namespace CarRental.Provider.Tests;
+namespace CarRental.Provider.Tests.Infrastructure;
 
 public sealed class RentalBillCalculatorServiceTests
 {
@@ -9,7 +9,7 @@ public sealed class RentalBillCalculatorServiceTests
 
 	public RentalBillCalculatorServiceTests()
 	{
-		this.service = new RentalBillCalculatorService();
+		service = new RentalBillCalculatorService();
 	}
 
 	[Fact]
@@ -24,7 +24,7 @@ public sealed class RentalBillCalculatorServiceTests
 		);
 
 		// Act
-		Action act = () => this.service.CalculateBill(input);
+		Action act = () => service.CalculateBill(input);
 
 		// Assert
 		act.Should().Throw<ArgumentException>();
@@ -35,8 +35,8 @@ public sealed class RentalBillCalculatorServiceTests
 	[InlineData("2024-12-19T00:00:00", "2024-12-20T10:00:00", 2)] // 1 day 10 hours, rounds to 2 days
 	[InlineData("2024-12-19T00:00:00", "2024-12-21T10:00:00", 3)] // 2 days 10 hours, rounds to 3 days
 	public void CalculateBill_WhenPartialDaysArePresent_ShouldRoundUpNumberOfDays(
-		string rentedAt, 
-		string returnedAt, 
+		string rentedAt,
+		string returnedAt,
 		int expectedDays)
 	{
 		// Arrange
@@ -77,7 +77,7 @@ public sealed class RentalBillCalculatorServiceTests
 		var expectedTotalPrice = expectedRentalTotalPrice + expectedInsuranceTotalPrice;
 
 		// Act
-		var result = this.service.CalculateBill(input);
+		var result = service.CalculateBill(input);
 
 		// Assert
 		result.Should().NotBeNull();

@@ -24,9 +24,7 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
 
     public async Task<Result<UserIdDto>> Handle(CreateUserCommand request, CancellationToken cancellationToken)
     {
-        var user = this.mapper.Map<User>(request.CreateUserDto);
-
-        var specification = new UserByEmailSpecification(user.Email);
+        var specification = new UserByEmailSpecification(request.UserDto.Email);
 
         var userInDatabase = await this.usersRepository.FirstOrDefaultAsync(specification, cancellationToken);
 
@@ -35,10 +33,12 @@ public class CreateUserCommandHandler : IRequestHandler<CreateUserCommand, Resul
             return Result<UserIdDto>.Conflict();
         }
 
+        var user = this.mapper.Map<User>(request.UserDto);
+
         await this.usersRepository.AddAsync(user, cancellationToken);
 
-        var userDto = this.mapper.Map<UserIdDto>(user);
+        var userIdDto = this.mapper.Map<UserIdDto>(user);
 
-        return Result<UserIdDto>.Created(userDto);
+        return Result<UserIdDto>.Created(userIdDto);
     }
 }

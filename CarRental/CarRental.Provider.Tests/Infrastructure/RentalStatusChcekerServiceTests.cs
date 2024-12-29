@@ -8,7 +8,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace CarRental.Provider.Tests;
+namespace CarRental.Provider.Tests.Infrastructure;
 
 public class RentalStatusCheckerServiceTests
 {
@@ -18,11 +18,11 @@ public class RentalStatusCheckerServiceTests
 
 	public RentalStatusCheckerServiceTests()
 	{
-		this.rentalsRepositoryMock = new Mock<IRepositoryBase<Rental>>();		
-		this.loggerMock = new Mock<ILogger<RentalStatusCheckerService>>();
-		this.service = new RentalStatusCheckerService(
-			this.rentalsRepositoryMock.Object, 
-			this.loggerMock.Object
+		rentalsRepositoryMock = new Mock<IRepositoryBase<Rental>>();
+		loggerMock = new Mock<ILogger<RentalStatusCheckerService>>();
+		service = new RentalStatusCheckerService(
+			rentalsRepositoryMock.Object,
+			loggerMock.Object
 		);
 	}
 
@@ -58,7 +58,7 @@ public class RentalStatusCheckerServiceTests
 	public async Task CheckAndUpdateRentalStatusAsync_WhenRentalStatusIsNotUnconfirmed_ShouldLogAndReturn()
 	{
 		// Arrange
-		var rental = ProviderEntitiesDummyFactory.CreateDummyRental();
+		var rental = ProviderEntitiesDummyFactory.CreateRentalDummy();
 		rental.Status = RentalStatus.Active;
 
 		rentalsRepositoryMock.Setup(r => r.FirstOrDefaultAsync(
@@ -89,7 +89,7 @@ public class RentalStatusCheckerServiceTests
 	public async Task CheckAndUpdateRentalStatusAsync_WhenStatusIsUnconfirmed_ShouldSetStatusToRejected()
 	{
 		// Arrange
-		var rental = ProviderEntitiesDummyFactory.CreateDummyRental();
+		var rental = ProviderEntitiesDummyFactory.CreateRentalDummy();
 		rental.Status = RentalStatus.Unconfirmed;
 
 		rentalsRepositoryMock.Setup(r => r.FirstOrDefaultAsync(
@@ -108,7 +108,7 @@ public class RentalStatusCheckerServiceTests
 		);
 
 		rentalsRepositoryMock.Verify(
-			r => r.SaveChangesAsync(It.IsAny<CancellationToken>()), 
+			r => r.SaveChangesAsync(It.IsAny<CancellationToken>()),
 			Times.Once
 		);
 	}

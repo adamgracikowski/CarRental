@@ -7,7 +7,6 @@ using CarRental.Common.Infrastructure.Providers.DateTimeProvider;
 using CarRental.Common.Infrastructure.Storages.BlobStorage;
 using CarRental.Provider.API.DTOs.RentalReturns;
 using CarRental.Provider.API.Requests.Rentals.Commands;
-using CarRental.Provider.Infrastructure.Calculators.RentalBillCalculator;
 using CarRental.Provider.Infrastructure.EmailServices;
 using CarRental.Provider.Persistence.Specifications.Rentals;
 using MediatR;

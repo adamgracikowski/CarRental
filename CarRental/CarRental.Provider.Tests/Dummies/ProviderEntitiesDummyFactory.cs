@@ -4,7 +4,7 @@ namespace CarRental.Provider.Tests.Dummies;
 
 public static class ProviderEntitiesDummyFactory
 {
-	public static Customer CreateDummyCustomer()
+	public static Customer CreateCustomerDummy()
 	{
 		return new Customer()
 		{
@@ -14,64 +14,64 @@ public static class ProviderEntitiesDummyFactory
 		};
 	}
 
-	public static Insurance CreateDummyInsurance()
+	public static Insurance CreateInsuranceDummy()
 	{
 		return new Insurance() { Name = string.Empty };
 	}
 
-	public static Segment CreateDummySegment()
+	public static Segment CreateSegmentDummy()
 	{
 		return new Segment()
 		{
 			Name = string.Empty,
-			Insurance = CreateDummyInsurance()
+			Insurance = CreateInsuranceDummy()
 		};
 	}
 
-	public static Make CreateDummyMake()
+	public static Make CreateMakeDummy()
 	{
 		return new Make() { Name = string.Empty };
 	}
 
-	public static Model CreateDummyModel()
+	public static Model CreateModelDummy()
 	{
 		return new Model()
 		{
 			Name = string.Empty,
-			Make = CreateDummyMake(),
-			Segment = CreateDummySegment()
+			Make = CreateMakeDummy(),
+			Segment = CreateSegmentDummy()
 		};
 	}
 
-	public static Car CreateDummyCar()
+	public static Car CreateCarDummy()
 	{
 		return new Car()
 		{
-			Model = CreateDummyModel(),
+			Model = CreateModelDummy(),
 		};
 	}
 
-	public static Offer CreateDummyOffer()
+	public static Offer CreateOfferDummy()
 	{
 		return new Offer()
 		{
 			Key = string.Empty,
 			GeneratedBy = string.Empty,
-			Car = CreateDummyCar()
+			Car = CreateCarDummy()
 		};
 	}
 
-	public static Rental CreateDummyRental()
+	public static Rental CreateRentalDummy()
 	{
 		return new Rental()
 		{
-			Customer = CreateDummyCustomer(),
-			Offer = CreateDummyOffer()
+			Customer = CreateCustomerDummy(),
+			Offer = CreateOfferDummy()
 		};
 	}
 
-	public static RentalReturn CreateDummyRentalReturn()
+	public static RentalReturn CreateRentalReturnDummy()
 	{
-		return new RentalReturn() { Rental = CreateDummyRental() };
+		return new RentalReturn() { Rental = CreateRentalDummy() };
 	}
 }

@@ -5,7 +5,7 @@ using FluentAssertions;
 using Microsoft.Extensions.Options;
 using Moq;
 
-namespace CarRental.Provider.Tests;
+namespace CarRental.Provider.Tests.Infrastructure;
 
 public sealed class OfferCalculatorServiceTests
 {
@@ -15,8 +15,8 @@ public sealed class OfferCalculatorServiceTests
 
 	public OfferCalculatorServiceTests()
 	{
-		this.mockDateTimeProvider = new Mock<IDateTimeProvider>();
-		this.options = Options.Create(new OfferCalculatorOptions
+		mockDateTimeProvider = new Mock<IDateTimeProvider>();
+		options = Options.Create(new OfferCalculatorOptions
 		{
 			YoungDriverSurcharge = 0.2m,
 			YoungDriverAgeLimit = 25,
@@ -25,7 +25,7 @@ public sealed class OfferCalculatorServiceTests
 			OfferExpirationInMinutes = 60
 		});
 
-		this.service = new OfferCalculatorService(this.options, this.mockDateTimeProvider.Object);
+		service = new OfferCalculatorService(options, mockDateTimeProvider.Object);
 	}
 
 	[Fact]
@@ -42,15 +42,15 @@ public sealed class OfferCalculatorServiceTests
 		);
 
 		var generatedAt = DateTime.Today;
-		this.mockDateTimeProvider.Setup(p => p.UtcNow).Returns(generatedAt);
+		mockDateTimeProvider.Setup(p => p.UtcNow).Returns(generatedAt);
 
 		// Act
-		var result = this.service.CalculatePricePerDay(input);
+		var result = service.CalculatePricePerDay(input);
 
 		// Assert
 		result.Should().NotBeNull();
 		result.GeneratedAt.Should().Be(generatedAt);
-		result.ExpiresAt.Should().Be(generatedAt.AddMinutes(this.options.Value.OfferExpirationInMinutes));
+		result.ExpiresAt.Should().Be(generatedAt.AddMinutes(options.Value.OfferExpirationInMinutes));
 	}
 
 	[Theory]
@@ -73,10 +73,10 @@ public sealed class OfferCalculatorServiceTests
 			BaseInsurancePricePerDay: baseInsurancePrice
 		);
 
-		this.mockDateTimeProvider.Setup(p => p.UtcNow).Returns(DateTime.Today);
+		mockDateTimeProvider.Setup(p => p.UtcNow).Returns(DateTime.Today);
 
 		// Act
-		var result = this.service.CalculatePricePerDay(input);
+		var result = service.CalculatePricePerDay(input);
 
 		// Assert
 		result.Should().NotBeNull();

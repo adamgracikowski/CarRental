@@ -12,7 +12,7 @@ namespace CarRental.Provider.API.Requests.Rentals.Handlers;
 
 public sealed class ConfirmRentalCommandHandler : IRequestHandler<ConfirmRentalCommand, Result>
 {
-    private IRepositoryBase<Rental> rentalsRepository;
+    private readonly IRepositoryBase<Rental> rentalsRepository;
     private readonly IEmailService emailService;
 	private readonly IDateTimeProvider dateTimeProvider;
 	private readonly IEmailInputMaker emailInputMaker;
@@ -60,7 +60,7 @@ public sealed class ConfirmRentalCommandHandler : IRequestHandler<ConfirmRentalC
 
         if (rental.Offer.Car.Status == CarStatus.Rented)
         {
-            return Result.Invalid(new ValidationError("CarStatus", "Car is not available."));
+            return Result.Invalid(new ValidationError(nameof(CarStatus), "Car is not available."));
         }
 
         rental.Status = RentalStatus.Active;
