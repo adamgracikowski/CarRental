@@ -1,3 +1,4 @@
+using Azure.Identity;
 using CarRental.Common.Infrastructure.Configurations;
 using CarRental.Common.Infrastructure.Middlewares;
 using CarRental.Comparer.API;
@@ -10,7 +11,17 @@ using Hangfire;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration.AddUserSecrets<Program>();
+if (builder.Environment.IsDevelopment())
+{
+	builder.Configuration.AddUserSecrets<Program>();
+}
+else
+{
+	var keyVaultUri = builder.Configuration["AzureKeyVault:VaultUri"];
+	ArgumentException.ThrowIfNullOrEmpty(keyVaultUri);
+
+	builder.Configuration.AddAzureKeyVault(new Uri(keyVaultUri), new DefaultAzureCredential());
+}
 
 builder.Services.RegisterConfigurationOptions(builder.Configuration);
 builder.Services.ConfigureCors(builder.Configuration);
@@ -24,17 +35,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.ConfigureSwaggerDocumentation();
 
-builder.Host.ConfigureLogger(builder.Environment.IsDevelopment());
+builder.ConfigureLogger(builder.Environment.IsDevelopment());
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.AutoRunMigrations<CarRentalComparerDbContext>();
+app.AutoRunMigrations<CarRentalComparerDbContext>();
 
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseMiddleware<LoggingMiddleware>();
 

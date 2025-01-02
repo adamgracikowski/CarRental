@@ -1,18 +1,16 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using Serilog.Events;
 using Serilog.Exceptions;
 
 namespace CarRental.Common.Infrastructure.Configurations;
 
 public static class SerilogConfiguration
 {
-    public static void ConfigureLogger(this IHostBuilder hostBuilder, bool isDevelopment)
+    public static void ConfigureLogger(this WebApplicationBuilder builder, bool isDevelopment)
     {
-        hostBuilder.ConfigureLogging(logging =>
-        {
-            logging.ClearProviders();
-        });
+        builder.Logging.ClearProviders();
 
         var loggerConfiguration = new LoggerConfiguration()
             .MinimumLevel.Information()
@@ -32,11 +30,20 @@ public static class SerilogConfiguration
         }
         else
         {
-            // application insights...
+            var applicationInsightsConnectionString = builder
+                .Configuration["ApplicationInsights:InstrumentationKey"];
+
+            ArgumentException.ThrowIfNullOrEmpty(applicationInsightsConnectionString);
+
+            loggerConfiguration.WriteTo.ApplicationInsights(
+                applicationInsightsConnectionString,
+                TelemetryConverter.Traces,
+                restrictedToMinimumLevel: LogEventLevel.Information
+            );
         }
 
         Log.Logger = loggerConfiguration.CreateLogger();
 
-        hostBuilder.UseSerilog();
+        builder.Host.UseSerilog();
     }
 }
