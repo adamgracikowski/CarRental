@@ -1,0 +1,80 @@
+# File: carrental-deployment.yaml
+# Description: Deployment Pipeline used when changes are being pushed on branch main.
+
+# File: carrental-deployment.yaml
+# Description: Deployment Pipeline used when changes are being pushed on branch main.
+
+trigger:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: "ubuntu-latest"
+
+variables:
+  buildConfiguration: "Release"
+  dotnetVersion: "8.x.x"
+
+stages:
+  - stage: Build
+    jobs:
+      - job: Build
+        displayName: "Build"
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              packageType: "sdk"
+              version: "$(dotnetVersion)"
+
+          - script: |
+              dotnet restore
+              dotnet build --configuration $(buildConfiguration)
+            displayName: "Restore and Build"
+
+          - task: DotNetCoreCLI@2
+            inputs:
+              command: "test"
+              projects: "**/*Tests/*.csproj"
+              arguments: "--configuration $(buildConfiguration) --no-build --verbosity normal"
+            displayName: "Run Tests"
+
+  - stage: Deploy
+    dependsOn: Build
+    jobs:
+      - job: Deploy
+        displayName: "Deploy"
+        steps:
+          - task: UseDotNet@2
+            inputs:
+              packageType: "sdk"
+              version: "$(dotnetVersion)"
+
+          - script: |
+              dotnet publish CarRental.Comparer.API/CarRental.Comparer.API.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/CarRental.Comparer.API
+              dotnet publish CarRental.Provider.API/CarRental.Provider.API.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/CarRental.Provider.API
+              dotnet publish CarRental.Comparer.Web/CarRental.Comparer.Web.csproj --configuration $(buildConfiguration) --output $(Build.ArtifactStagingDirectory)/CarRental.Comparer.Web
+            displayName: "Publish Projects"
+
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              azureSubscription: "PW-Sem05"
+              appType: "webApp"
+              WebAppName: "carrental-comparer"
+              packageForLinux: "$(Build.ArtifactStagingDirectory)/CarRental.Comparer.API"
+            displayName: "Deploy CarRental.Comparer.API"
+
+          - task: AzureRmWebAppDeployment@4
+            inputs:
+              azureSubscription: "PW-Sem05"
+              appType: "webApp"
+              WebAppName: "carrental-provider"
+              packageForLinux: "$(Build.ArtifactStagingDirectory)/CarRental.Provider.API"
+            displayName: "Deploy CarRental.Provider.API"
+
+          - task: AzureStaticWebApp@0
+            inputs:
+              app_location: "CarRental.Comparer.Web"
+              output_location: "build"
+              azure_static_web_apps_api_token: $(deployment_token)
+            displayName: "Deploy CarRental.Comparer.Web"
