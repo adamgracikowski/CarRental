@@ -1,9 +1,9 @@
 ﻿@using CarRental.Comparer.Web.Requests.DTOs.RentalTransactions
 @using CarRental.Comparer.Web.Requests.RentalTransactionServices
+@using CarRental.Comparer.Web.Services.GeolocationServices
 @using CarRental.Comparer.Web.Validators
-@using Darnton.Blazor.DeviceInterop.Geolocation
 
-@inject IGeolocationService GeolocationService
+@inject IGeoLocationService GeolocationService
 @inject IRentalTransactionService RentalTransactionService
 
 <MudForm Model="@Model" @ref="@Form" Validation="@(ValidationRules.ValidateValue)" ValidationDelay="0">

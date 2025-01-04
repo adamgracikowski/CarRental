@@ -49,9 +49,7 @@ public sealed class EmailInputMaker : IEmailInputMaker
 		var fromEmail = this.sendEmailOptions.FromEmail;
 		var fromName = this.sendEmailOptions.FromName;
 
-		var link = this.sendEmailOptions.LinkTemplate
-			.Replace("{{RentalId}}", rentalId.ToString())
-			.Replace("{{OfferKey}}", offerKey);
+		var link = $"{this.sendEmailOptions.LinkTemplate}/Rentals/{rentalId}/confirm/{offerKey}";
 
 		var content = this.offerConfirmedTemplate.Template
 			.Replace(Make, make)

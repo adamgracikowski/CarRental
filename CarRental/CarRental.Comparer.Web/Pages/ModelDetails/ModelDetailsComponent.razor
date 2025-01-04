@@ -10,11 +10,11 @@
 @using CarRental.Comparer.Web.Requests.ProvidersServices
 @using CarRental.Comparer.Web.Requests.UserServices
 @using CarRental.Comparer.Web.RoleModels
-@using Darnton.Blazor.DeviceInterop.Geolocation
+@using CarRental.Comparer.Web.Services.GeolocationServices
 @using GoogleMapsComponents.Maps
 
 @inject IDialogService DialogService
-@inject IGeolocationService GeolocationService
+@inject IGeoLocationService GeolocationService
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ISnackbar Snackbar
 @inject ICarService CarService

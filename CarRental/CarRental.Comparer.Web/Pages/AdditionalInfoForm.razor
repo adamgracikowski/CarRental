@@ -4,14 +4,14 @@
 @using CarRental.Comparer.Web.Requests.DTOs.Users
 @using CarRental.Comparer.Web.Requests.UserServices
 @using CarRental.Comparer.Web.RoleModels
-@using Darnton.Blazor.DeviceInterop.Geolocation
+@using CarRental.Comparer.Web.Services.GeolocationServices
 
 @attribute [Authorize(Roles = AuthorizationRoles.User)]
 
 @inject IUserService UserService
 @inject NavigationManager Navigation
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject IGeolocationService GeolocationService
+@inject IGeoLocationService GeolocationService
 @inject IDateTimeProvider DateTimeProvider
 
 <MudContainer MaxWidth="MaxWidth.Medium" Class="mt-5">

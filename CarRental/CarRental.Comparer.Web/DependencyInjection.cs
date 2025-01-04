@@ -8,8 +8,9 @@ using CarRental.Comparer.Web.Requests.ReportServices;
 using CarRental.Comparer.Web.Requests.UserServices;
 using CarRental.Comparer.Web.RoleModels;
 using CarRental.Comparer.Web.Services;
+using CarRental.Comparer.Web.Services.GeolocationServices;
 using CarRental.Comparer.Web.Services.StateContainer;
-using Darnton.Blazor.DeviceInterop.Geolocation;
+using CarRental.Comparer.Web.Settings;
 using GoogleMapsComponents;
 using Microsoft.AspNetCore.Components.WebAssembly.Authentication;
 using MudBlazor.Services;
@@ -18,14 +19,14 @@ namespace CarRental.Comparer.Web;
 
 public static class DependencyInjection
 {
-	public static IServiceCollection RegisterInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
+	public static IServiceCollection RegisterInfrastructureServices(this IServiceCollection services, AppSecrets configuration)
 	{
 		services.AddMsal(configuration);
 		services.ConfigureHttpClients(configuration);
 
 		services.AddMudServices();
 
-		services.AddScoped<IGeolocationService, GeolocationService>();
+		services.AddScoped<IGeoLocationService, GeoLocationService>();
 		services.AddScoped<ThemeService>();
 		services.AddScoped<StateContainer>();
 
@@ -43,15 +44,17 @@ public static class DependencyInjection
 		return services;
 	}
 
-	public static IServiceCollection AddMsal(this IServiceCollection services, IConfiguration configuration)
+	public static IServiceCollection AddMsal(this IServiceCollection services, AppSecrets configuration)
 	{
-		var scope = configuration.GetSection("AzureAd:ApiScope").Get<string>();
+		var scope = configuration.AzureAd?.ApiScope;
 
 		ArgumentNullException.ThrowIfNull(scope, "Scope cannot be null");
 
 		services.AddMsalAuthentication<RemoteAuthenticationState, CustomUserAccount>(options =>
 		{
-			configuration.Bind("AzureAd", options.ProviderOptions.Authentication);
+			options.ProviderOptions.Authentication.ClientId = configuration.AzureAd.ClientId;
+			options.ProviderOptions.Authentication.Authority = configuration.AzureAd.Authority;	
+			options.ProviderOptions.Authentication.ValidateAuthority = configuration.AzureAd.ValidateAuthority;	
 			options.ProviderOptions.DefaultAccessTokenScopes.Add(scope);
 			options.ProviderOptions.DefaultAccessTokenScopes.Add("email");
 			options.UserOptions.RoleClaim = "appRole";
@@ -60,13 +63,13 @@ public static class DependencyInjection
 		return services;
 	}
 
-	public static IServiceCollection ConfigureHttpClients(this IServiceCollection services, IConfiguration configuration)
+	public static IServiceCollection ConfigureHttpClients(this IServiceCollection services, AppSecrets configuration)
 	{
-		var baseUrl = configuration.GetValue<string>("ComparerApiSettings:BaseUrl");
+		var baseUrl = configuration.ComparerApiSettings?.BaseUrl;
 
 		ArgumentException.ThrowIfNullOrEmpty(baseUrl, "BaseUrl can not be null.");
 
-		var apiScope = configuration.GetSection("AzureAd:ApiScope").Get<string>();
+		var apiScope = configuration.AzureAd?.ApiScope;
 
 		ArgumentNullException.ThrowIfNull(apiScope, "Scope can not be null");
 
@@ -105,9 +108,9 @@ public static class DependencyInjection
 	}
 
 
-	public static IServiceCollection ConfigureGoogleMaps(this IServiceCollection services, IConfiguration configuration)
+	public static IServiceCollection ConfigureGoogleMaps(this IServiceCollection services, AppSecrets configuration)
 	{
-		var googleKey = configuration.GetValue<string>("GoogleMaps:ApiKey");
+		var googleKey = configuration.GoogleMaps?.ApiKey;
 
 		ArgumentException.ThrowIfNullOrEmpty(googleKey, "Api key for Google Maps can not be null or empty.");
 

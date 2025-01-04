@@ -1,4 +1,5 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace CarRental.Comparer.API.Authorization;
 
@@ -9,6 +10,6 @@ public static class ClaimsPrincipalExtensions
 	public static string? GetEmailClaim(this ClaimsPrincipal claimsPrincipal)
 	{
 		return claimsPrincipal.Claims
-			.FirstOrDefault(c => c.Type == EmailClaim)?.Value;
+			.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.PreferredUsername)?.Value;
 	}
 }
