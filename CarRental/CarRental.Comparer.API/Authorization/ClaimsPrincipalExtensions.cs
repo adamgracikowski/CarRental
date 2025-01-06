@@ -9,7 +9,7 @@ public static class ClaimsPrincipalExtensions
 
 	public static string? GetEmailClaim(this ClaimsPrincipal claimsPrincipal)
 	{
-		return claimsPrincipal.Claims
+		return claimsPrincipal.Claims.FirstOrDefault(c => c.Type == EmailClaim)?.Value ?? claimsPrincipal.Claims
 			.FirstOrDefault(c => c.Type == JwtRegisteredClaimNames.PreferredUsername)?.Value;
 	}
 }

@@ -1,6 +1,7 @@
 ﻿using Ardalis.Result;
 using Ardalis.Specification;
 using CarRental.Common.Core.ComparerEntities;
+using CarRental.Common.Core.Enums;
 using CarRental.Comparer.API.Requests.Users.Commands;
 using CarRental.Comparer.Persistence.Specifications.Users;
 using MediatR;
@@ -18,7 +19,7 @@ public class DeleteUserByEmailQueryHandler : IRequestHandler<DeleteUserByEmailCo
 
     public async Task<Result> Handle(DeleteUserByEmailCommand request, CancellationToken cancellationToken)
     {
-        var specification = new UserByEmailSpecification(request.Email);
+        var specification = new UserByEmailWithConstrainedRentalStatus(request.Email);
 
         var user = await this.usersRepository.FirstOrDefaultAsync(specification, cancellationToken);
 
