@@ -17,12 +17,12 @@ namespace CarRental.Provider.API.Controllers;
 [ApiController]
 public sealed class CarsController : ControllerBase
 {
-    private readonly IMediator mediator;
+	private readonly IMediator mediator;
 
-    public CarsController(IMediator mediator)
-    {
-        this.mediator = mediator;
-    }
+	public CarsController(IMediator mediator)
+	{
+		this.mediator = mediator;
+	}
 
 	/// <summary>
 	/// Retrieves a list of available cars.
@@ -32,15 +32,15 @@ public sealed class CarsController : ControllerBase
 	/// <response code="200">The list of available cars was retrieved successfully.</response>
 	/// <response code="500">An internal server error occurred while retrieving the cars.</response>
 	[TranslateResultToActionResult]
-    [HttpGet("available")]
-    public async Task<Result<CarListDto>> GetAvailableCars(CancellationToken cancellationToken)
-    {
-        var query = new GetCarsByStatusQuery(CarStatus.Available);
+	[HttpGet("available")]
+	public async Task<Result<CarListDto>> GetAvailableCars(CancellationToken cancellationToken)
+	{
+		var query = new GetCarsByStatusQuery(CarStatus.Available);
 
-        var response = await this.mediator.Send(query, cancellationToken);
+		var response = await this.mediator.Send(query, cancellationToken);
 
-        return response;
-    }
+		return response;
+	}
 
 	/// <summary>
 	/// Creates an offer for a specific car.
@@ -55,15 +55,35 @@ public sealed class CarsController : ControllerBase
 	/// <response code="404">The specified car was not found.</response>
 	/// <response code="500">An internal server error occurred while creating the offer.</response>
 	[TranslateResultToActionResult]
-    [HttpPost("{id}/offers")]
-    public async Task <Result<OfferDto>> CreateOffer(int id, CreateOfferDto createOfferDto, CancellationToken cancellationToken)
-    {
-        var audience = User.GetAudience();
+	[HttpPost("{id}/offers")]
+	public async Task<Result<OfferDto>> CreateOffer(int id, CreateOfferDto createOfferDto, CancellationToken cancellationToken)
+	{
+		var audience = User.GetAudience();
 
-        var command = new CreateOfferCommand(id, createOfferDto, audience);
+		var command = new CreateOfferCommand(id, createOfferDto, audience);
 
-        var response = await this.mediator.Send(command, cancellationToken);
+		var response = await this.mediator.Send(command, cancellationToken);
 
-        return response;
-    }
+		return response;
+	}
+
+	/// <summary>
+	/// Retrieves details of a specific car.
+	/// </summary>
+	/// <param name="id">The ID of the car for which the details are requested.</param>
+	/// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
+	/// <returns>Details of a specific car</returns>
+	/// <response code="200">The details of the car were retrieved successfully.</response>
+	/// <response code="404">The specified car was not found.</response>
+	/// <response code="500">An internal server error occurred while retrieving the details of the car.</response>
+	[TranslateResultToActionResult]
+	[HttpGet("{id}")]
+	public async Task<Result<CarDetailsExtendedDto>> GetCar(int id, CancellationToken cancellationToken)
+	{
+		var query = new GetCarByIdQuery(id);
+
+		var response = await this.mediator.Send(query, cancellationToken);
+
+		return response;
+	}
 }
