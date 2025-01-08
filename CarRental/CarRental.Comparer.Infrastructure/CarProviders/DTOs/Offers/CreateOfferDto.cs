@@ -1,4 +1,4 @@
-﻿namespace CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
+﻿namespace CarRental.Comparer.Infrastructure.CarProviders.DTOs.Offers;
 
 public sealed record CreateOfferDto(
     int DrivingLicenseYears,

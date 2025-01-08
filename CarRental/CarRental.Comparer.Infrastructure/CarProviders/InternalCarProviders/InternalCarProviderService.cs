@@ -1,7 +1,8 @@
 ﻿using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
-using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Cars;
+using CarRental.Comparer.Infrastructure.CarProviders.DTOs.Offers;
+using CarRental.Comparer.Infrastructure.CarProviders.DTOs.Offers.Cars;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Rentals;
 using CarRental.Comparer.Infrastructure.MultipartExtensions;
@@ -52,8 +53,14 @@ public sealed class InternalCarProviderService : ICarProviderService
 
 			if (response.IsSuccessStatusCode)
 			{
-				var offerDto = await response.Content.ReadFromJsonAsync<OfferDto>(cancellationToken);
-				return offerDto;
+				var offerDto = await response.Content.ReadFromJsonAsync<InternalOfferDto>(cancellationToken);
+
+				return new OfferDto(
+					offerDto.Id,
+					offerDto.RentalPricePerDay,
+					offerDto.InsurancePricePerDay,
+					offerDto.Car,
+					offerDto.Segment);
 			}
 			else
 			{

@@ -1,4 +1,5 @@
 ﻿using Ardalis.Result;
+using CarRental.Comparer.Infrastructure.CarProviders.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using MediatR;
 

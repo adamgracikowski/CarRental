@@ -6,6 +6,7 @@ using CarRental.Comparer.Infrastructure.CarComparisons.DTOs;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarComparisons.DTOs.Rentals;
 using CarRental.Comparer.Infrastructure.CarProviders;
+using CarRental.Comparer.Infrastructure.CarProviders.DTOs.Offers;
 using CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Offers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -152,26 +153,30 @@ public sealed class CarComparisonService : ICarComparisonService
 		var makes = responses
 			.Where(r => r is not null)
 			.SelectMany(r => r!.Makes)
-			.Select(mk =>
+			.GroupBy(mk => mk.Name)
+			.Select(makeGroup =>
 			{
-				var models = mk.Models
+				var firstMake = makeGroup.FirstOrDefault(g => !string.IsNullOrEmpty(g.LogoUrl)) ?? makeGroup.First();
+
+				var models = makeGroup
+					.SelectMany(mk => mk.Models)
 					.GroupBy(m => m.Name)
-					.Select(m =>
+					.Select(modelGroup =>
 					{
-						var first = m.First();
+						var firstModel = modelGroup.First();
 						var model = new UnifiedModelDto(
-							Name: first.Name,
-							NumberOfDoors: first.NumberOfDoors,
-							NumberOfSeats: first.NumberOfSeats,
-							EngineType: first.EngineType,
-							WheelDriveType: first.WheelDriveType,
-							Cars: m.SelectMany(m => m.Cars).ToList()
+							Name: firstModel.Name,
+							NumberOfDoors: firstModel.NumberOfDoors,
+							NumberOfSeats: firstModel.NumberOfSeats,
+							EngineType: firstModel.EngineType,
+							WheelDriveType: firstModel.WheelDriveType,
+							Cars: modelGroup.SelectMany(m => m.Cars).ToList()
 						);
 
 						return model;
 					}).ToList();
 
-				var makeKey = mk.Name
+				var makeKey = firstMake.Name
 					.Replace(' ', '-')
 					.ToLower();
 
@@ -181,7 +186,7 @@ public sealed class CarComparisonService : ICarComparisonService
 				}
 
 				var make = new UnifiedMakeDto(
-					Name: mk.Name,
+					Name: firstMake.Name,
 					Models: models,
 					LogoUrl: logoUrl
 				);

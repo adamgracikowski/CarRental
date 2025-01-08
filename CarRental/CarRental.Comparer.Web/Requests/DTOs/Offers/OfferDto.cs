@@ -7,8 +7,6 @@ public sealed record OfferDto(
 	int Id,
 	decimal RentalPricePerDay,
 	decimal InsurancePricePerDay,
-	DateTime GeneratedAt,
-	DateTime ExpiresAt,
 	CarDetailsDto Car,
-	SegmentDto Segment
+	SegmentDto? Segment
 );

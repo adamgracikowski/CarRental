@@ -1,4 +1,4 @@
-﻿namespace CarRental.Comparer.Infrastructure.CarProviders.InternalCarProviders.DTOs.Cars;
+﻿namespace CarRental.Comparer.Infrastructure.CarProviders.DTOs.Offers.Cars;
 
 public sealed record ModelDto(
     string Name,

@@ -132,21 +132,32 @@
 									<MudText Typo="Typo.subtitle1">
 										<b>Insurance:</b>
 									</MudText>
-									<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Insurance.Name</MudText>
-									@if (!string.IsNullOrEmpty(context.Item.Offer.Segment.Insurance.Description))
-									{
-										<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Insurance.Description</MudText>
+									@if(context.Item.Offer.Segment is not null){
+										<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Insurance.Name</MudText>
+										@if (!string.IsNullOrEmpty(context.Item.Offer.Segment.Insurance.Description))
+										{
+											<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Insurance.Description</MudText>
+										}
 									}
 									<MudText Typo="Typo.caption" Color="Color.Success">
 										<b>@context.Item.Offer.InsurancePricePerDay.ToString("C")</b>
 									</MudText>
 								</MudItem>
 								<MudItem xs="4">
-									<MudText Typo="Typo.subtitle1">
-										<b>Segment:</b>
-									</MudText>
-									<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Name</MudText>
-									<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Description</MudText>
+									@if (context.Item.Offer.Segment is not null)
+									{
+										<MudText Typo="Typo.subtitle1">
+											<b>Segment:</b>
+										</MudText>
+										<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Name</MudText>
+										<MudText Typo="Typo.body2">@context.Item.Offer.Segment.Description</MudText>
+									}
+									else
+									{
+										<MudText Typo="Typo.subtitle1">
+											<b>Rental price:</b>
+										</MudText>
+									}
 									<MudText Typo="Typo.caption" Color="Color.Success">
 										<b>@context.Item.Offer.RentalPricePerDay.ToString("C")</b>
 									</MudText>

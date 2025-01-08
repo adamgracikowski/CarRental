@@ -22,7 +22,8 @@ VALUES
 	
 INSERT INTO Providers (Name)
 VALUES
-    ('CarRental.Provider.API')
+    ('CarRental.Provider.API'),
+    ('External.Provider.API')
 
 INSERT INTO Employees (Email, ProviderId, FirstName, LastName)
 VALUES
