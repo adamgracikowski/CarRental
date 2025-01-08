@@ -1,11 +1,6 @@
 ﻿using Ardalis.Specification;
 using CarRental.Common.Core.ComparerEntities;
 using CarRental.Common.Core.Enums;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CarRental.Comparer.Persistence.Specifications.Users;
 

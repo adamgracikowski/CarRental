@@ -34,7 +34,7 @@ public sealed class DeleteUserByEmailQueryHandlerTests
 
 		// Assert
 		usersRepositoryMock.Verify(r => r.FirstOrDefaultAsync(
-			It.IsAny<UserByEmailSpecification>(),
+			It.IsAny<UserByEmailWithConstrainedRentalStatus>(),
 			It.IsAny<CancellationToken>()),
 			Times.Once
 		);
@@ -51,7 +51,7 @@ public sealed class DeleteUserByEmailQueryHandlerTests
 		var user = ComparerEntitiesDummyFactory.CreateUserDummy();
 
 		usersRepositoryMock.Setup(r => r.FirstOrDefaultAsync(
-			It.IsAny<UserByEmailSpecification>(),
+			It.IsAny<UserByEmailWithConstrainedRentalStatus>(),
 			It.IsAny<CancellationToken>())
 		).ReturnsAsync(user);
 
@@ -60,7 +60,7 @@ public sealed class DeleteUserByEmailQueryHandlerTests
 
 		// Assert
 		usersRepositoryMock.Verify(r => r.FirstOrDefaultAsync(
-			It.IsAny<UserByEmailSpecification>(),
+			It.IsAny<UserByEmailWithConstrainedRentalStatus>(),
 			It.IsAny<CancellationToken>()),
 			Times.Once
 		);

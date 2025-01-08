@@ -12,3 +12,5 @@ variables:
 steps:
   - script: dotnet build ./CarRental --configuration $(buildConfiguration)
     displayName: "Build the project"
+  - script: dotnet test ./CarRental
+    displayName: "Run tests"
