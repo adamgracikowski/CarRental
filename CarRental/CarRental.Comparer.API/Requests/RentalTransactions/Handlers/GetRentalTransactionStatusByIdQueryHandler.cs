@@ -53,6 +53,12 @@ public class GetRentalTransactionStatusByIdQueryHandler : IRequestHandler<GetRen
 			await this.rentalTransactionsRepository.UpdateAsync(rentalTransaction, cancellationToken);
 			await this.rentalTransactionsRepository.SaveChangesAsync(cancellationToken);
 		}
+		else
+		{
+			this.logger.LogWarning($"Cannot convert {rentalStatusDto.Status} for provider {rentalTransaction.Provider.Name}");
+		}
+
+		this.logger.LogWarning(updatedStatus.ToString());
 
 		var rentalTransactionStatusDto = new RentalTransactionStatusDto(rentalTransaction.Id, rentalTransaction.Status.ToString());
 

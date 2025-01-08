@@ -83,6 +83,6 @@ public class RentalComparerStatusCheckerService : IRentalComparerStatusCheckerSe
 			return;
 		}
 
-		this.logger.LogInformation($"Rental status different from Active or Rejected... Trying again.");
+		this.logger.LogInformation($"Rental status {rentalStatusDto.Status} is different from Active or Rejected ... Trying again.");
 	}
 }

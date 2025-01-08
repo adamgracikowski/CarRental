@@ -8,8 +8,8 @@ public sealed record ExternalCarDetailsDto(
 	ExternalMakeDto Brand,
 	ExternalModelDto Model,
 	int Year,
-	int FuelType,
-	int GearboxType,
+	string FuelType,
+	string GearboxType,
 	string Location,
 	decimal RentalCost,
 	decimal InsuranceCost

@@ -32,12 +32,12 @@ public sealed class RentalStatusConverter : IRentalStatusConverter
 	{
 		outerStatus = string.Empty;
 
-		if (!this.options.Conversions.TryGetValue(providerName, out var providerConversions)) 
+		if (!this.options.Conversions.TryGetValue(providerName, out var providerConversions))
 			return false;
 
 		var reversedConversions = providerConversions.ToDictionary(p => p.Value, p => p.Key);
 
-		if (!reversedConversions.TryGetValue(rentalStatus.ToString(), out var outerStatusString)) 
+		if (!reversedConversions.TryGetValue(rentalStatus.ToString(), out var outerStatusString))
 			return false;
 
 		outerStatus = outerStatusString;
@@ -49,10 +49,10 @@ public sealed class RentalStatusConverter : IRentalStatusConverter
 	{
 		outerStatus = outerStatus.ToLower();
 
-		if (!this.options.Conversions.TryGetValue(providerName, out var providerConversions)) 
+		if (!this.options.Conversions.TryGetValue(providerName, out var providerConversions))
 			return string.Empty;
 
-		if (!providerConversions.TryGetValue(outerStatus, out var rentalStatusString)) 
+		if (!providerConversions.TryGetValue(outerStatus, out var rentalStatusString))
 			return string.Empty;
 
 		return rentalStatusString;

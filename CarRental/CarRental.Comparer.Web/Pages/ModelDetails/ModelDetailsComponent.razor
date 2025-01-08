@@ -435,7 +435,7 @@ else
 			EmailAddress: UserEmailAddress,
 			Make: MakeName ?? string.Empty,
 			Model: ModelName ?? string.Empty,
-			Segment: offerButton.Offer.Segment.Name,
+			Segment: offerButton.Offer.Segment?.Name ?? string.Empty,
 			CarOuterId: "0", // nie mam tego na froncie...
 			YearOfProduction: offerButton.Offer.Car.ProductionYear,
 			TransmissionType: offerButton.Offer.Car.TransmissionType,
