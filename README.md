@@ -26,7 +26,7 @@ Każdy dostawca będzie mógł udostępniać swoje zasoby poprzez dedykowane API
 
 Dodatkowym założeniem systemu jest możliwość współpracy z innymi zespołami projektowymi, którzy dostarczają swoje własne API dostawcy samochodów, co zapewnia szerokie możliwości rozszerzenia systemu o nowe funkcjonalności.
 
-## Architektury Rozwiązania
+## Architektura Rozwiązania
 
 Rozwiązanie składa się z 11 projektów, zorganizowanych w sposób modularny, co zapewnia:
 
