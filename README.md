@@ -46,7 +46,7 @@ Projekty są podzielone na logiczne warstwy:
 Diagram przedstawia strukturę podziału na projekty w ramach rozwiązania:
 
 <p align="center">
-  <img src="./CarRental.Docs/Diagrams/SolutionArchitecture/carrental.png" 
+  <img src="./CarRental.Docs/Diagrams/SolutionArchitecture/CarRental.png" 
        alt="Diagram projektów w solucji" 
        style="width: 80%;"/>
 </p>
