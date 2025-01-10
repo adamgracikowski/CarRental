@@ -126,7 +126,12 @@
 									<MudText Typo="Typo.subtitle1">
 										<b>Car Details</b>
 									</MudText>
-									<MudText Typo="Typo.body2">Location: (@context.Item.Offer.Car.Latitude; @context.Item.Offer.Car.Longitude)</MudText>
+										<MudText Typo="Typo.body2">
+											Location: 
+											 @(string.IsNullOrEmpty(context.Item.Offer.Car.Address) 
+										     ? $"({context.Item.Offer.Car.Latitude}; {context.Item.Offer.Car.Longitude})" 
+												  : context.Item.Offer.Car.Address)
+										</MudText>								
 								</MudItem>
 								<MudItem xs="4">
 									<MudText Typo="Typo.subtitle1">

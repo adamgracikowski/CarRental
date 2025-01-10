@@ -34,6 +34,9 @@
 
 	public async Task AddMarkerAsync(double lat, double lng, bool user = false)
 	{
+		if (lat == 0 && lng == 0)
+			return;
+
 		var position = new LatLngLiteral()
 			{
 				Lat = lat,

@@ -86,10 +86,10 @@ public sealed class ExternalProviderService : ICarProviderService
 			}
 		}
 		catch (Exception ex)
-	{
+		{
 			this.logger.LogInformation(ex.Message);
 			return null;
-	}
+		}
 	}
 
 	public async Task<OfferDto?> CreateOfferAsync(int carId, CreateOfferDto createOfferDto, CancellationToken cancellationToken = default)
@@ -120,10 +120,11 @@ public sealed class ExternalProviderService : ICarProviderService
 
 			var carDetailsDto = new CarDetailsDto(
 				externalCarDetailsDto[0].Year,
-				externalCarDetailsDto[0].FuelType, 
+				externalCarDetailsDto[0].FuelType,
 				externalCarDetailsDto[0].GearboxType,
 				0,
-				0
+				0,
+				externalCarDetailsDto[0].Location
 			);
 
 			return new OfferDto(
@@ -195,7 +196,7 @@ public sealed class ExternalProviderService : ICarProviderService
 					this.logger.LogWarning("externalRentalStatusDto is null");
 					return null;
 				}
-				
+
 				var rentalStatusDto = new RentalStatusDto(externalRentalStatusDto.RentalId.ToString(), externalRentalStatusDto.CarState);
 				return rentalStatusDto;
 			}
@@ -227,7 +228,7 @@ public sealed class ExternalProviderService : ICarProviderService
 
 			if (response.IsSuccessStatusCode)
 			{
-				var rentalStatusDto = new RentalStatusDto(rentalId, RentalStatus.ReadyForReturn.ToString()); 
+				var rentalStatusDto = new RentalStatusDto(rentalId, RentalStatus.ReadyForReturn.ToString());
 				return rentalStatusDto;
 			}
 			else

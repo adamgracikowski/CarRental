@@ -5,5 +5,6 @@ public sealed record CarDetailsDto(
 	string? FuelType,
 	string? TransmissionType,
 	decimal Longitude,
-	decimal Latitude
+	decimal Latitude,
+	string? Address
 );
