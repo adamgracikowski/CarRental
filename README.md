@@ -46,7 +46,7 @@ Projekty są podzielone na logiczne warstwy:
 Diagram przedstawia strukturę podziału na projekty w ramach rozwiązania:
 
 <p align="center">
-  <img src="CarRental.Docs/Diagrams/SolutionArchitecture/carrental.png" 
+  <img src="./CarRental.Docs/Diagrams/SolutionArchitecture/carrental.png" 
        alt="Diagram projektów w solucji" 
        style="width: 80%;"/>
 </p>
@@ -64,7 +64,7 @@ System został wdrożony w środowisku **Microsoft Azure**, co zapewnia:
 Poniżej przedstawiono diagram prezentujący architekturę usług chmurowych:
 
 <p align="center"> 
-   <img src="CarRental.Docs/Diagrams/AzureArchitecture/azure-architecture.png" 
+   <img src="./CarRental.Docs/Diagrams/AzureArchitecture/azure-architecture.png" 
         alt="Diagram Architektury Usług Chmurowych" 
         style="width: 90%;"/> 
 </p>
@@ -104,7 +104,7 @@ Poniżej przedstawiono diagramy ilustrujące strukturę baz danych, relacje mię
 ### Diagram Bazy Danych Dostawcy Samochodów:
 
 <p align="center">
-  <img src="CarRental.Docs/Diagrams/Databases/carrental-provider-db.png" 
+  <img src="./CarRental.Docs/Diagrams/Databases/carrental-provider-db.png" 
        alt="Diagram Bazy Danych Dostawcy Samochodów" 
        style="width: 80%;"/>
 </p>
@@ -112,7 +112,7 @@ Poniżej przedstawiono diagramy ilustrujące strukturę baz danych, relacje mię
 ### Diagram Bazy Danych Porównywarki Cen:
 
 <p align="center">
-  <img src="CarRental.Docs/Diagrams/Databases/carrental-comparer-db.png" 
+  <img src="./CarRental.Docs/Diagrams/Databases/carrental-comparer-db.png" 
        alt="Diagram Bazy Danych Porównywarki Cen" 
        style="width: 80%;"/>
 </p>
@@ -243,7 +243,7 @@ Poniżej znajdują się zrzuty ekranu interfejsu dokumentacji dla obu API:
 #### Dokumentacja dla `CarRental.Comparer.API`
 
 <p align="center">
-  <img src="CarRental.Docs/Images/provider-swagger.PNG" 
+  <img src="./CarRental.Docs/Images/provider-swagger.PNG" 
        alt="Dokumentacja dla CarRental.Comparer.API" 
        style="width: 80%;"/>
 </p>
@@ -251,7 +251,7 @@ Poniżej znajdują się zrzuty ekranu interfejsu dokumentacji dla obu API:
 #### Dokumentacja dla `CarRental.Provider.API`
 
 <p align="center">
-  <img src="CarRental.Docs/Images/comparer-swagger.PNG" 
+  <img src="./CarRental.Docs/Images/comparer-swagger.PNG" 
        alt="Dokumentacja dla CarRental.Provider.API" 
        style="width: 80%;"/>
 </p>
@@ -273,7 +273,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 ##### Strona Główna
 
 <p align="center">
-  <img src="CarRental.Docs/Images/User/home.PNG" 
+  <img src="./CarRental.Docs/Images/User/home.PNG" 
        alt="Strona Główna" 
        style="width: 80%;"/>
 </p>
@@ -281,7 +281,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 ##### Filtry Pojazdów
 
 <p align="center">
-  <img src="CarRental.Docs/Images/User/car-filters.PNG" 
+  <img src="./CarRental.Docs/Images/User/car-filters.PNG" 
        alt="Filtry Pojazdów" 
        style="width: 80%;"/>
 </p>
@@ -289,7 +289,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 ##### Zarządzanie Profilem
 
 <p align="center">
-  <img src="CarRental.Docs/Images/User/profile-management.PNG" 
+  <img src="./CarRental.Docs/Images/User/profile-management.PNG" 
        alt="Zarządzanie Profilem" 
        style="width: 80%;"/>
 </p>
@@ -297,7 +297,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 ##### Aktywne Wypożyczenia
 
 <p align="center">
-  <img src="CarRental.Docs/Images/User/user-rentals-active.PNG" 
+  <img src="./CarRental.Docs/Images/User/user-rentals-active.PNG" 
        alt="Aktywne Wypożyczenia" 
        style="width: 80%;"/>
 </p>
@@ -305,7 +305,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 ##### Zwrócone Wypożyczenia
 
 <p align="center">
-  <img src="CarRental.Docs/Images/User/user-rentals-returned.PNG" 
+  <img src="./CarRental.Docs/Images/User/user-rentals-returned.PNG" 
        alt="Zwrócone Wypożyczenia" 
        style="width: 80%;"/>
 </p>
@@ -313,7 +313,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 ##### Generowanie Ofert
 
 <p align="center">
-  <img src="CarRental.Docs/Images/User/offers-user-details-form.PNG" 
+  <img src="./CarRental.Docs/Images/User/offers-user-details-form.PNG" 
        alt="Generowanie Ofert" 
        style="width: 80%;"/>
 </p>
@@ -321,7 +321,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 ##### Integracja z Google Maps
 
 <p align="center">
-  <img src="CarRental.Docs/Images/User/offers-google-map.PNG" 
+  <img src="./CarRental.Docs/Images/User/offers-google-map.PNG" 
        alt="Integracja z Google Maps" 
        style="width: 80%;"/>
 </p>
@@ -331,7 +331,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 ##### Aktywne Wypożyczenia
 
 <p align="center">
-  <img src="CarRental.Docs/Images/Employee/dashboard-active-rentals.PNG" 
+  <img src="./CarRental.Docs/Images/Employee/dashboard-active-rentals.PNG" 
        alt="Aktywne Wypożyczenia" 
        style="width: 80%;"/>
 </p>
@@ -339,7 +339,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 ##### Wypożyczenia Do Zwortu
 
 <p align="center">
-  <img src="CarRental.Docs/Images/Employee/dashboard-confirm-rentals.PNG" 
+  <img src="./CarRental.Docs/Images/Employee/dashboard-confirm-rentals.PNG" 
        alt="Wypożyczenia Do Zwortu" 
        style="width: 80%;"/>
 </p>
@@ -347,7 +347,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 ##### Akceptacja Zwrotu
 
 <p align="center">
-  <img src="CarRental.Docs/Images/Employee/dashboard-confirm-return-form.PNG" 
+  <img src="./CarRental.Docs/Images/Employee/dashboard-confirm-return-form.PNG" 
        alt="Akceptacja Zwrotu" 
        style="width: 80%;"/>
 </p>
@@ -355,7 +355,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 ##### Wypożyczenia Zwrócone
 
 <p align="center">
-  <img src="CarRental.Docs/Images/Employee/dashboard-rental-history.PNG" 
+  <img src="./CarRental.Docs/Images/Employee/dashboard-rental-history.PNG" 
        alt="Wypożyczenia Zwrócone" 
        style="width: 80%;"/>
 </p>
@@ -363,7 +363,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 ##### Generowanie Raportu
 
 <p align="center">
-  <img src="CarRental.Docs/Images/Employee/excel-report-generate.PNG" 
+  <img src="./CarRental.Docs/Images/Employee/excel-report-generate.PNG" 
        alt="Generowanie Raportu" 
        style="width: 80%;"/>
 </p>
@@ -371,7 +371,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 <br></br>
 
 <p align="center">
-  <img src="CarRental.Docs/Images/Employee/excel-report-table.PNG" 
+  <img src="./CarRental.Docs/Images/Employee/excel-report-table.PNG" 
        alt="Generowanie Raportu" 
        style="width: 80%;"/>
 </p>
@@ -379,7 +379,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 <br></br>
 
 <p align="center">
-  <img src="CarRental.Docs/Images/Employee/excel-report-pivot.PNG" 
+  <img src="./CarRental.Docs/Images/Employee/excel-report-pivot.PNG" 
        alt="Generowanie Raportu" 
        style="width: 80%;"/>
 </p>
@@ -387,7 +387,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 #### Serwis Emailowy
 
 <p align="center">
-  <img src="CarRental.Docs/Images/Emails/email-confirm-rental.PNG" 
+  <img src="./CarRental.Docs/Images/Emails/email-confirm-rental.PNG" 
        alt="Serwis Emailowy" 
        style="width: 80%;"/>
 </p>
@@ -395,7 +395,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 <br></br>
 
 <p align="center">
-  <img src="CarRental.Docs/Images/Emails/email-rental-confirmed.PNG" 
+  <img src="./CarRental.Docs/Images/Emails/email-rental-confirmed.PNG" 
        alt="Serwis Emailowy" 
        style="width: 80%;"/>
 </p>
@@ -403,7 +403,7 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 <br></br>
 
 <p align="center">
-  <img src="CarRental.Docs/Images/Emails/email-return-started.PNG" 
+  <img src="./CarRental.Docs/Images/Emails/email-return-started.PNG" 
        alt="Serwis Emailowy" 
        style="width: 80%;"/>
 </p>
@@ -411,12 +411,10 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
 <br></br>
 
 <p align="center">
-  <img src="CarRental.Docs/Images/Emails/email-rental-returned.PNG" 
+  <img src="./CarRental.Docs/Images/Emails/email-rental-returned.PNG" 
        alt="Serwis Emailowy" 
        style="width: 80%;"/>
 </p>
-
-<br></br>
 
 ## Autorzy
 
