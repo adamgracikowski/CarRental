@@ -1,4 +1,5 @@
 ﻿using CarRental.Comparer.Web.Requests.DTOs.RentalTransactions;
+using System.Globalization;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 
@@ -7,6 +8,8 @@ namespace CarRental.Comparer.Web.Requests.RentalTransactionServices;
 public sealed class RentalTransactionService : IRentalTransactionService
 {
 	private const string RentalTransactions = "rental-transactions";
+	private const string Latitude = "Latitude";
+	private const string Longitude = "Longitude";
 
 	private readonly HttpClient httpClient;
 
@@ -31,8 +34,8 @@ public sealed class RentalTransactionService : IRentalTransactionService
 			}
 
 			formContent.Add(new StringContent(acceptReturnDto.Description), nameof(acceptReturnDto.Description));
-			formContent.Add(new StringContent(acceptReturnDto.Latitude.ToString()), nameof(acceptReturnDto.Latitude));
-			formContent.Add(new StringContent(acceptReturnDto.Longitude.ToString()), nameof(acceptReturnDto.Longitude));
+			formContent.Add(new StringContent(acceptReturnDto.Latitude.ToString(CultureInfo.InvariantCulture)), Latitude);
+			formContent.Add(new StringContent(acceptReturnDto.Longitude.ToString(CultureInfo.InvariantCulture)), Longitude);
 
 			var url = $"{RentalTransactions}/{id}/accept-return";
 
@@ -41,6 +44,8 @@ public sealed class RentalTransactionService : IRentalTransactionService
 				Content = formContent
 			};
 
+			request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+
 			var response = await this.httpClient.SendAsync(request, cancellationToken);
 
 			if (response.IsSuccessStatusCode)
@@ -48,10 +53,14 @@ public sealed class RentalTransactionService : IRentalTransactionService
 				return true;
 			}
 
+			var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+			Console.WriteLine($"Error response: {errorContent}");
+
 			return false;
 		}
-		catch (Exception)
+		catch (Exception ex)
 		{
+			Console.WriteLine($"An error occurred: {ex.Message}");
 			return false;
 		}
 	}
