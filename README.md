@@ -48,6 +48,14 @@ The system is designed for **flexibility** and **extensibility**:
 
 ## 🚀 Technologies Used
 
+### 🌐 Frontend
+
+- **Blazor WebAssembly**, **MudBlazor**, **Microsoft Entra Id**, **GoogleMaps**.
+
+### ⚙️ Backend
+
+- **ASP.NET Core**, **C#**, **Entity Framework Core**, **SQL Server**, **Azure Cache for Redis**, **SendGrid**, **Azure Blob Storage**, **Azure Key Vault**, **Application Insights**.
+
 ## 🏗️ Solution Architecture
 
 The solution consists of **11** modular projects, organized to ensure:
