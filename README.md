@@ -1,47 +1,88 @@
-# Wypożyczalnia Samochodów
+# 🚗 Car Rental System
 
-Projekt realizowany w ramach przedmiotu _Tworzenie aplikacji webowych z wykorzystaniem .NET Framework_ podczas zimowego semestru roku akademickiego 2024/2025.
+<p align="center">
+  <img src="https://img.shields.io/badge/ASP.NET_Core-512BD4?style=for-the-badge&logo=.net&logoColor=white" alt="ASP.NET Core"/>
+  <img src="https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=c-sharp&logoColor=white" alt="C#"/>
+  <img src="https://img.shields.io/badge/ORM-EF%20Core-512BD4?style=for-the-badge&logo=code&logoColor=white" alt="EF Core"/>
+  <img src="https://img.shields.io/badge/Database-SQL%20Server-CC2927?style=for-the-badge&logo=database&logoColor=white" alt="SQL Server"/>
+  <img src="https://img.shields.io/badge/Cloud-Microsoft%20Azure-0089D6?style=for-the-badge&logo=cloud&logoColor=white" alt="Microsoft Azure"/>
+  <img src="https://img.shields.io/badge/SendGrid-FF6C37?style=for-the-badge&logo=sendgrid&logoColor=white" alt="SendGrid"/>
+  <img src="https://img.shields.io/badge/Blazor_WASM-512BD4?style=for-the-badge&logo=blazor&logoColor=white" alt="Blazor WebAssembly"/>
+  <img src="https://img.shields.io/badge/Google_Maps-4285F4?style=for-the-badge&logo=google-maps&logoColor=white" alt="Google Maps"/>
+</p>
 
-## Spis treści
+**CarRental** is a full-stack car rental platform that aggregates rental offers from multiple third-party API providers 🚀. It features a price comparison tool, allowing users to find the best deals.
 
-- [Opis projektu](#opis-projektu)
-- [Architektura Rozwiązania](#architektura-rozwiązania)
-- [Architektura Usług Chmurowych](#architektura-usług-chmurowych)
-- [Schemat Bazy Danych](#schemat-bazy-danych)
-- [Kluczowe Wzorce i Technologie](#kluczowe-wzorce-i-technologie)
-- [Testy Jednostkowe](#testy-jednostkowe)
-- [Dokumentacja API](#dokumentacja-api)
-- [Frontend Aplikacji](#frontend-aplikacji)
-- [Autorzy](#autorzy)
+The project was developed as part of the _Web Application Development with .NET_ course during the winter semester of the 2024/2025 academic year.
 
-## Opis projektu
+## 📘 Table of Contents
 
-Projekt zakłada stworzenie kompleksowego systemu do wynajmu samochodów, który składa się z dwóch głównych komponentów:
+1. [📖 Overview](#-overview)
+2. [🎯 Features](#-features)
+3. [🚀 Technologies Used](#-technologies-used)
+4. [🏗️ Solution Architecture](#-solution-architecture)
+5. [☁️ Cloud Services Architecture](#-cloud-services-architecture)
+6. [🗄️ Database Schema](#-database-schema)
+7. [🧠 Key Patterns & Technologies](#-key-patterns--technologies)
+8. [🧪 Unit Testing](#-unit-testing)
+9. [📘 API Documentation](#-api-documentation)
+10. [📦 Installation](#-installation)
+11. [👥 Authors](#-authors)
 
-- Aplikacja webowa: Umożliwiająca użytkownikom przeglądanie, filtrowanie i porównywanie cen ofert wynajmu samochodów pochodzących od różnych dostawców.
-- API dostawcy samochodów: Zapewniające integrację z zewnętrznymi usługami wynajmu pojazdów, umożliwiające zarządzanie danymi o dostępnych samochodach, ich rezerwacjami oraz szczegółami wynajmu.
+## 📖 Overview
 
-System został zaprojektowany z myślą o elastyczności i łatwości rozbudowy, umożliwiając dodawanie nowych dostawców samochodów w przyszłości.
-Każdy dostawca będzie mógł udostępniać swoje zasoby poprzez dedykowane API, co zapewnia skalowalność i możliwość integracji z różnymi partnerami.
+The goal of this project is to build a comprehensive 🚗 **Car Rental System** composed of two main components:
 
-Dodatkowym założeniem systemu jest możliwość współpracy z innymi zespołami projektowymi, którzy dostarczają swoje własne API dostawcy samochodów, co zapewnia szerokie możliwości rozszerzenia systemu o nowe funkcjonalności.
+- 🌐 **Web Application**  
+  Allows users to browse, filter, and compare rental prices from multiple car providers in one place.
 
-## Architektura Rozwiązania
+- 🔌 **Car Provider API**  
+  Integrates with external vehicle‑rental services to manage available cars, reservations, and rental details.
 
-Rozwiązanie składa się z 11 projektów, zorganizowanych w sposób modularny, co zapewnia:
+The system is designed for **flexibility** and **extensibility**:
 
-- Czytelność kodu.
-- Łatwość utrzymania.
-- Możliwość dalszej rozbudowy systemu bez naruszania istniejącej funkcjonalności.
+- ➕ New car providers can be added at any time via dedicated APIs, ensuring smooth **scalability**.
+- 🤝 Supports collaboration with other teams offering their own provider APIs, opening the door to future feature enhancements.
 
-Projekty są podzielone na logiczne warstwy:
+## 🎯 Features
 
-- **Core** - Zawiera klasy modelowe oraz typy wyliczeniowe dla dostawcy samochodów oraz porównywarki cen wypożyczeń.
-- **Persistence** - Odpowiada za dostęp do danych przy użyciu **Entity Framework Core** oraz wzorca repozytorium.
-- **Infrastructure** - Zawiera logikę biznesową oraz obsługuje integrację z usługami zewnętrznymi, takimi jak **Azure Cache for Redis**, **Azure Blob Storage**, czy **Twilio Sendgrid**.
-- **API** - Udostępnia funkcjonalności za pomocą endpointów REST API, autoryzację oraz walidację zapytań.
-- **Web** - Frontend aplikacji zrealizowany przy pomocy **Blazor WebAssembly**, zbudowany jako aplikacja statyczna hostowana na **Azure Static Web Apps**.
-- **Tests** - Zawiera testy jednostkowe, umożliwiające weryfikację poprawności działania systemu.
+## 🚀 Technologies Used
+
+## 🏗️ Solution Architecture
+
+The solution consists of **11** modular projects, organized to ensure:
+
+- ✔️ Clear code structure  
+- 🔧 Easy maintenance  
+- 🚀 Expandability without breaking existing functionality  
+
+Below is an overview of the logical layers and their responsibilities:
+
+| 🔨 Layer         | 📝 Description                                                                                     |
+|------------------|---------------------------------------------------------------------------------------------------|
+| **Core**         | 📦 Domain models and enums for car providers and the rental price comparer.                       |
+| **Persistence**  | 💾 Data access via **Entity Framework Core** and the repository pattern.                          |
+| **Infrastructure** | 🔗 Business logic and integrations with external services (e.g. **Azure Cache for Redis**, **Azure Blob Storage**, **Twilio SendGrid**). |
+| **API**          | 🌐 Exposes REST endpoints, handles authentication & authorization, and validates requests.         |
+| **Web**          | 🎨 Frontend built with **Blazor WebAssembly**, hosted as a static app on **Azure Static Web Apps**. |
+| **Tests**        | 🧪 Unit tests to verify correctness of business logic and data access layers.                     |
+
+
+## ☁️ Cloud Services Architecture
+
+## 🗄️ Database Schema
+
+## 🧠 Key Patterns & Technologies
+
+## 🧪 Unit Testing
+
+## 📘 API Documentation
+
+## 📦 Installation
+
+## 👥 Authors
+
+
 
 Diagram przedstawia strukturę podziału na projekty w ramach rozwiązania:
 
