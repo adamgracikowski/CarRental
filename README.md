@@ -67,10 +67,80 @@ Below is an overview of the logical layers and their responsibilities:
 | **Web**          | 🎨 Frontend built with **Blazor WebAssembly**, hosted as a static app on **Azure Static Web Apps**. |
 | **Tests**        | 🧪 Unit tests to verify correctness of business logic and data access layers.                     |
 
+<!-- 
+<br>
+
+> The diagram illustrates the structure of how the projects are organized within the solution:
+
+<br>
+
+<p align="center">
+  <img src="./CarRental.Docs/Diagrams/SolutionArchitecture/CarRental.png" 
+       alt="Diagram of the projects" 
+       style="width: 80%;"/>
+</p>
+
+```mermaid
+
+```
+-->
 
 ## ☁️ Cloud Services Architecture
 
+> 👇 **Click to see the diagram**
+
+<details>
+<summary>
+ 🔍 Diagram illustrating the cloud services architecture
+</summary>
+<br>
+<p align="center"> 
+   <img src="./CarRental.Docs/Diagrams/AzureArchitecture/azure-architecture.png" 
+        alt="Cloud Services Architecture Diagram" 
+        style="width: 90%;"/> 
+</p>
+</details>
+
+### 🧩 Resource Groups Breakdown
+
+The system’s resources are organized into three **Resource Groups** for clarity and separation of responsibilities:
+
+| 🔖 Resource Group | 🛠️ Service Name  | 📦 Type | 📝 Description |
+|--------------------|------------------|---------|----------------|
+| **`carrental-provider-prod-rg`** | `carrental-provider` | App Service | Hosts the Car Provider API (CRUD operations for vehicles, offers & reservations). |
+| | `carrental-provider-kv` | Key Vault | Secure storage for keys, passwords and other secrets. |
+| | `carrental-provider-ai` | Application Insights | Real‑time monitoring and diagnostics for the provider API. |
+| | `CarRentalProviderDb` | SQL Database | Relational database storing car provider data. |
+| **`carrental-comparer-prod-rg`** | `carrental-comparer` | App Service | Hosts the Price Comparer API (aggregates and compares rental offers). |
+| | `carrental-comparer-kv` | Key Vault | Secure storage for keys, passwords and other secrets. |
+| | `carrental-comparer-ai` | Application Insights | Monitoring and telemetry for the comparer API. |
+| | `CarRentalComparerDb` | SQL Database | Relational database powering the price comparison engine. |
+| | `carrental-comparer-web` | Static Web App | Frontend hosting for the price comparison UI. |
+| **`carrental-common-prod-rg`** | `carrentalminisa` | Blob Storage | Static file storage (e.g., vehicle images, brand logos). |
+| | `carrental-cache` | Azure Cache for Redis | Caching layer to accelerate read operations (e.g., search results). |
+
 ## 🗄️ Database Schema
+
+The system uses **Entity Framework Core** to manage the database with a _code-first_ approach 🧩. This means the database schema is automatically generated from your C# model classes, ensuring consistency between the application and the database.
+
+- In the **development** environment, we use **Microsoft SQL Server** running locally (`localhost`) 🖥️.  
+- In **production**, the solution is deployed on two **Azure SQL Database** instances ☁️—one for the Car Provider API and one for the Price Comparer.
+
+<!-- 
+Below are the diagrams illustrating the database structures, table relationships, and key attributes:
+
+<p align="center">
+  <img src="./CarRental.Docs/Diagrams/Databases/carrental-provider-db.png" 
+       alt="Database Schema for the Car Rental Provider" 
+       style="width: 80%;"/>
+</p>
+
+<p align="center">
+  <img src="./CarRental.Docs/Diagrams/Databases/carrental-comparer-db.png" 
+       alt="Database Schema for the Car Rental Comparer" 
+       style="width: 80%;"/>
+</p>
+-->
 
 ## 🧠 Key Patterns & Technologies
 
@@ -82,82 +152,13 @@ Below is an overview of the logical layers and their responsibilities:
 
 ## 👥 Authors
 
+This project was created by:
 
+- [Antonina Frąckowiak](https://github.com/tosiaf)
+- [Adam Grącikowski](https://github.com/adamgracikowski)
+- [Marcin Gronicki](https://github.com/gawxgd)
 
-Diagram przedstawia strukturę podziału na projekty w ramach rozwiązania:
-
-<p align="center">
-  <img src="./CarRental.Docs/Diagrams/SolutionArchitecture/CarRental.png" 
-       alt="Diagram projektów w solucji" 
-       style="width: 80%;"/>
-</p>
-
-## Architektura Usług Chmurowych
-
-System został wdrożony w środowisku **Microsoft Azure**, co zapewnia:
-
-- Skalowalność,
-- Wysoki poziom bezpieczeństwa,
-- Łatwość utrzymania i monitorowania zasobów.
-
-### Diagram Architektury
-
-Poniżej przedstawiono diagram prezentujący architekturę usług chmurowych:
-
-<p align="center"> 
-   <img src="./CarRental.Docs/Diagrams/AzureArchitecture/azure-architecture.png" 
-        alt="Diagram Architektury Usług Chmurowych" 
-        style="width: 90%;"/> 
-</p>
-
-### Podział Zasobów
-
-Zasoby systemu zostały podzielone na trzy grupy zasobów (**Resource Groups**), aby zapewnić przejrzystość i separację odpowiedzialności.
-
-1. `carrental-provider-prod-rg`: Zasoby obsługujące API dostawcy samochodów.
-
-   - `carrental-provider` (**App Service**): Usługa hostująca API dla operacji CRUD na pojazdach, ofertach i rezerwacjach.
-   - `carrental-provider-kv` (**Key Vault**): Bezpieczne przechowywanie kluczy, haseł oraz innych tajnych danych.
-   - `carrental-provider-ai` (**Application Insights**): Monitorowanie i diagnostyka działania aplikacji w czasie rzeczywistym.
-   - `CarRentalProviderDb` (**SQL Database**): Relacyjna baza danych przechowująca informacje potrzebne dostawcy samochodów.
-
-2. `carrental-comparer-prod-rg`: Zasoby obsługujące API porównywarki cen, obsługujące poszczególne wypożyczalnie samochodów.
-
-   - `carrental-comparer` (**App Service**): Usługa hostująca API odpowiedzialne za porównywanie ofert.
-   - `carrental-comparer-kv` (**Key Vault**): Bezpieczne przechowywanie kluczy, haseł oraz innych tajnych danych.
-   - `carrental-comparer-ai` (**Application Insights**): Monitorowanie działania aplikacji i zbieranie metryk diagnostycznych.
-   - `CarRentalComparerDb` (**SQL Database**): Relacyjna baza danych obsługująca funkcjonalności porównywania ofert.
-   - `carrental-comparer-web` (**Static Apps**): Hostowanie aplikacji frontowej, która udostępnia interfejs użytkownika końcowego.
-
-3. `carrental-common-prod-rg`: Zadoby wspólne dla obu części rozwiązania, takie jak przechowywanie plików oraz pamięć podręczna.
-   - `carrentalminisa` (**Blob Storage**): Przechowywanie plików statycznych, takich jak zdjęcia pojazdów oraz logo marek samochodów.
-   - `carrental-cache` (**Azure Cache for Redis**): Pamięć podręczna wykorzystywana do przyspieszenia operacji odczytu, np. przechowywanie wyników wyszukiwania.
-
-## Schemat Bazy Danych
-
-System wykorzystuje **Entity Framework Core** do zarządzania bazą danych przy użyciu podejścia _code-first_.
-Dzięki temu struktura baz danych jest generowana na podstawie klas modelowych w kodzie, co ułatwia utrzymanie spójności między aplikacją a bazą danych.
-
-W środowisku developerskim używano **Microsoft SQL Server** uruchomionego lokalnie (`localhost`), natomiast w środowisku produkcyjnym wdrożono rozwiązanie oparte na dwóch instancjach **Azure SQL Database** – jednej dla dostawcy samochodów i jednej dla porównywarki cen.
-
-Poniżej przedstawiono diagramy ilustrujące strukturę baz danych, relacje między tabelami oraz kluczowe atrybuty.
-
-### Diagram Bazy Danych Dostawcy Samochodów:
-
-<p align="center">
-  <img src="./CarRental.Docs/Diagrams/Databases/carrental-provider-db.png" 
-       alt="Diagram Bazy Danych Dostawcy Samochodów" 
-       style="width: 80%;"/>
-</p>
-
-### Diagram Bazy Danych Porównywarki Cen:
-
-<p align="center">
-  <img src="./CarRental.Docs/Diagrams/Databases/carrental-comparer-db.png" 
-       alt="Diagram Bazy Danych Porównywarki Cen" 
-       style="width: 80%;"/>
-</p>
-
+<!--
 ## Kluczowe Wzorce i Technologie
 
 Aby zapewnić modularność i skalowalność, wykorzystano m.in. następujące wzorce projektowe i biblioteki:
@@ -466,3 +467,4 @@ Projekt został wykonany przez 3-osobowy zespół:
 - [Marcin Gronicki](https://github.com/gawxgd)
 
 Przedmiot prowadził pan [Marcin Sulecki](https://github.com/sulmar).
+-->
