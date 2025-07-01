@@ -26,8 +26,7 @@ The project was developed as part of the _Web Application Development with .NET_
 7. [🧠 Key Patterns & Technologies](#-key-patterns--technologies)
 8. [🧪 Unit Testing](#-unit-testing)
 9. [📘 API Documentation](#-api-documentation)
-10. [📦 Installation](#-installation)
-11. [👥 Authors](#-authors)
+10. [👥 Authors](#-authors)
 
 ## 📖 Overview
 
@@ -45,6 +44,154 @@ The system is designed for **flexibility** and **extensibility**:
 - 🤝 Supports collaboration with other teams offering their own provider APIs, opening the door to future feature enhancements.
 
 ## 🎯 Features
+
+> 👇 **Click on any feature below to see it in action**
+
+### 📱 User Views:
+
+---
+
+<details>
+<summary> 🏠 Home Page </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/User/home.PNG" alt="Home Page" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> 🚘 Vehicle Filters </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/User/car-filters.PNG" alt="Vehicle Filters" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> 👤 Profile Management </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/User/profile-management.PNG" alt="Profile Management" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> 🟢 Active Rentals </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/User/user-rentals-active.PNG" alt="Active Rentals" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> ✅ Returned Rentals </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/User/user-rentals-returned.PNG" alt="Returned Rentals" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> 🧾 Offer Generation </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/User/offers-user-details-form.PNG" alt="Offer Generation" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> 🗺️ Google Maps Integration </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/User/offers-google-map.PNG" alt="Google Maps Integration" style="width: 80%;" />
+</p>
+</details>
+
+### 🧑‍💼 Employee Views
+
+---
+
+<details>
+<summary> 🟢 Active Rentals </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/Employee/dashboard-active-rentals.PNG" alt="Active Rentals - Employee" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> ⏳ Rentals Pending Return </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/Employee/dashboard-confirm-rentals.PNG" alt="Rentals Pending Return" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> ✅ Return Confirmation </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/Employee/dashboard-confirm-return-form.PNG" alt="Return Confirmation" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> 📖 Rental History </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/Employee/dashboard-rental-history.PNG" alt="Rental History" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> 📊 Excel Report Generation </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/Employee/excel-report-generate.PNG" alt="Report Generation - Initial View" style="width: 80%;" />
+</p>
+<p align="center">
+  <img src="./CarRental.Docs/Images/Employee/excel-report-table.PNG" alt="Excel Report - Table" style="width: 80%;" />
+</p>
+<p align="center">
+  <img src="./CarRental.Docs/Images/Employee/excel-report-pivot.PNG" alt="Excel Report - Pivot Table" style="width: 80%;" />
+</p>
+</details>
+
+### 📧 Email Service
+
+---
+
+<details>
+<summary> 📩 Rental Confirmation Email </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/Emails/email-confirm-rental.PNG" alt="Rental Confirmation Email" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> 📨 Rental Approved Email </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/Emails/email-rental-confirmed.PNG" alt="Rental Approved Email" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> ↩️ Return Started Email </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/Emails/email-return-started.PNG" alt="Return Started Email" style="width: 80%;" />
+</p>
+</details>
+
+<details>
+<summary> ✅ Rental Returned Email </summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/Emails/email-rental-returned.PNG" alt="Rental Returned Email" style="width: 80%;" />
+</p>
+</details>
 
 ## 🚀 Technologies Used
 
@@ -252,7 +399,40 @@ All tests follow the **Arrange-Act-Assert** pattern to maintain clarity and ease
 
 ## 📘 API Documentation
 
-## 📦 Installation
+You can access the API docs for both the Car Provider and Price Comparer in your **development** environment:
+
+- 🚗 **[CarRental.Provider.API](https://github.com/adamgracikowski/CarRental/tree/main/CarRental/CarRental.Provider.API)**: `https://localhost:7173/swagger/index.html`  
+- 🔍 **[CarRental.Comparer.API](https://github.com/adamgracikowski/CarRental/tree/main/CarRental/CarRental.Comparer.API)**: `https://localhost:7016/swagger/index.html`  
+
+<br>
+
+> 👇 **Click to see the Swagger UI examples**
+
+<br>
+
+<details>
+<summary>
+ 📑 Comparer API Swagger UI
+</summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/provider-swagger.PNG" 
+       alt="Comparer API Swagger UI" 
+       style="width: 80%;"/>
+</p>
+</details>
+
+<details>
+<summary>
+ 📑 Provider API Swagger UI
+</summary>
+<br>
+<p align="center">
+  <img src="./CarRental.Docs/Images/comparer-swagger.PNG" 
+       alt="Provider API Swagger UI" 
+       style="width: 80%;"/>
+</p>
+</details>
 
 ## 👥 Authors
 
@@ -263,198 +443,3 @@ This project was created by:
 - [Marcin Gronicki](https://github.com/gawxgd)
 
 The course was taught by 🎓 [Marcin Sulecki](https://github.com/sulmar).
-
-<!--
-## Dokumentacja API
-
-Dokumentację dla API dostawcy samochodów oraz porównywarki cen wypożyczeń można znaleźć pod następującymi adresami (w środowisku deweloperskim):
-
-- `CarRental.Provider.API`: `https://localhost:7173/swagger/index.html`
-- `CarRental.Comparer.API`: `https://localhost:7016/swagger/index.html`
-
-Dokumentacja zawiera:
-
-- Szczegółowy opis dostępnych endpointów,
-- Wymagane parametry dla każdego żądania,
-- Przykłady odpowiedzi w formacie `JSON`.
-
-### Przykłady widoków Swagger
-
-Poniżej znajdują się zrzuty ekranu interfejsu dokumentacji dla obu API:
-
-#### Dokumentacja dla `CarRental.Comparer.API`
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/provider-swagger.PNG" 
-       alt="Dokumentacja dla CarRental.Comparer.API" 
-       style="width: 80%;"/>
-</p>
-
-#### Dokumentacja dla `CarRental.Provider.API`
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/comparer-swagger.PNG" 
-       alt="Dokumentacja dla CarRental.Provider.API" 
-       style="width: 80%;"/>
-</p>
-
-## Frontend Aplikacji
-
-Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – framework do tworzenia nowoczesnych aplikacji webowych z użyciem **C#** i **Razor**.
-
-### Zastosowane Rozwiązania
-
-- **MudBlazor**: Umożliwiająca stworzenie spójnego i nowoczesnego interfejsu użytkownika, który jest responsywny, estetyczny oraz przyjazny w nawigacji.
-- **Blazor.Geolocation.WebAssembly**: Umożliwia automatyczne pobieranie lokalizacji użytkownika i wypełnaienie pól adresowych.
-- **BlazorGoogleMaps**: Umożliwia zintegrowanie mapy Google w celu wizualizacji lokalizacji użytkownika oraz dostępnych samochodów.
-
-### Zrzuty Ekrany Aplikacji
-
-#### Widoki Użytkownika
-
-##### Strona Główna
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/User/home.PNG" 
-       alt="Strona Główna" 
-       style="width: 80%;"/>
-</p>
-
-##### Filtry Pojazdów
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/User/car-filters.PNG" 
-       alt="Filtry Pojazdów" 
-       style="width: 80%;"/>
-</p>
-
-##### Zarządzanie Profilem
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/User/profile-management.PNG" 
-       alt="Zarządzanie Profilem" 
-       style="width: 80%;"/>
-</p>
-
-##### Aktywne Wypożyczenia
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/User/user-rentals-active.PNG" 
-       alt="Aktywne Wypożyczenia" 
-       style="width: 80%;"/>
-</p>
-
-##### Zwrócone Wypożyczenia
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/User/user-rentals-returned.PNG" 
-       alt="Zwrócone Wypożyczenia" 
-       style="width: 80%;"/>
-</p>
-
-##### Generowanie Ofert
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/User/offers-user-details-form.PNG" 
-       alt="Generowanie Ofert" 
-       style="width: 80%;"/>
-</p>
-
-##### Integracja z Google Maps
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/User/offers-google-map.PNG" 
-       alt="Integracja z Google Maps" 
-       style="width: 80%;"/>
-</p>
-
-#### Widoki Pracownika
-
-##### Aktywne Wypożyczenia
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/Employee/dashboard-active-rentals.PNG" 
-       alt="Aktywne Wypożyczenia" 
-       style="width: 80%;"/>
-</p>
-
-##### Wypożyczenia Do Zwortu
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/Employee/dashboard-confirm-rentals.PNG" 
-       alt="Wypożyczenia Do Zwortu" 
-       style="width: 80%;"/>
-</p>
-
-##### Akceptacja Zwrotu
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/Employee/dashboard-confirm-return-form.PNG" 
-       alt="Akceptacja Zwrotu" 
-       style="width: 80%;"/>
-</p>
-
-##### Wypożyczenia Zwrócone
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/Employee/dashboard-rental-history.PNG" 
-       alt="Wypożyczenia Zwrócone" 
-       style="width: 80%;"/>
-</p>
-
-##### Generowanie Raportu
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/Employee/excel-report-generate.PNG" 
-       alt="Generowanie Raportu" 
-       style="width: 80%;"/>
-</p>
-
-<br></br>
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/Employee/excel-report-table.PNG" 
-       alt="Generowanie Raportu" 
-       style="width: 80%;"/>
-</p>
-
-<br></br>
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/Employee/excel-report-pivot.PNG" 
-       alt="Generowanie Raportu" 
-       style="width: 80%;"/>
-</p>
-
-#### Serwis Emailowy
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/Emails/email-confirm-rental.PNG" 
-       alt="Serwis Emailowy" 
-       style="width: 80%;"/>
-</p>
-
-<br></br>
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/Emails/email-rental-confirmed.PNG" 
-       alt="Serwis Emailowy" 
-       style="width: 80%;"/>
-</p>
-
-<br></br>
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/Emails/email-return-started.PNG" 
-       alt="Serwis Emailowy" 
-       style="width: 80%;"/>
-</p>
-
-<br></br>
-
-<p align="center">
-  <img src="./CarRental.Docs/Images/Emails/email-rental-returned.PNG" 
-       alt="Serwis Emailowy" 
-       style="width: 80%;"/>
-</p>
--->
