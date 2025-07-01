@@ -152,6 +152,86 @@ Below are the diagrams illustrating the database structures, table relationships
 
 ## 🧠 Key Patterns & Technologies
 
+To ensure modularity and scalability, the system leverages the following design patterns and libraries:
+
+### 🤝 Mediator Pattern
+
+Using **[`MediatR`](https://github.com/jbogard/MediatR)**, we implemented a mediator to handle communication between components, which:
+
+- 🔗 Reduces direct dependencies between modules  
+- 🎯 Centralizes request/command handling logic  
+
+### ⚖️ CQRS (Command Query Responsibility Segregation)
+
+We separate operations into:
+
+- **Commands**: Modify system state (e.g. generate offers, create/return rentals, update user data)  
+- **Queries**: Read-only operations (e.g. search available vehicles, fetch rental details)  
+
+This separation simplifies logic and improves code clarity.
+
+### 🗃️ Repository & Specification Patterns
+
+With **[`Ardalis.Specification`](https://specification.ardalis.com/)**, we introduced:
+
+- **Repository Pattern**: Abstracts data operations, decoupling business logic from data access  
+- **Specifications**: Encapsulate query criteria in reusable classes for consistent querying  
+
+### 🏆 Result Pattern
+
+Using **[`Ardalis.Result`](https://result.ardalis.com/)** for standardized operation results:
+
+- ✅ Indicates success or failure  
+- 📝 Provides error details (codes/messages)  
+- 🚫 Minimizes exception usage in business logic for cleaner, more testable code  
+
+### 🔐 User Authentication
+
+Integrated **[`Microsoft Entra ID`](https://www.microsoft.com/en-us/security/business/identity-access/microsoft-entra-id)** for secure, single-sign‑on access:
+
+- 🧑‍💼 Users log in via SSO
+- 🔒 External service integration for robust access control  
+
+#### 👥 Role-Based Access
+
+Two main roles are defined:
+
+- **`Employee`**: Manages vehicles, reservations, and system administration  
+- **`User`**: Browses available cars, compares offers, and rents vehicles  
+
+Each role has distinct permissions to enforce proper access control.
+
+### ⏳ Background Jobs
+
+Handled with **[`Hangfire`](https://www.hangfire.io/)** for asynchronous tasks such as:
+
+- ⏰ Marking offers as expired based on business rules  
+- 🔄 Checking rental status updates  
+
+Hangfire offers easy scheduling, a web dashboard for monitoring, and seamless integration with Azure.
+
+### 🧪 Data & Request Validation
+
+Employed **[`FluentValidation`](https://docs.fluentvalidation.net/en/latest/)** to declare advanced validation rules:
+
+- 🔍 Ensures every business operation starts with validated input  
+- 📜 Improves readability and maintainability of validation logic  
+
+### 🔄 Object Mapping
+
+Used **[`AutoMapper`](https://docs.automapper.org/en/stable/)** for rapid object-to-object mapping:
+
+- ✂️ Eliminates boilerplate conversion code  
+- 🔄 Maintains consistent data structures across application layers  
+
+### 📊 Excel Reporting
+
+Utilized **[`ClosedXML`](https://docs.closedxml.io/en/latest/)** to generate periodic Excel reports:
+
+- 🏗️ Quickly create and format complex spreadsheets  
+- 📈 Build dynamic reports from database or runtime data  
+- ➗ Support advanced formulas and multiple data types for detailed analysis  
+
 ## 🧪 Unit Testing
 
 ## 📘 API Documentation
@@ -165,6 +245,8 @@ This project was created by:
 - [Antonina Frąckowiak](https://github.com/tosiaf)
 - [Adam Grącikowski](https://github.com/adamgracikowski)
 - [Marcin Gronicki](https://github.com/gawxgd)
+
+The course was taught by 🎓 [Marcin Sulecki](https://github.com/sulmar).
 
 <!--
 ## Kluczowe Wzorce i Technologie
@@ -465,14 +547,4 @@ Frontend aplikacji został zbudowany w oparciu o **Blazor WebAssembly** – fram
        alt="Serwis Emailowy" 
        style="width: 80%;"/>
 </p>
-
-## Autorzy
-
-Projekt został wykonany przez 3-osobowy zespół:
-
-- [Antonina Frąckowiak](https://github.com/tosiaf)
-- [Adam Grącikowski](https://github.com/adamgracikowski)
-- [Marcin Gronicki](https://github.com/gawxgd)
-
-Przedmiot prowadził pan [Marcin Sulecki](https://github.com/sulmar).
 -->
