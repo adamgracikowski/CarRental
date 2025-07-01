@@ -234,6 +234,22 @@ Utilized **[`ClosedXML`](https://docs.closedxml.io/en/latest/)** to generate per
 
 ## 🧪 Unit Testing
 
+The solution includes two dedicated test projects to ensure code quality and reliability:
+
+- 🔍 **[CarRental.Comparer.Tests](https://github.com/adamgracikowski/CarRental/tree/main/CarRental/CarRental.Comparer.Tests)**  
+  Contains unit tests for the price comparison logic.
+
+- ⚙️ **[CarRental.Provider.Tests](https://github.com/adamgracikowski/CarRental/tree/main/CarRental/CarRental.Provider.Tests)**  
+  Contains unit tests for the Car Provider API logic.
+
+The following libraries and frameworks are used for testing:
+
+- 🧰 **[`xUnit`](https://xunit.net/)**: A streamlined testing framework for creating, running, and reporting unit tests.  
+- ✅ **[`FluentValidation`](https://docs.fluentvalidation.net/en/latest/)**: Automatically validates input models in tests, enabling precise validation checks.  
+- 🤖 **[`Moq`](https://github.com/devlooped/moq)**: A mocking library for creating fake objects, allowing isolated testing of business logic without external dependencies.
+
+All tests follow the **Arrange-Act-Assert** pattern to maintain clarity and ease of debugging.  
+
 ## 📘 API Documentation
 
 ## 📦 Installation
@@ -249,112 +265,6 @@ This project was created by:
 The course was taught by 🎓 [Marcin Sulecki](https://github.com/sulmar).
 
 <!--
-## Kluczowe Wzorce i Technologie
-
-Aby zapewnić modularność i skalowalność, wykorzystano m.in. następujące wzorce projektowe i biblioteki:
-
-### Wzorzec Mediatora (Mediator Pattern)
-
-Za pomocą pakietu **MediatR** zaimplementowano mechanizm pośredniczący w komunikacji między komponentami systemu. Dzięki temu:
-
-- Zredukowano zależności między modułami,
-- Umożliwiono centralizację logiki obsługi zapytań i poleceń.
-
-### Wzorzec CQRS (Command Query Responsibility Segregation)
-
-Zastosowano wzorzec CQRS, który dzieli operacje na:
-
-- **Commands** (polecenia): Odpowiadają za operacje modyfikujące stan systemu, takie jak generowanie ofert, tworzenie i zwrot wypożyczenia czy aktualizacja danych użytkowników.
-- **Queries** (zapytania): Służą do odczytu danych, np. wyszukiwanie dostępnych pojazdów czy pobieranie szczegółów wypożyczenia.
-
-Taki podział upraszcza zarządzanie logiką i zwiększa przejrzystość kodu.
-
-### Wzorzec Repozytorium i Specyfikacji (Repository and Specification Patterns)
-
-Dzięki bibliotece **Ardalis.Specification** wdrożono:
-
-- **Wzorzec repozytorium**: Abstrakcję dla operacji na danych, która pozwala oddzielić logikę biznesową od szczegółów implementacji dostępu do danych.
-- **Specyfikacje**: Określenie precyzyjnych kryteriów zapytań w formie zdefiniowanych klas. Pozwala to na wielokrotne użycie tych samych reguł w różnych częściach systemu.
-
-### Wzorzec Wynikowy (Result Pattern)
-
-W celu ustandaryzowania obsługi wyników operacji, zarówno pomyślnych, jak i zakończonych błędami, zastosowano bibliotekę **Ardalis.Result**.
-Wzorzec ten pozwala na zwracanie obiektów, które:
-
-- Zawierają informację o sukcesie bądź błędzie operacji.
-- Dostarczają szczegóły błędów, np. w postaci kodów błędów lub komunikatów.
-- Upraszczają obsługę wyjątków i komunikację między warstwami systemu.
-
-Dzięki **Ardalis.Result** ograniczono użycie wyjątków w logice biznesowej, co poprawiło czytelność kodu i ułatwiło testowanie operacji.
-
-### Logowanie Użytkowników
-
-Do obsługi logowania użytkowników w systemie wykorzystano **Microsoft Entra ID**. Dzięki temu:
-
-- Użytkownicy mogą logować się za pomocą uwierzytelnienia jednokrotnego.
-- System integruje się z zewnętrznymi usługami, co pozwala na bezpieczne zarządzanie dostępem do zasobów.
-
-#### Zastosowanie Ról w Systemie
-
-Komponenty systemu oraz dostępne endpointy zostały przystosowane do pracy z użytkownikami o różnych rolach.
-Wprowadzono dwie główne role:
-
-- **Pracownik** (`Employee`): Osoba odpowiedzialna za zarządzanie samochodami, rezerwacjami, oraz administrację systemem.
-- **Użytkownik** (`User`): Klient, który korzysta z aplikacji do przeglądania dostępnych pojazdów, porównywania ofert wypożyczalni oraz wypożyczania samochodów.
-
-Każda z ról ma przypisane konkretne uprawnienia, co umożliwia segregację funkcji oraz zapewnia odpowiedni poziom dostępu w zależności od charakteru użytkownika.
-
-### Wykonywanie Zadań w Tle
-
-Wykorzystano bibliotekę **Hangfire** do obsługi zadań wykonywanych asynchronicznie w tle, takich jak:
-
-- Oznaczanie oferty jako przeterminowanej po upływie czasu określonego przez reguły biznesowe.
-- Sprawdzanie statusu wypozyczenia.
-
-**Hangfire** umożliwia:
-
-- Łatwą konfigurację harmonogramów zadań,
-- Wizualizację i monitorowanie zadań w dashboardzie webowym,
-- Skalowalność dzięki integracji z Azure oraz innymi platformami chmurowymi.
-
-### Walidacja Danych i Zapytań
-
-W projekcie zastosowano **FluentValidation**, który umożliwia zdefiniowanie zaawansowanych reguł walidacji dla obiektów. Dzięki temu:
-
-- Każda operacja biznesowa jest poprzedzona dokładną weryfikacją poprawności danych wejściowych,
-- Walidacja jest przeprowadzana w sposób deklaratywny, co zwiększa czytelność kodu i ułatwia jej modyfikację.
-
-### Mapowanie Obiektów
-
-Do mapowania obiektów wykorzystano **AutoMapper**, który pozwala na szybkie konwertowanie danych między modelami.
-**AutoMapper** ułatwia:
-
-- Unikanie powielania logiki konwersji, co poprawia przejrzystość kodu.
-- Utrzymanie spójności struktury danych między różnymi warstwami aplikacji.
-
-### Generowanie Raportów w Excelu
-
-Do generowania okresowych raportów w formacie Excel wykorzystano bibliotekę **ClosedXML**. Dzięki niej możliwe jest:
-
-- Szybkie tworzenie i formatowanie zaawansowanych arkuszy kalkulacyjnych.
-- Tworzenie dynamicznych raportów opartych na danych z bazy lub generowanych w czasie rzeczywistym.
-- Obsługa wielu typów danych i zaawansowanych formuł, co ułatwia analizę i prezentację wyników.
-
-## Testy Jednostkowe
-
-W projekcie wykorzystano dwa osobne projekty testowe:
-
-- `CarRental.Comparer.Tests`: Zawiera testy jednostkowe dla logiki związanej z porównywarką cen wypożyczeń samochodów.
-- `CarRental.Provider.Tests`: Zawiera testy jednostkowe dla logiki związanej z obsługą API dostawcy samochodów.
-
-Do pisania testów jednostkowych użyto:
-
-- **XUnit**: Framework testowy, który zapewnia prosty i czytelny sposób na tworzenie, uruchamianie oraz raportowanie wyników testów jednostkowych.
-- **FluentValidation**: Dzięki tej bibliotece możliwe jest automatyczne sprawdzanie poprawności danych wejściowych w testach, co pozwala na precyzyjne testowanie walidacji.
-- **Moq**: Narzędzie do tworzenia fałszywych obiektów (mocków), które umożliwia łatwe i izolowane testowanie logiki aplikacji, bez potrzeby korzystania z zależności zewnętrznych.
-
-Wszystkie testy są zorganizowane modularnie i korzystają z podejścia **Arrange-Act-Assert**, co zapewnia klarowność i łatwość w identyfikacji błędów.
-
 ## Dokumentacja API
 
 Dokumentację dla API dostawcy samochodów oraz porównywarki cen wypożyczeń można znaleźć pod następującymi adresami (w środowisku deweloperskim):
