@@ -222,23 +222,149 @@ Below is an overview of the logical layers and their responsibilities:
 | **Web**          | 🎨 Frontend built with **Blazor WebAssembly**, hosted as a static app on **Azure Static Web Apps**. |
 | **Tests**        | 🧪 Unit tests to verify correctness of business logic and data access layers.                     |
 
-<!-- 
 <br>
 
-> The diagram illustrates the structure of how the projects are organized within the solution:
+> The diagrams illustrates the structure of how the projects are organized within the solution:
 
-<br>
-
-<p align="center">
-  <img src="./CarRental.Docs/Diagrams/SolutionArchitecture/CarRental.png" 
-       alt="Diagram of the projects" 
-       style="width: 80%;"/>
-</p>
+### 🔗 Project Dependencies Overview
 
 ```mermaid
-
+graph TD
+  A[CarRental.Comparer.Web]
+  B[CarRental.Provider.Persistence] --> C[CarRental.Common.Core]
+  D[CarRental.Comparer.Persistence] --> C
+  E[CarRental.Provider.Infrastructure] --> B
+  E --> F[CarRental.Common.Infrastructure]
+  G[CarRental.Comparer.Infrastructure] --> F
+  G --> D
+  H[CarRental.Provider.API] --> E
+  I[CarRental.Comparer.API] --> G
+  J[CarRental.Provider.Tests] --> H
+  K[CarRental.Comparer.Tests] --> I
 ```
--->
+
+### 📁 Internal Module Architecture
+
+```mermaid
+graph TD
+  subgraph CarRental.Common.Core
+    A1[ComparerEntities]
+    A2[Enums]
+    A3[ProviderEntities]
+  end
+
+  subgraph CarRental.Common.Infrastructure
+    B1[Configurations]
+    B2[PipelineBehaviours]
+    B3[Middlewares]
+    B4[Providers]
+    B5[Storages]
+  end
+
+  subgraph CarRental.Comparer.API
+    C1[DTOs]
+    C2[Authorization]
+    C3[Controllers]
+    C4[Profiles]
+    C5[Validators]
+    C6[Requests]
+    C7[Pagination]
+    C8[BackgroundJobs]
+  end
+
+  subgraph CarRental.Provider.API
+    D1[DTOs]
+    D2[Authorization]
+    D3[Controllers]
+    D4[Profiles]
+    D5[Validators]
+    D6[Requests]
+  end
+
+  subgraph CarRental.Provider.Infrastructure
+    E1[Calculators]
+    E2[EmailServices]
+    E3[BackgroundJobs]
+  end
+
+  subgraph CarRental.Comparer.Infrastructure
+    G1[HttpClients]
+    G2[Providers]
+    G3[Cache]
+    G4[Reports]
+    G5[CarProviders]
+    G6[CarComparisons]
+  end
+
+  subgraph CarRental.Provider.Persistence
+    H1[Specifications]
+    H2[Configurations]
+    H3[Migrations]
+    H4[Options]
+    H5[Data]
+    H6[Repositories]
+  end
+
+  subgraph CarRental.Comparer.Persistence
+    I1[Specifications]
+    I2[Configurations]
+    I3[Migrations]
+    I4[Options]
+    I5[Data]
+    I6[Repositories]
+  end
+
+  %% --- ZALEŻNOŚCI LOGICZNE ---
+
+  %% API → Infrastructure
+  C3 --> C1
+  C3 --> C6
+  C3 --> C5
+  C3 --> C4
+  C3 --> C2
+  C6 --> G5
+  C6 --> G6
+  C8 --> G4
+  C7 --> G3
+
+  D3 --> D1
+  D3 --> D6
+  D3 --> D5
+  D3 --> D4
+  D3 --> D2
+  D6 --> E1
+  E3 --> E2
+
+  %% Infrastructure → Persistence
+  G5 --> I6
+  G6 --> I6
+  G2 --> I6
+  G4 --> I5
+  G3 --> I4
+
+  E1 --> H6
+  E2 --> H5
+
+  %% Persistence → Core
+  H6 --> A3
+  I6 --> A1
+  H1 --> A2
+  I1 --> A2
+
+  %% Common Infrastructure → Core
+  B4 --> A1
+  B4 --> A3
+  B2 --> A2
+  B3 --> A2
+  B5 --> A2
+
+  %% API → Common.Infrastructure
+  C3 --> B3
+  D3 --> B3
+  C8 --> B5
+  D3 --> B1
+```
+
 
 ## ☁️ Cloud Services Architecture
 
@@ -281,21 +407,155 @@ The system uses **Entity Framework Core** to manage the database with a _code-fi
 - In the **development** environment, we use **Microsoft SQL Server** running locally (`localhost`) 🖥️.  
 - In **production**, the solution is deployed on two **Azure SQL Database** instances ☁️—one for the Car Provider API and one for the Price Comparer.
 
-<!-- 
-Below are the diagrams illustrating the database structures, table relationships, and key attributes:
+> Below are the diagrams illustrating the database structures, table relationships, and key attributes:
 
-<p align="center">
-  <img src="./CarRental.Docs/Diagrams/Databases/carrental-provider-db.png" 
-       alt="Database Schema for the Car Rental Provider" 
-       style="width: 80%;"/>
-</p>
+### 🚗 `CarRentalProviderDb`
 
-<p align="center">
-  <img src="./CarRental.Docs/Diagrams/Databases/carrental-comparer-db.png" 
-       alt="Database Schema for the Car Rental Comparer" 
-       style="width: 80%;"/>
-</p>
--->
+---
+
+```mermaid
+erDiagram
+  Insurance {
+    int Id PK
+    string Name
+    string Description
+    decimal PricePerDay
+  }
+  Segment {
+    int Id PK
+    int InsuranceId FK "Insurance"
+    string Name
+    string Description
+    decimal PricePerDay
+  }
+  Model {
+    int Id PK
+    int MakeId FK "Make"
+    int SegmentId FK "Segment"
+    string Name
+    int NumberOfDoors
+    int NumberOfSeats
+    EngineType EngineType
+    WheelDriveType WheelDriveType
+  }
+  Make {
+    int Id PK
+    string Name
+  }
+  Car {
+    int Id PK
+    int ModelId FK "Model"
+    int ProductionYear
+    FuelType FuelType
+    TransmissionType TransmissionType
+    decimal Longitude
+    decimal Latitude
+    CarStatus Status
+  }
+  Offer {
+    int Id PK
+    int CarId FK "Car"
+    DateTime GeneratedAt
+    DateTime ExpiresAt
+    decimal RentalPricePerDay
+    decimal InsurancePricePerDay
+    string Key
+    string GeneratedBy
+  }
+  Rental {
+    int Id PK
+    int OfferId FK "Offer"
+    int CustomerId FK "Customer"
+    RenatlStatus Status
+  }
+  Customer {
+    int Id PK
+    string EmailAddress
+    string FirstName
+    string LastName
+  }
+  RentalReturn {
+    int Id PK
+    int RentalId FK "Rental"
+    DateTime ReturnedAt
+    string Description
+    string Image
+    decimal Longitude
+    decimal Latitude
+  }
+
+  Insurance ||--o{ Segment : has
+  Segment ||--o{ Model : categorizes
+  Make ||--o{ Model : builds
+  Model ||--o{ Car : includes
+  Car ||--o{ Offer : offers
+  Offer ||--o{ Rental : basedOn
+  Customer ||--o{ Rental : rents
+  Rental ||--o| RentalReturn : mightHave
+```
+
+### 🚗 `CarRentalComparerDb`
+
+---
+
+```mermaid
+erDiagram
+  User {
+    int Id PK
+    string Name
+    string LastName
+    string Email
+    DateTime Birthday
+    DateTime DrivingLicenseDate
+    decimal Longitude
+    decimal Latitude
+  }
+  RentalTransaction {
+    int Id PK
+    int UserId FK "User"
+    int ProviderId FK "Provider"
+    int CarDetailsId FK "CarDetails"
+    string RentalOuterId
+    decimal RentalPricePerDay
+    decimal InsurancePricePerDay
+    DateTime RentedAt
+    DateTime ReturnedAt
+    decimal PricePerDay
+    RentalTransactionStatus Status
+    string Description
+    string Image
+  }
+  Provider {
+    int Id PK
+    string Name
+  }
+  Employee {
+    int Id PK
+    int ProviderId FK "Provider"
+    string FirstName
+    string LastName
+    string Email
+  }
+  CarDetails {
+    int Id PK
+    int OuterId
+    string Make
+    string Model
+    string Segment
+    string FuelType
+    string TransmissionType
+    int YearOfProduction
+    int NumberOfDoors
+    int NumberOfSeats
+  }
+
+  User ||--o{ RentalTransaction : rents
+  Provider ||--o{ RentalTransaction : offers
+  Provider ||--o{ Employee : employs
+  CarDetails ||--o{ RentalTransaction : describes
+```
+
+
 
 ## 🧠 Key Patterns & Technologies
 
